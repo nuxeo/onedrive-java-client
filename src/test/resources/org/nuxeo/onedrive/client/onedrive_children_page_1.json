@@ -1,0 +1,73 @@
+{
+  "@odata.context": "https://nuxeofr-my.sharepoint.com/_api/v2.0/$metadata#items",
+  "@odata.nextLink": "https://nuxeofr-my.sharepoint.com/_api/v2.0?p=2",
+  "value": [
+    {
+      "@odata.type": "#oneDrive.item",
+      "@odata.id": "https://nuxeofr-my.sharepoint.com/_api/v2.0/drive/items/01YOWJ6CQSJ5S3PYEERFBLEDREVCLCBNPU",
+      "@odata.etag": "\"{B7654F12-84E0-4289-B20E-24A89620B5F4},1\"",
+      "@odata.editLink": "drive/items/01YOWJ6CQSJ5S3PYEERFBLEDREVCLCBNPU",
+      "createdBy": {
+        "user": {
+          "id": "1234abcd-12ab-12ab-12ab-1234abcd",
+          "displayName": "Nuxeo User"
+        }
+      },
+      "createdDateTime": "2016-01-26T08:47:50Z",
+      "eTag": "\"{B7654F12-84E0-4289-B20E-24A89620B5F4},1\"",
+      "folder": {
+        "childCount": 3
+      },
+      "id": "01YOWJ6CQSJ5S3PYEERFBLEDREVCLCBNPU",
+      "lastModifiedBy": {
+        "user": {
+          "id": "1234abcd-12ab-12ab-12ab-1234abcd",
+          "displayName": "Nuxeo User"
+        }
+      },
+      "lastModifiedDateTime": "2016-01-26T10:43:01Z",
+      "name": "Test",
+      "parentReference": {
+        "driveId": "b!X-6e_1234abcd_1234abcd-1234abcd",
+        "id": "4K4Q87486LMKRP9X82Y2YJ2N2NFVD2F596",
+        "path": "/drive/root:"
+      },
+      "size": 0,
+      "webUrl": "https://nuxeofr-my.sharepoint.com/personal/kleturc_nuxeofr_onmicrosoft_com/Documents/Test"
+    },
+    {
+      "@odata.type": "#oneDrive.item",
+      "@odata.id": "https://nuxeofr-my.sharepoint.com/_api/v2.0/drive/items/01YOWJ6CT42I3ABB3ZFBGJ2E5ZRUGXXVJ4",
+      "@odata.etag": "\"{0036D27C-7987-4C28-9D13-B98D0D7BD53C},1\"",
+      "@odata.editLink": "drive/items/01YOWJ6CT42I3ABB3ZFBGJ2E5ZRUGXXVJ4",
+      "@content.downloadUrl": "https://nuxeofr-my.sharepoint.com/personal/kleturc_nuxeofr_onmicrosoft_com/_layouts/15/download.aspx?guestaccesstoken=kXObvb6dE8CEruTh%2fNcrbizoeQMEmpmYs%2fOTmT5XacE%3d&docid=00036d27c79874c289d13b98d0d7bd53c&expiration=26%2f01%2f2016+14%3a34%3a17&userid=3&authurl=True&NeverAuth=True",
+      "createdBy": {
+        "user": {
+          "id": "1234abcd-12ab-12ab-12ab-1234abcd",
+          "displayName": "Nuxeo User"
+        }
+      },
+      "createdDateTime": "2016-01-26T09:03:41Z",
+      "cTag": "\"c:{0036D27C-7987-4C28-9D13-B98D0D7BD53C},1\"",
+      "eTag": "\"{0036D27C-7987-4C28-9D13-B98D0D7BD53C},1\"",
+      "file": {},
+      "id": "01YOWJ6CT42I3ABB3ZFBGJ2E5ZRUGXXVJ4",
+      "image": {},
+      "lastModifiedBy": {
+        "user": {
+          "id": "1234abcd-12ab-12ab-12ab-1234abcd",
+          "displayName": "Nuxeo User"
+        }
+      },
+      "lastModifiedDateTime": "2016-01-26T09:03:41Z",
+      "name": "dummy-480x270-Mosque (1).jpg",
+      "parentReference": {
+        "driveId": "b!X-6e_1234abcd_1234abcd-1234abcd",
+        "id": "4K4Q87486LMKRP9X82Y2YJ2N2NFVD2F596",
+        "path": "/drive/root:"
+      },
+      "size": 90081,
+      "webUrl": "https://nuxeofr-my.sharepoint.com/personal/kleturc_nuxeofr_onmicrosoft_com/Documents/dummy-480x270-Mosque%20(1).jpg"
+    }
+  ]
+}

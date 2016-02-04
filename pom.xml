@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo.onedrive</groupId>
+  <artifactId>onedrive-java-client</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>OneDrive Java client</name>
+  <description>The OneDrive client for Java.</description>
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <organization>
+    <name>Nuxeo SA</name>
+    <url>http://www.nuxeo.com</url>
+  </organization>
+
+  <mailingLists>
+    <mailingList>
+      <name>Nuxeo ECM list</name>
+      <post>ecm@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</subscribe>
+      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm/</archive>
+      <otherArchives>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm@lists.nuxeo.com/
+        </otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM checkins list</name>
+      <subscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm-checkins/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM developers list</name>
+      <post>nuxeo-dev@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev
+      </unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/nuxeo-dev/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.nuxeo.com/browse/NXP</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://qa.nuxeo.org/jenkins/</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>ecm-qa@lists.nuxeo.com</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+
+  <prerequisites>
+    <maven>3.1.1</maven>
+  </prerequisites>
+
+  <properties>
+    <powermock.version>1.6.4</powermock.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.eclipsesource.minimal-json</groupId>
+      <artifactId>minimal-json</artifactId>
+      <version>0.9.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:https://github.com/nuxeo/nuxeo-onedrive-java-client.git</connection>
+    <developerConnection>scm:git:https://github.com/nuxeo/nuxeo-onedrive-java-client.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-onedrive-java-client</url>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>
+
