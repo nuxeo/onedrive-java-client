@@ -18,6 +18,8 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.util.Objects;
+
 import com.eclipsesource.json.JsonObject;
 
 /**
@@ -29,9 +31,14 @@ public class OneDriveResource {
 
     private final String id;
 
+    OneDriveResource(OneDriveAPI api) {
+        this.api = Objects.requireNonNull(api);
+        this.id = null;
+    }
+
     public OneDriveResource(OneDriveAPI api, String id) {
-        this.api = api;
-        this.id = id;
+        this.api = Objects.requireNonNull(api);
+        this.id = Objects.requireNonNull(id);
     }
 
     public OneDriveAPI getApi() {
@@ -40,6 +47,10 @@ public class OneDriveResource {
 
     public String getId() {
         return id;
+    }
+
+    public boolean isRoot() {
+        return id == null;
     }
 
     @Override

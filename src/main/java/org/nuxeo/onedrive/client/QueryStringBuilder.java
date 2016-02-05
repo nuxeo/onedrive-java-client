@@ -49,6 +49,20 @@ class QueryStringBuilder {
         return this;
     }
 
+    public QueryStringBuilder set(String key, QueryStringCommaParameter... parameters) {
+        if (parameters != null && parameters.length > 0) {
+            StringBuilder builder = new StringBuilder();
+            for (QueryStringCommaParameter parameter : parameters) {
+                if (builder.length() > 0) {
+                    builder.append(",");
+                }
+                builder.append(parameter.getKey());
+            }
+            this.parameters.put(key, builder.toString());
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
         if (parameters.isEmpty()) {

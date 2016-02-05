@@ -39,8 +39,9 @@ public class OneDriveFile extends OneDriveItem {
     }
 
     @Override
-    public OneDriveFile.Metadata getMetadata() throws OneDriveAPIException {
-        URL url = GET_FILE_URL.build(getApi().getBaseURL(), getId());
+    public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws OneDriveAPIException {
+        QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
+        URL url = GET_FILE_URL.build(getApi().getBaseURL(), query, getId());
         OneDriveJsonRequest request = new OneDriveJsonRequest(getApi(), url, "GET");
         OneDriveJsonResponse response = request.send();
         return new OneDriveFile.Metadata(response.getContent());

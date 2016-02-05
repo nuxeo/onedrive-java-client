@@ -18,8 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.io.InputStream;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
@@ -29,11 +35,35 @@ import com.eclipsesource.json.ParseException;
  */
 public abstract class OneDriveItem extends OneDriveResource {
 
+    OneDriveItem(OneDriveAPI api) {
+        super(api);
+    }
+
     public OneDriveItem(OneDriveAPI api, String id) {
         super(api, id);
     }
 
-    public abstract OneDriveItem.Metadata getMetadata() throws OneDriveAPIException;
+    public abstract OneDriveItem.Metadata getMetadata(OneDriveExpand... expand) throws OneDriveAPIException;
+
+    public OneDriveThumbnailSet.Metadata getThumbnailSet() throws OneDriveAPIException {
+        Iterator<OneDriveThumbnailSet.Metadata> iterator = getThumbnailSets().iterator();
+        if (iterator.hasNext()) {
+            return iterator.next();
+        }
+        return null;
+    }
+
+    public OneDriveThumbnail.Metadata getThumbnail(OneDriveThumbnailSize size) throws OneDriveAPIException {
+        return new OneDriveThumbnail(getApi(), getId(), size).getMetadata();
+    }
+
+    public InputStream downloadThumbnail(OneDriveThumbnailSize size) throws OneDriveAPIException {
+        return new OneDriveThumbnail(getApi(), getId(), size).download();
+    }
+
+    Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() throws OneDriveAPIException {
+        return () -> new OneDriveThumbnailSetIterator(getApi(), getId());
+    }
 
     /** See documentation at https://dev.onedrive.com/resources/item.htm. */
     public abstract class Metadata extends OneDriveResource.Metadata {
@@ -59,6 +89,8 @@ public abstract class OneDriveItem extends OneDriveResource {
         private String description;
 
         private boolean deleted;
+
+        private List<OneDriveThumbnailSet.Metadata> thumbnailSets = Collections.emptyList();
 
         public Metadata(JsonObject json) {
             super(json);
@@ -108,6 +140,14 @@ public abstract class OneDriveItem extends OneDriveResource {
             return deleted;
         }
 
+        public OneDriveThumbnailSet.Metadata getThumbnailSet() {
+            return thumbnailSets.stream().findFirst().orElse(null);
+        }
+
+        List<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
+            return Collections.unmodifiableList(thumbnailSets);
+        }
+
         @Override
         protected void parseMember(JsonObject.Member member) {
             super.parseMember(member);
@@ -139,9 +179,21 @@ public abstract class OneDriveItem extends OneDriveResource {
                     description = value.asString();
                 } else if ("deleted".equals(memberName)) {
                     deleted = true;
+                } else if ("thumbnailSets".equals(memberName)) {
+                    parseThumbnailsMember(value.asArray());
                 }
             } catch (ParseException e) {
                 throw new OneDriveRuntimeException("Parse failed, maybe a bug in client.", e);
+            }
+        }
+
+        private void parseThumbnailsMember(JsonArray thumbnails) {
+            thumbnailSets = new ArrayList<>(thumbnails.size());
+            for (JsonValue value : thumbnails) {
+                JsonObject thumbnail = value.asObject();
+                int id = Integer.parseInt(thumbnail.get("id").asString());
+                OneDriveThumbnailSet thumbnailSet = new OneDriveThumbnailSet(getApi(), getId(), id);
+                thumbnailSets.add(thumbnailSet.new Metadata(thumbnail));
             }
         }
 

@@ -20,6 +20,7 @@ package org.nuxeo.onedrive.client;
 
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -42,25 +43,22 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
 
-    private final boolean root;
-
     OneDriveFolder(OneDriveAPI api) {
-        super(api, "");
-        root = true;
+        super(api);
     }
 
     public OneDriveFolder(OneDriveAPI api, String id) {
         super(api, id);
-        root = false;
     }
 
     @Override
-    public OneDriveFolder.Metadata getMetadata() throws OneDriveAPIException {
+    public OneDriveFolder.Metadata getMetadata(OneDriveExpand... expands) throws OneDriveAPIException {
+        QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
         URL url;
-        if (root) {
-            url = GET_FOLDER_ROOT_URL.build(getApi().getBaseURL());
+        if (isRoot()) {
+            url = GET_FOLDER_ROOT_URL.build(getApi().getBaseURL(), query);
         } else {
-            url = GET_FOLDER_URL.build(getApi().getBaseURL(), getId());
+            url = GET_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
         }
         OneDriveJsonRequest request = new OneDriveJsonRequest(getApi(), url, "GET");
         OneDriveJsonResponse response = request.send();
@@ -79,7 +77,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     public Iterator<OneDriveItem.Metadata> iterator() {
         QueryStringBuilder query = new QueryStringBuilder().set("top", 200);
         URL url;
-        if (root) {
+        if (isRoot()) {
             url = GET_CHILDREN_ROOT_URL.build(getApi().getBaseURL(), query);
         } else {
             url = GET_CHILDREN_URL.build(getApi().getBaseURL(), query, getId());
@@ -90,7 +88,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     public Iterable<OneDriveItem.Metadata> search(String search) throws OneDriveAPIException {
         QueryStringBuilder query = new QueryStringBuilder().set("q", search);
         URL url;
-        if (root) {
+        if (isRoot()) {
             url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
         } else {
             url = SEARCH_IN_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
@@ -98,10 +96,23 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         return () -> new OneDriveItemIterator(getApi(), url);
     }
 
+    @Override
+    public Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() throws OneDriveAPIException {
+        if (isRoot()) {
+            return () -> new OneDriveThumbnailSetIterator(getApi());
+        }
+        return super.getThumbnailSets();
+    }
+
     /** See documentation at https://dev.onedrive.com/resources/item.htm. */
     public class Metadata extends OneDriveItem.Metadata {
 
         private long childCount;
+
+        @Override
+        public List<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
+            return super.getThumbnailSets();
+        }
 
         public Metadata(JsonObject json) {
             super(json);
