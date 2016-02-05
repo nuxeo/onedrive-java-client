@@ -27,6 +27,8 @@ import java.util.Objects;
  */
 class URLTemplate {
 
+    public static final URLTemplate EMPTY_TEMPLATE = new URLTemplate("");
+
     private String template;
 
     URLTemplate(String template) {

@@ -42,6 +42,9 @@ public class OneDriveTestCase {
 
     protected OneDriveAPI api = new OneDriveBasicAPI("ACCESS_TOKEN_TEST");
 
+    protected OneDriveAPI businessApi = new OneDriveBusinessAPI("https://nuxeofr-my.sharepoint.com/",
+            "ACCESS_TOKEN_TEST");
+
     protected void mockJsonRequest(String jsonResponseFile) throws Exception {
         OneDriveJsonRequest jsonRequest = mock(OneDriveJsonRequest.class);
         whenNew(OneDriveJsonRequest.class).withAnyArguments().thenReturn(jsonRequest);

@@ -18,23 +18,19 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.util.Objects;
-
 /**
  * @since 1.0
  */
 public class OneDriveBusinessAPI extends AbstractOneDriveAPI {
 
-    private static final String EMAIL_URL = "https://apis.live.net/v5.0/me";
-
-    private final String resourceURL;
-
     private final String baseUrl;
+
+    private final String emailUrl;
 
     public OneDriveBusinessAPI(String resourceURL, String accessToken) {
         super(accessToken);
-        this.resourceURL = Objects.requireNonNull(resourceURL);
         this.baseUrl = resourceURL + "_api/v2.0/me";
+        this.emailUrl = resourceURL + "_api/SP.UserProfiles.PeopleManager/GetMyProperties";
     }
 
     @Override
@@ -49,7 +45,7 @@ public class OneDriveBusinessAPI extends AbstractOneDriveAPI {
 
     @Override
     public String getEmailURL() {
-        return EMAIL_URL;
+        return emailUrl;
     }
 
 }
