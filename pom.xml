@@ -129,9 +129,9 @@
   </build>
 
   <scm>
-    <connection>scm:git:https://github.com/nuxeo/nuxeo-onedrive-java-client.git</connection>
-    <developerConnection>scm:git:https://github.com/nuxeo/nuxeo-onedrive-java-client.git</developerConnection>
-    <url>https://github.com/nuxeo/nuxeo-onedrive-java-client</url>
+    <connection>scm:git:https://github.com/nuxeo/onedrive-java-client.git</connection>
+    <developerConnection>scm:git:https://github.com/nuxeo/onedrive-java-client.git</developerConnection>
+    <url>https://github.com/nuxeo/onedrive-java-client</url>
   </scm>
 
   <repositories>
