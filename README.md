@@ -22,13 +22,13 @@ To import the client as maven dependency, declare it as follow for latest releas
 </dependency>
 ```
 
-If you ant to use the on development version, declare :
+If you want to use the on development version, declare :
 
 ```
 <dependency>
   <groupId>org.nuxeo.onedrive</groupId>
   <artifactId>onedrive-java-client</artifactId>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -75,15 +75,15 @@ OneDriveFile.Metadata fileMetadata = item.getMetadata();
 - Iterate over folder children, to get all temporary download urls for example :
 ```
 public List<String> getChildrenDownloadUrls(OneDriveFolder folder) {
-  List<String> urls = new ArrayList<>();
-  for (OneDriveItem.Metadata metadata : folder) {
-    if (metadata.isFile()) {
-      urls.add(metadata.asFile().getDownloadUrl());
-    } else if (metadata.isFolder()) {
-      urls.addAll(getChildrenDownloadUrls(metadata.asFolder().getResource()));
+    List<String> urls = new ArrayList<>();
+    for (OneDriveItem.Metadata metadata : folder) {
+        if (metadata.isFile()) {
+            urls.add(metadata.asFile().getDownloadUrl());
+        } else if (metadata.isFolder()) {
+            urls.addAll(getChildrenDownloadUrls(metadata.asFolder().getResource()));
+        }
     }
-  }
-return urls;
+    return urls;
 }
 ```
 
