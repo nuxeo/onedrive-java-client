@@ -29,7 +29,7 @@ public class OneDriveBusinessAPI extends AbstractOneDriveAPI {
 
     public OneDriveBusinessAPI(String resourceURL, String accessToken) {
         super(accessToken);
-        this.baseUrl = resourceURL + "_api/v2.0/me";
+        this.baseUrl = resourceURL + "_api/v2.0";
         this.emailUrl = resourceURL + "_api/SP.UserProfiles.PeopleManager/GetMyProperties";
     }
 
