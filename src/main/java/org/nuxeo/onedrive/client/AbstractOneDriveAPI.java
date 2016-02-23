@@ -29,6 +29,7 @@ abstract class AbstractOneDriveAPI implements OneDriveAPI {
         this.accessToken = accessToken;
     }
 
+    @Override
     public String getAccessToken() {
         return accessToken;
     }
