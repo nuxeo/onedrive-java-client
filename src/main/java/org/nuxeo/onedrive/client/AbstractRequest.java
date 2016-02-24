@@ -64,9 +64,8 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
         this.method = Objects.requireNonNull(method);
         this.headers = new ArrayList<>();
 
-//        addHeader("Accept-Encoding", "gzip");
-//        addHeader("Accept-Charset", "utf-8");
-        addHeader("accept", "application/json");
+        addHeader("Accept-Encoding", "gzip");
+        addHeader("Accept-Charset", "utf-8");
     }
 
     public void addHeader(String key, String value) {

@@ -19,16 +19,8 @@
 package org.nuxeo.onedrive.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.nuxeo.onedrive.client.OneDriveEmailAccount.OneDriveBusinessEmailRequest;
-import org.nuxeo.onedrive.client.OneDriveEmailAccount.OneDriveBusinessEmailResponse;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 /**
@@ -40,24 +32,12 @@ public class TestOneDriveEmailAccount extends OneDriveTestCase {
     @Test
     public void testGetBusinessEmail() throws Exception {
         // Mock
-        mockBusinessEmailRequest("onedrive_business_email.xml");
+        mockJsonRequest("onedrive_business_email.json");
 
         // Test
         String email = OneDriveEmailAccount.getCurrentUserEmailAccount(businessApi);
         assertEquals("nuxeo@nuxeofr.onmicrosoft.com", email);
 
-    }
-
-    protected void mockBusinessEmailRequest(String xmlResponseFile) throws Exception {
-        OneDriveBusinessEmailRequest emailRequest = mock(OneDriveBusinessEmailRequest.class);
-        whenNew(OneDriveBusinessEmailRequest.class).withAnyArguments().thenReturn(emailRequest);
-
-        OneDriveBusinessEmailResponse emailResponse = mock(OneDriveBusinessEmailResponse.class);
-        when(emailRequest.send()).thenReturn(emailResponse);
-
-        InputStream xmlString = IOUtils.toInputStream(IOUtils.toString(getClass().getResource(xmlResponseFile)));
-        when(emailResponse.getBody()).thenReturn(xmlString);
-        when(emailResponse.getContent()).thenCallRealMethod();
     }
 
 }

@@ -32,6 +32,7 @@ public class OneDriveJsonRequest extends AbstractRequest<OneDriveJsonResponse> {
 
     public OneDriveJsonRequest(OneDriveAPI api, URL url, String method) {
         super(api, url, method);
+        addHeader("accept", "application/json");
     }
 
     @Override
