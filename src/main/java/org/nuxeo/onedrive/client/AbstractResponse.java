@@ -76,7 +76,7 @@ public abstract class AbstractResponse<C> implements Closeable {
                 throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
             }
         }
-        return new ReponseInputStream();
+        return new ResponseInputStream();
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class AbstractResponse<C> implements Closeable {
         return builder.toString();
     }
 
-    private class ReponseInputStream extends InputStream {
+    private class ResponseInputStream extends InputStream {
 
         @Override
         public int read() throws IOException {
