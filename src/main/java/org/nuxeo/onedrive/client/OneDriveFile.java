@@ -73,8 +73,18 @@ public class OneDriveFile extends OneDriveItem {
             super(json);
         }
 
-        public String getcTag() {
+        public String getCTag() {
             return cTag;
+        }
+
+        /**
+         * Returns the current version of OneDrive file.
+         * CAUTION: this value is known from cTag field, it doesn't rely on public field from OneDrive API.
+         *
+         * @return the current version of OneDrive file
+         */
+        public String getVersion() {
+            return cTag == null ? null : cTag.substring(cTag.lastIndexOf(',') + 1);
         }
 
         public String getMimeType() {
