@@ -21,6 +21,8 @@ package org.nuxeo.onedrive.client;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.eclipsesource.json.JsonObject;
+
 /**
  * @since 1.0
  */
@@ -32,12 +34,17 @@ public class OneDriveJsonRequest extends AbstractRequest<OneDriveJsonResponse> {
 
     public OneDriveJsonRequest(OneDriveAPI api, URL url, String method) {
         super(api, url, method);
+        addHeader("Content-Type", "application/json");
         addHeader("accept", "application/json");
     }
 
     @Override
     protected OneDriveJsonResponse createResponse(HttpURLConnection connection) throws OneDriveAPIException {
         return new OneDriveJsonResponse(connection);
+    }
+
+    public void setBody(JsonObject body) {
+        setBody(body.toString());
     }
 
 }

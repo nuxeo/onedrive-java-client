@@ -52,6 +52,19 @@ public class OneDriveAPIException extends IOException {
         this.response = null;
     }
 
+    public OneDriveAPIException(String message, OneDriveRuntimeException cause) {
+        super(message, cause);
+
+        if (cause.getCause() instanceof OneDriveAPIException) {
+            OneDriveAPIException subApiException = (OneDriveAPIException) cause.getCause();
+            this.responseCode = subApiException.getResponseCode();
+            this.response = subApiException.getResponse();
+        } else {
+            this.responseCode = -1;
+            this.response = null;
+        }
+    }
+
     public OneDriveAPIException(String message, int responseCode, String response, Throwable cause) {
         super(message, cause);
 

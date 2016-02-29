@@ -73,8 +73,16 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         return this;
     }
 
+    public Iterable<OneDriveItem.Metadata> getChildren(OneDriveExpand... expands) {
+        return () -> iterator(expands);
+    }
+
     @Override
     public Iterator<OneDriveItem.Metadata> iterator() {
+        return iterator(new OneDriveExpand[] {});
+    }
+
+    public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
         QueryStringBuilder query = new QueryStringBuilder().set("top", 200);
         URL url;
         if (isRoot()) {
@@ -85,8 +93,8 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         return new OneDriveItemIterator(getApi(), url);
     }
 
-    public Iterable<OneDriveItem.Metadata> search(String search) throws OneDriveAPIException {
-        QueryStringBuilder query = new QueryStringBuilder().set("q", search);
+    public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
+        QueryStringBuilder query = new QueryStringBuilder().set("q", search).set("expand", expands);
         URL url;
         if (isRoot()) {
             url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
@@ -97,7 +105,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     @Override
-    public Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() throws OneDriveAPIException {
+    public Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
         if (isRoot()) {
             return () -> new OneDriveThumbnailSetIterator(getApi());
         }

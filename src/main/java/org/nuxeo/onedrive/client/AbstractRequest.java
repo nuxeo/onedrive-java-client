@@ -18,11 +18,15 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,6 +49,10 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
     private URL url;
 
     private int timeout;
+
+    private InputStream body;
+
+    private long bodyLength;
 
     private int numRedirects;
 
@@ -76,6 +84,42 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
         this.timeout = timeout;
     }
 
+    protected InputStream getBody() {
+        return this.body;
+    }
+
+    protected void setBody(InputStream stream) {
+        this.body = stream;
+    }
+
+    protected void setBody(InputStream stream, long length) {
+        this.bodyLength = length;
+        this.body = stream;
+    }
+
+    protected void setBody(String body) {
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        this.bodyLength = bytes.length;
+        this.body = new ByteArrayInputStream(bytes);
+    }
+
+    protected void writeBody(HttpURLConnection connection) throws OneDriveAPIException {
+        if (this.body == null) {
+            return;
+        }
+
+        connection.setDoOutput(true);
+        try (OutputStream output = connection.getOutputStream()) {
+            int b = this.body.read();
+            while (b != -1) {
+                output.write(b);
+                b = this.body.read();
+            }
+        } catch (IOException e) {
+            throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
+        }
+    }
+
     public R send() throws OneDriveAPIException {
         HttpURLConnection connection = createConnection();
 
@@ -83,6 +127,8 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
         if (api != null) {
             connection.addRequestProperty("Authorization", "Bearer " + api.getAccessToken());
         }
+
+        writeBody(connection);
 
         try {
             connection.connect();

@@ -19,6 +19,7 @@
 package org.nuxeo.onedrive.client;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,10 @@ import com.eclipsesource.json.ParseException;
  */
 public abstract class OneDriveItem extends OneDriveResource {
 
+    private static final URLTemplate CREATE_SHARED_LINK_URL = new URLTemplate("/drive/items/%s/action.createLink");
+
+    private static final URLTemplate CREATE_SHARED_LINK_ROOT_URL = new URLTemplate("/drive/root/action.createLink");
+
     OneDriveItem(OneDriveAPI api) {
         super(api);
     }
@@ -46,9 +51,13 @@ public abstract class OneDriveItem extends OneDriveResource {
     public abstract OneDriveItem.Metadata getMetadata(OneDriveExpand... expand) throws OneDriveAPIException;
 
     public OneDriveThumbnailSet.Metadata getThumbnailSet() throws OneDriveAPIException {
-        Iterator<OneDriveThumbnailSet.Metadata> iterator = getThumbnailSets().iterator();
-        if (iterator.hasNext()) {
-            return iterator.next();
+        try {
+            Iterator<OneDriveThumbnailSet.Metadata> iterator = getThumbnailSets().iterator();
+            if (iterator.hasNext()) {
+                return iterator.next();
+            }
+        } catch (OneDriveRuntimeException e) {
+            throw new OneDriveAPIException(e.getMessage(), e);
         }
         return null;
     }
@@ -61,8 +70,28 @@ public abstract class OneDriveItem extends OneDriveResource {
         return new OneDriveThumbnail(getApi(), getId(), size).download();
     }
 
-    Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() throws OneDriveAPIException {
+    Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
         return () -> new OneDriveThumbnailSetIterator(getApi(), getId());
+    }
+
+    public OneDrivePermission.Metadata createSharedLink(OneDriveSharingLink.Type type) throws OneDriveAPIException {
+        URL url;
+        if (isRoot()) {
+            url = CREATE_SHARED_LINK_ROOT_URL.build(getApi().getBaseURL());
+        } else {
+            url = CREATE_SHARED_LINK_URL.build(getApi().getBaseURL(), getId());
+        }
+        OneDriveJsonRequest request = new OneDriveJsonRequest(getApi(), url, "POST");
+        request.setBody(new JsonObject().add("type", type.getType()));
+        OneDriveJsonResponse response = request.send();
+        String permissionId = response.getContent().asObject().get("id").asString();
+        OneDrivePermission permission;
+        if (isRoot()) {
+            permission = new OneDrivePermission(getApi(), permissionId);
+        } else {
+            permission = new OneDrivePermission(getApi(), getId(), permissionId);
+        }
+        return permission.new Metadata(response.getContent());
     }
 
     /** See documentation at https://dev.onedrive.com/resources/item.htm. */
