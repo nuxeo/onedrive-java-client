@@ -34,7 +34,9 @@ public class OneDriveJsonRequest extends AbstractRequest<OneDriveJsonResponse> {
 
     public OneDriveJsonRequest(OneDriveAPI api, URL url, String method) {
         super(api, url, method);
-        addHeader("Content-Type", "application/json");
+        if (!"GET".equals(method)) {
+            addHeader("Content-Type", "application/json");
+        }
         addHeader("accept", "application/json");
     }
 
