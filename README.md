@@ -14,7 +14,7 @@ The OneDrive & OneDrive for Business Java Client is a Java client library for RE
 
 To import the client as maven dependency, declare it as follow for latest release :
 
-```
+```xml
 <dependency>
   <groupId>org.nuxeo.onedrive</groupId>
   <artifactId>onedrive-java-client</artifactId>
@@ -24,7 +24,7 @@ To import the client as maven dependency, declare it as follow for latest releas
 
 If you want to use the on development version, declare :
 
-```
+```xml
 <dependency>
   <groupId>org.nuxeo.onedrive</groupId>
   <artifactId>onedrive-java-client</artifactId>
@@ -40,13 +40,17 @@ Artifact is available in nuxeo repositories :
 
 To use the client with OneDrive you first need to create a `OneDriveBasicApi` to use it after with items of client :
  
-```OneDriveAPI api = new OneDriveBasicAPI("YOUR_ACCESS_TOKEN");```
+```java
+OneDriveAPI api = new OneDriveBasicAPI("YOUR_ACCESS_TOKEN");
+```
  
 ### OneDrive for Business
 
 To use the client with OneDrive for Business you need to create a `OneDriveBusinessAPI` to use it after with items of client :
 
-```OneDriveAPI api = new OneDriveBusinessAPI("YOUR_RESOURCE_URL", "YOUR_ACCESS_TOKEN");```
+```java
+OneDriveAPI api = new OneDriveBusinessAPI("YOUR_RESOURCE_URL", "YOUR_ACCESS_TOKEN");
+```
  
 `YOUR_RESOURCE_URL` corresponds to your sharepoint resource url provided by microsoft, for example : `https://nuxeofr-my.sharepoint.com`.
 
@@ -54,18 +58,20 @@ To use the client with OneDrive for Business you need to create a `OneDriveBusin
 
 Now you have your `api` object you can request the APIs, for example to get the root folder run :
 
-```OneDriveFolder root = OneDriveFolder.getRoot(api);```
+```java
+OneDriveFolder root = OneDriveFolder.getRoot(api);
+```
 
 Or just get a folder or file item :
 
-```
+```java
 OneDriveFolder folder = new OneDriveFolder(api, "FOLDER_ID");
 OneDriveFile file = new OneDriveFile(api, "FILE_ID");
 ```
 
 Then retrieve the metadata :
 
-```
+```java
 OneDriveFolder.Metadata folderMetadata = folder.getMetadata();
 OneDriveFile.Metadata fileMetadata = item.getMetadata();
 ```
@@ -73,7 +79,7 @@ OneDriveFile.Metadata fileMetadata = item.getMetadata();
 ## Features
 
 - Iterate over folder children, to get all temporary download urls for example :
-```
+```java
 public List<String> getChildrenDownloadUrls(OneDriveFolder folder) {
     List<String> urls = new ArrayList<>();
     for (OneDriveItem.Metadata metadata : folder) {
@@ -88,23 +94,25 @@ public List<String> getChildrenDownloadUrls(OneDriveFolder folder) {
 ```
 
 - Download content of file :
-```InputStream stream = file.download();```
+```java
+InputStream stream = file.download();
+```
 
 - Get ThumbnailSet :
-```
+```java
 Iterable<OneDriveThumbnailSet.Metadata> folderThumbnail = folder.getThumbnailSets();
 OneDriveThumbnailSet.Metadata fileThumbnail = file.getThumbnailSet();
 String smallUrl = fileThumbnail.getSmall().getUrl(); // Get the small thumbnail url
 InputStream smallStream = fileThumbnail.getSmall().getResource().download(); // Download the content of small thumbnail
 ```
 You can also request thumbnail this way :
-```
+```java
 OneDriveThumbnail thumbnail = new OneDriveThumbnail(api, "FILE_ID", OneDriveThumbnailSize.SMALL);
 String smallUrl = thumbnail.getMetadata().getUrl();
 InputStream smallStream = thumbnail.download();
 ```
 Or while getting metadata with `expand` parameter :
-```
+```java
 OneDriveFile.Metadata metadata = file.getMetadata(OneDriveExpand.THUMBNAILS);
 ...
 OneDriveThumbnailSet.Metadata fileThumbnail = metadata.getThumbnailSet();
