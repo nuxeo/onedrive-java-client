@@ -28,7 +28,7 @@ If you want to use the on development version, declare :
 <dependency>
   <groupId>org.nuxeo.onedrive</groupId>
   <artifactId>onedrive-java-client</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
 </dependency>
 ```
 
