@@ -37,6 +37,11 @@ public class OneDriveBasicAPI extends AbstractOneDriveAPI {
     }
 
     @Override
+    public boolean isGraphConnection() {
+        return false;
+    }
+
+    @Override
     public String getBaseURL() {
         return BASE_URL;
     }

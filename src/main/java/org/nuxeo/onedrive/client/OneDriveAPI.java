@@ -25,6 +25,8 @@ public interface OneDriveAPI {
 
     boolean isBusinessConnection();
 
+    boolean isGraphConnection();
+
     String getBaseURL();
 
     String getEmailURL();
