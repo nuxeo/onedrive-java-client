@@ -36,6 +36,8 @@ class JsonObjectIterator implements Iterator<JsonObject> {
 
     private URL url;
 
+    private String deltaLink;
+
     private boolean hasMorePages;
 
     private Iterator<JsonValue> currentPage;
@@ -65,6 +67,10 @@ class JsonObjectIterator implements Iterator<JsonObject> {
         throw new NoSuchElementException();
     }
 
+    public String getDeltaLink() {
+        return deltaLink;
+    }
+
     private void loadNextPage() throws OneDriveRuntimeException {
         try {
             OneDriveJsonRequest request = new OneDriveJsonRequest(api, url, "GET");
@@ -79,6 +85,10 @@ class JsonObjectIterator implements Iterator<JsonObject> {
             }
 
             JsonValue nextUrl = json.get("@odata.nextLink");
+
+            JsonValue delta = json.get("@odata.deltaLink");
+            deltaLink = delta.asString();
+
             hasMorePages = nextUrl != null && !nextUrl.isNull();
             if (hasMorePages) {
                 url = new URL(nextUrl.asString());

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +38,16 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
 
+    private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
+
     private static final URLTemplate GET_FOLDER_URL = new URLTemplate("/drive/items/%s");
 
     private static final URLTemplate GET_CHILDREN_URL = new URLTemplate("/drive/items/%s/children");
 
     private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
+
+    private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
+
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
@@ -102,6 +108,28 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = SEARCH_IN_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
+    }
+
+    public OneDriveItemIterator delta() {
+        return delta(null);
+    }
+
+    public OneDriveItemIterator delta(String deltaLink) {
+        URL url;
+            if (deltaLink!=null) {
+                try {
+                    url = new URL(deltaLink);
+                } catch (MalformedURLException e) {
+                    throw new OneDriveRuntimeException("Wrong delta link: "+deltaLink,e);
+                }
+            } else {
+                if (isRoot()) {
+                    url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
+                } else {
+                    url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(),getId());
+                }
+            }
+        return new OneDriveItemIterator(getApi(), url);
     }
 
     @Override
