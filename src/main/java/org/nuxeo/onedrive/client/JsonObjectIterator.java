@@ -18,14 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 /**
  * @since 1.0
@@ -87,7 +87,7 @@ class JsonObjectIterator implements Iterator<JsonObject> {
             JsonValue nextUrl = json.get("@odata.nextLink");
 
             JsonValue delta = json.get("@odata.deltaLink");
-            deltaLink = delta.asString();
+            deltaLink = delta !=null && !delta.isNull() ? delta.asString():null;
 
             hasMorePages = nextUrl != null && !nextUrl.isNull();
             if (hasMorePages) {
