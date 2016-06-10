@@ -18,14 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0
@@ -38,7 +38,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
 
-    private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
+    private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
 
     private static final URLTemplate GET_FOLDER_URL = new URLTemplate("/drive/items/%s");
 
@@ -46,7 +46,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
 
-    private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
+    private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.delta");
 
 
     OneDriveFolder(OneDriveAPI api) {
