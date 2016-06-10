@@ -18,6 +18,9 @@
  */
 package org.nuxeo.onedrive.client;
 
+/**
+ * @since 1.1
+ */
 public class OneDriveGraphAPI implements OneDriveAPI {
 
     protected String accessToken;
