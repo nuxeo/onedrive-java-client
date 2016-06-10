@@ -61,6 +61,9 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
         return nextMetadata;
     }
 
+    /**
+     * @since 1.1
+     */
     public String getDeltaLink() {
         return jsonObjectIterator.getDeltaLink();
     }

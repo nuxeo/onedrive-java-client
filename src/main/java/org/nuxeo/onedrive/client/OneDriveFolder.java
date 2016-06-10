@@ -110,6 +110,9 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         return () -> new OneDriveItemIterator(getApi(), url);
     }
 
+    /**
+     * @since 1.1
+     */
     public OneDriveItemIterator delta() {
         URL url;
         if (isRoot()) {
@@ -120,6 +123,9 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         return new OneDriveItemIterator(getApi(), url);
     }
 
+    /**
+     * @since 1.1
+     */
     public OneDriveItemIterator delta(String deltaLink) {
         if (deltaLink==null) return delta();
         try {

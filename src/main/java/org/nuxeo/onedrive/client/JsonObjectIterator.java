@@ -67,6 +67,9 @@ class JsonObjectIterator implements Iterator<JsonObject> {
         throw new NoSuchElementException();
     }
 
+    /**
+     * @since 1.1
+     */
     public String getDeltaLink() {
         return deltaLink;
     }
