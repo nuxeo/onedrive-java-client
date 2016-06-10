@@ -111,25 +111,23 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     public OneDriveItemIterator delta() {
-        return delta(null);
+        URL url;
+        if (isRoot()) {
+            url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
+        } else {
+            url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(),getId());
+        }
+        return new OneDriveItemIterator(getApi(), url);
     }
 
     public OneDriveItemIterator delta(String deltaLink) {
-        URL url;
-            if (deltaLink!=null) {
-                try {
-                    url = new URL(deltaLink);
-                } catch (MalformedURLException e) {
-                    throw new OneDriveRuntimeException("Wrong delta link: "+deltaLink,e);
-                }
-            } else {
-                if (isRoot()) {
-                    url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
-                } else {
-                    url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(),getId());
-                }
-            }
-        return new OneDriveItemIterator(getApi(), url);
+        if (deltaLink==null) return delta();
+        try {
+            URL url = new URL(deltaLink);
+            return new OneDriveItemIterator(getApi(), url);
+        } catch (MalformedURLException e) {
+            throw new OneDriveRuntimeException("Wrong delta link: "+deltaLink,e);
+        }
     }
 
     @Override
