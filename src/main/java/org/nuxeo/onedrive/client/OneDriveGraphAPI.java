@@ -1,56 +1,63 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  * Contributors:
- *     Kevin Leturc
+ *
  */
 package org.nuxeo.onedrive.client;
 
-/**
- * @since 1.0
- */
-public class OneDriveBusinessAPI extends AbstractOneDriveAPI {
+public class OneDriveGraphAPI implements OneDriveAPI {
 
-    private final String baseUrl;
+    protected String accessToken;
+    protected String userId;
 
-    private final String emailUrl;
+    public OneDriveGraphAPI(String accessToken) {
+        this.accessToken = accessToken;
+    }
 
-    public OneDriveBusinessAPI(String resourceURL, String accessToken) {
-        super(accessToken);
-        this.baseUrl = resourceURL + "_api/v2.0";
-        this.emailUrl = resourceURL + "_api/SP.UserProfiles.PeopleManager/GetMyProperties";
+    public OneDriveGraphAPI(String accessToken, String userId) {
+        this.accessToken = accessToken;
+        this.userId = userId;
     }
 
     @Override
     public boolean isBusinessConnection() {
-        return true;
-    }
-
-    @Override
-    public boolean isGraphConnection() {
         return false;
     }
 
     @Override
+    public boolean isGraphConnection() {
+        return true;
+    }
+
+    @Override
     public String getBaseURL() {
-        return baseUrl;
+        return "https://graph.microsoft.com/v1.0/"+
+                (userId ==null ? "me" : "/users/"+ userId);
     }
 
     @Override
     public String getEmailURL() {
-        return emailUrl;
+        return "https://graph.microsoft.com/v1.0/"+
+                (userId ==null ? "me" : "/users/"+ userId);
     }
+
+    @Override
+    public String getAccessToken() {
+        return accessToken;
+    }
+
 
 }

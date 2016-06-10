@@ -41,6 +41,8 @@ public class OneDriveEmailAccount {
                            .filter(JsonValue::isString)
                            .map(JsonValue::asString)
                            .orElseGet(() -> searchBusinessEmail(jsonObject.get("UserProfileProperties").asArray()));
+        } else if (api.isGraphConnection()) {
+            return jsonObject.get("userPrincipalName").asString();
         }
         return jsonObject.get("emails").asObject().get("account").asString();
     }
