@@ -35,7 +35,14 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
 
     public OneDriveItemIterator(OneDriveAPI api, URL url) {
         this.api = Objects.requireNonNull(api);
-        this.jsonObjectIterator = new JsonObjectIterator(api, url);
+        this.jsonObjectIterator = new JsonObjectIterator(api, url) {
+
+            @Override
+            protected void onResponse(JsonObject response) {
+                OneDriveItemIterator.this.onResponse(response);
+            }
+
+        };
     }
 
     @Override
@@ -64,8 +71,8 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
     /**
      * @since 1.1
      */
-    public String getDeltaLink() {
-        return jsonObjectIterator.getDeltaLink();
+    protected void onResponse(JsonObject response) {
+        // Hook method
     }
 
 }

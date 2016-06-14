@@ -18,14 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 /**
  * @since 1.0
@@ -35,8 +35,6 @@ class JsonObjectIterator implements Iterator<JsonObject> {
     private final OneDriveAPI api;
 
     private URL url;
-
-    private String deltaLink;
 
     private boolean hasMorePages;
 
@@ -67,18 +65,12 @@ class JsonObjectIterator implements Iterator<JsonObject> {
         throw new NoSuchElementException();
     }
 
-    /**
-     * @since 1.1
-     */
-    public String getDeltaLink() {
-        return deltaLink;
-    }
-
     private void loadNextPage() throws OneDriveRuntimeException {
         try {
             OneDriveJsonRequest request = new OneDriveJsonRequest(api, url, "GET");
             OneDriveJsonResponse response = request.send();
             JsonObject json = response.getContent();
+            onResponse(json);
 
             JsonValue values = json.get("value");
             if (values.isNull()) {
@@ -88,10 +80,6 @@ class JsonObjectIterator implements Iterator<JsonObject> {
             }
 
             JsonValue nextUrl = json.get("@odata.nextLink");
-
-            JsonValue delta = json.get("@odata.deltaLink");
-            deltaLink = delta !=null && !delta.isNull() ? delta.asString():null;
-
             hasMorePages = nextUrl != null && !nextUrl.isNull();
             if (hasMorePages) {
                 url = new URL(nextUrl.asString());
@@ -102,6 +90,13 @@ class JsonObjectIterator implements Iterator<JsonObject> {
             hasMorePages = false;
             throw new OneDriveRuntimeException("Next url returned from OneDrive API is malformed.", e);
         }
+    }
+
+    /**
+     * @since 1.1
+     */
+    protected void onResponse(JsonObject response) {
+        // Hook method
     }
 
 }

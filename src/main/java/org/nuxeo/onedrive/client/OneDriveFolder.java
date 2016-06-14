@@ -18,14 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.ParseException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0
@@ -47,7 +47,6 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
 
     private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.delta");
-
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
@@ -113,26 +112,28 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     /**
      * @since 1.1
      */
-    public OneDriveItemIterator delta() {
+    public OneDriveDeltaItemIterator delta() {
         URL url;
         if (isRoot()) {
             url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
         } else {
-            url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(),getId());
+            url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(), getId());
         }
-        return new OneDriveItemIterator(getApi(), url);
+        return new OneDriveDeltaItemIterator(getApi(), url);
     }
 
     /**
      * @since 1.1
      */
     public OneDriveItemIterator delta(String deltaLink) {
-        if (deltaLink==null) return delta();
+        if (deltaLink == null) {
+            return delta();
+        }
         try {
             URL url = new URL(deltaLink);
-            return new OneDriveItemIterator(getApi(), url);
+            return new OneDriveDeltaItemIterator(getApi(), url);
         } catch (MalformedURLException e) {
-            throw new OneDriveRuntimeException("Wrong delta link: "+deltaLink,e);
+            throw new OneDriveRuntimeException("Wrong delta link: " + deltaLink, e);
         }
     }
 
