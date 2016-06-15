@@ -18,6 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +38,15 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
 
+    private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
+
     private static final URLTemplate GET_FOLDER_URL = new URLTemplate("/drive/items/%s");
 
     private static final URLTemplate GET_CHILDREN_URL = new URLTemplate("/drive/items/%s/children");
 
     private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
+
+    private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.delta");
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
@@ -102,6 +107,34 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = SEARCH_IN_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
+    }
+
+    /**
+     * @since 1.1
+     */
+    public OneDriveDeltaItemIterator delta() {
+        URL url;
+        if (isRoot()) {
+            url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
+        } else {
+            url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(), getId());
+        }
+        return new OneDriveDeltaItemIterator(getApi(), url);
+    }
+
+    /**
+     * @since 1.1
+     */
+    public OneDriveItemIterator delta(String deltaLink) {
+        if (deltaLink == null) {
+            return delta();
+        }
+        try {
+            URL url = new URL(deltaLink);
+            return new OneDriveDeltaItemIterator(getApi(), url);
+        } catch (MalformedURLException e) {
+            throw new OneDriveRuntimeException("Wrong delta link: " + deltaLink, e);
+        }
     }
 
     @Override

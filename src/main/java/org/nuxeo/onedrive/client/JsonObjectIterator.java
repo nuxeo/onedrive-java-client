@@ -70,6 +70,7 @@ class JsonObjectIterator implements Iterator<JsonObject> {
             OneDriveJsonRequest request = new OneDriveJsonRequest(api, url, "GET");
             OneDriveJsonResponse response = request.send();
             JsonObject json = response.getContent();
+            onResponse(json);
 
             JsonValue values = json.get("value");
             if (values.isNull()) {
@@ -89,6 +90,13 @@ class JsonObjectIterator implements Iterator<JsonObject> {
             hasMorePages = false;
             throw new OneDriveRuntimeException("Next url returned from OneDrive API is malformed.", e);
         }
+    }
+
+    /**
+     * @since 1.1
+     */
+    protected void onResponse(JsonObject response) {
+        // Hook method
     }
 
 }

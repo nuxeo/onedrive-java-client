@@ -35,7 +35,14 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
 
     public OneDriveItemIterator(OneDriveAPI api, URL url) {
         this.api = Objects.requireNonNull(api);
-        this.jsonObjectIterator = new JsonObjectIterator(api, url);
+        this.jsonObjectIterator = new JsonObjectIterator(api, url) {
+
+            @Override
+            protected void onResponse(JsonObject response) {
+                OneDriveItemIterator.this.onResponse(response);
+            }
+
+        };
     }
 
     @Override
@@ -59,6 +66,13 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
             throw new OneDriveRuntimeException("The object type is currently not handled.");
         }
         return nextMetadata;
+    }
+
+    /**
+     * @since 1.1
+     */
+    protected void onResponse(JsonObject response) {
+        // Hook method
     }
 
 }
