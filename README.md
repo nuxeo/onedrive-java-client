@@ -2,7 +2,7 @@
 
 The OneDrive & OneDrive for Business Java Client is a Java client library for REST API. It is designed to work with both OneDrive & OneDrive for Business and to have light dependencies.
 
-![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=onedrive-java-client-master)
+![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/onedrive-java-client-master)
 
 ## Building
 
