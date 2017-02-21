@@ -18,213 +18,60 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.io.ByteArrayInputStream;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @since 1.0
  */
 public abstract class AbstractRequest<R extends AbstractResponse> {
 
-    private static final int MAX_REDIRECTS = 3;
-
-    private static final String USER_AGENT = "Nuxeo OneDrive Java SDK v1.0";
-
-    private final OneDriveAPI api;
-
-    private final List<RequestHeader> headers;
-
+    private final Set<RequestHeader> headers = new HashSet<>();
     private final String method;
-
-    private URL url;
-
-    private int timeout;
-
-    private InputStream body;
-
-    private long bodyLength;
-
-    private int numRedirects;
+    private final URL url;
 
     /**
      * Constructs an unauthenticated request.
      */
-    public AbstractRequest(URL url, String method) {
-        this(null, url, method);
-    }
-
-    /**
-     * Constructs an authenticated request using a provided OneDriveAPI.
-     */
-    public AbstractRequest(OneDriveAPI api, URL url, String method) {
-        this.api = api;
+    public AbstractRequest(final URL url, final String method) {
         this.url = Objects.requireNonNull(url);
         this.method = Objects.requireNonNull(method);
-        this.headers = new ArrayList<>();
 
-        addHeader("Accept-Encoding", "gzip");
-        addHeader("Accept-Charset", "utf-8");
+        this.addHeader("Accept-Encoding", "gzip");
+        this.addHeader("Accept-Charset", "utf-8");
     }
 
-    public void addHeader(String key, String value) {
+    public void addHeader(final String key, final String value) {
         this.headers.add(new RequestHeader(key, value));
     }
 
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
+    public R sendRequest(final RequestExecutor sender) throws IOException {
+        return this.sendRequest(sender, null);
     }
 
-    protected InputStream getBody() {
-        return this.body;
-    }
-
-    protected void setBody(InputStream stream) {
-        this.body = stream;
-    }
-
-    protected void setBody(InputStream stream, long length) {
-        this.bodyLength = length;
-        this.body = stream;
-    }
-
-    protected void setBody(String body) {
-        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        this.bodyLength = bytes.length;
-        this.body = new ByteArrayInputStream(bytes);
-    }
-
-    protected void writeBody(HttpURLConnection connection) throws OneDriveAPIException {
-        if (this.body == null) {
-            return;
-        }
-
-        connection.setDoOutput(true);
-        try (OutputStream output = connection.getOutputStream()) {
-            int b = this.body.read();
-            while (b != -1) {
-                output.write(b);
-                b = this.body.read();
+    public R sendRequest(final RequestExecutor sender, final InputStream body) throws IOException {
+        switch(method) {
+            case "GET": {
+                final RequestExecutor.Response response = sender.doGet(url, headers);
+                return this.createResponse(response);
             }
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
+            case "POST": {
+                final RequestExecutor.Upload response = sender.doPost(url, headers);
+                IOUtils.copy(body, response.getOutputStream());
+                return this.createResponse(response.getResponse());
+            }
+            default: {
+                throw new OneDriveAPIException(String.format("Unsupported HTTP method %s", method));
+            }
         }
     }
 
-    public R send() throws OneDriveAPIException {
-        HttpURLConnection connection = createConnection();
-
-        connection.setRequestProperty("User-Agent", USER_AGENT);
-        if (api != null) {
-            connection.addRequestProperty("Authorization", "Bearer " + api.getAccessToken());
-        }
-
-        writeBody(connection);
-
-        try {
-            connection.connect();
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
-        }
-
-        // We need to manually handle redirects by creating a new HttpURLConnection so that connection pooling
-        // happens correctly. There seems to be a bug in Oracle's Java implementation where automatically handled
-        // redirects will not keep the connection alive.
-        int responseCode;
-        try {
-            responseCode = connection.getResponseCode();
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
-        }
-
-        if (isResponseRedirect(responseCode)) {
-            return handleRedirect(connection);
-        }
-
-        return createResponse(connection);
-    }
-
-    private R handleRedirect(HttpURLConnection connection) throws OneDriveAPIException {
-        if (this.numRedirects >= MAX_REDIRECTS) {
-            throw new OneDriveAPIException("The OneDrive API responded with too many redirects.");
-        }
-        this.numRedirects++;
-
-        // We need to read the InputStream of response, unless Java won't put the connection back in the connection pool
-        try {
-            AbstractResponse.readStream(connection.getInputStream());
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
-        }
-
-        try {
-            String redirect = connection.getHeaderField("Location");
-            url = new URL(redirect);
-        } catch (MalformedURLException e) {
-            throw new OneDriveAPIException("The OneDrive API responded with an invalid redirect url.", e);
-        }
-        return send();
-    }
-
-    private HttpURLConnection createConnection() throws OneDriveAPIException {
-        HttpURLConnection connection;
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't connect to OneDrive API due to a network error.", e);
-        }
-
-        try {
-            connection.setRequestMethod(method);
-        } catch (ProtocolException e) {
-            throw new OneDriveAPIException("Couldn't connect to OneDrive API because method is not correct.", e);
-        }
-
-        connection.setConnectTimeout(timeout);
-        connection.setReadTimeout(timeout);
-
-        // Disable redirects on connection because we handle it manually
-        connection.setInstanceFollowRedirects(false);
-
-        headers.forEach(header -> connection.addRequestProperty(header.getKey(), header.getValue()));
-
-        return connection;
-    }
-
-    private static boolean isResponseRedirect(int responseCode) {
-        return (responseCode == 301 || responseCode == 302);
-    }
-
-    protected abstract R createResponse(HttpURLConnection connection) throws OneDriveAPIException;
-
-    private final class RequestHeader {
-
-        private final String key;
-
-        private final String value;
-
-        public RequestHeader(String key, String value) {
-            this.key = Objects.requireNonNull(key);
-            this.value = Objects.requireNonNull(value);
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-    }
+    protected abstract R createResponse(RequestExecutor.Response response) throws IOException;
 
 }

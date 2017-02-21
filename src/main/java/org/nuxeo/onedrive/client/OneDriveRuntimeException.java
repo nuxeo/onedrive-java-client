@@ -27,12 +27,12 @@ public class OneDriveRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public OneDriveRuntimeException(String message) {
-        super(message);
+    public OneDriveRuntimeException(OneDriveAPIException cause) {
+        super(cause);
     }
 
-    public OneDriveRuntimeException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public synchronized OneDriveAPIException getCause() {
+        return (OneDriveAPIException) super.getCause();
     }
-
 }

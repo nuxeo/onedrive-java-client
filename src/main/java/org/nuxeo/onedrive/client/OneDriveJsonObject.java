@@ -35,8 +35,8 @@ public abstract class OneDriveJsonObject {
     }
 
     protected static void parseMember(JsonObject json, Consumer<JsonObject.Member> consumer) {
-        for (JsonObject.Member member : json) {
-            if (member.getValue().isNull()) {
+        for(JsonObject.Member member : json) {
+            if(member.getValue().isNull()) {
                 continue;
             }
             consumer.accept(member);

@@ -39,8 +39,9 @@ class URLTemplate {
         String urlString = String.format(base + this.template, values);
         try {
             return new URL(urlString);
-        } catch (MalformedURLException e) {
-            throw new OneDriveRuntimeException("Template produced an invalid URL (maybe a bug in client).", e);
+        }
+        catch(MalformedURLException e) {
+            throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
 
@@ -48,8 +49,9 @@ class URLTemplate {
         String urlString = String.format(base + this.template, values) + query.toString();
         try {
             return new URL(urlString);
-        } catch (MalformedURLException e) {
-            throw new OneDriveRuntimeException("Template produced an invalid URL (maybe a bug in client).", e);
+        }
+        catch(MalformedURLException e) {
+            throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
 

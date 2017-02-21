@@ -28,7 +28,6 @@ import com.eclipsesource.json.JsonObject;
 public class OneDriveResource {
 
     private final OneDriveAPI api;
-
     private final String id;
 
     OneDriveResource(OneDriveAPI api) {
@@ -55,11 +54,11 @@ public class OneDriveResource {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !getClass().equals(obj.getClass())) {
+        if(obj == null || !getClass().equals(obj.getClass())) {
             return false;
         }
 
-        if (this == obj) {
+        if(this == obj) {
             return true;
         }
 

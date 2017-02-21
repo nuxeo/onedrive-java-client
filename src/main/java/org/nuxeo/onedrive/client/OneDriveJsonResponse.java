@@ -20,7 +20,8 @@ package org.nuxeo.onedrive.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import com.eclipsesource.json.JsonObject;
 
@@ -29,27 +30,17 @@ import com.eclipsesource.json.JsonObject;
  */
 public class OneDriveJsonResponse extends AbstractResponse<JsonObject> {
 
-    private JsonObject json;
-
-    public OneDriveJsonResponse(HttpURLConnection connection) throws OneDriveAPIException {
-        super(connection);
+    public OneDriveJsonResponse(final int responseCode, final String responseMessage, final InputStream inputStream) throws OneDriveAPIException {
+        super(responseCode, responseMessage, inputStream);
     }
 
     /**
      * Gets the body as JSON object. Once this method is called, the response will be disconnected.
      */
     @Override
-    public JsonObject getContent() throws OneDriveAPIException {
-        if (json != null) {
-            return json;
-        }
-        try (InputStream body = getBody()) {
-            String jsonString = readStream(body);
-            json = JsonObject.readFrom(jsonString);
-            return json;
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't read the stream from OneDrive API.", e);
+    public JsonObject getContent() throws IOException {
+        try (InputStreamReader in = new InputStreamReader(this.getBody(), StandardCharsets.UTF_8)) {
+            return JsonObject.readFrom(in);
         }
     }
-
 }

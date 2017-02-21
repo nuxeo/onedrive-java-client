@@ -18,7 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,9 +48,10 @@ class JsonObjectIterator implements Iterator<JsonObject> {
 
     @Override
     public boolean hasNext() throws OneDriveRuntimeException {
-        if (currentPage != null && currentPage.hasNext()) {
+        if(currentPage != null && currentPage.hasNext()) {
             return true;
-        } else if (hasMorePages) {
+        }
+        else if(hasMorePages) {
             loadNextPage();
             return currentPage != null && currentPage.hasNext();
         }
@@ -59,7 +60,7 @@ class JsonObjectIterator implements Iterator<JsonObject> {
 
     @Override
     public JsonObject next() throws OneDriveRuntimeException {
-        if (hasNext()) {
+        if(hasNext()) {
             return currentPage.next().asObject();
         }
         throw new NoSuchElementException();
@@ -67,28 +68,27 @@ class JsonObjectIterator implements Iterator<JsonObject> {
 
     private void loadNextPage() throws OneDriveRuntimeException {
         try {
-            OneDriveJsonRequest request = new OneDriveJsonRequest(api, url, "GET");
-            OneDriveJsonResponse response = request.send();
+            OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+            OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
             JsonObject json = response.getContent();
             onResponse(json);
 
             JsonValue values = json.get("value");
-            if (values.isNull()) {
+            if(values.isNull()) {
                 currentPage = Collections.emptyIterator();
-            } else {
+            }
+            else {
                 currentPage = values.asArray().iterator();
             }
 
             JsonValue nextUrl = json.get("@odata.nextLink");
             hasMorePages = nextUrl != null && !nextUrl.isNull();
-            if (hasMorePages) {
+            if(hasMorePages) {
                 url = new URL(nextUrl.asString());
             }
-        } catch (OneDriveAPIException e) {
-            throw new OneDriveRuntimeException("An error occurred during connection with OneDrive API.", e);
-        } catch (MalformedURLException e) {
-            hasMorePages = false;
-            throw new OneDriveRuntimeException("Next url returned from OneDrive API is malformed.", e);
+        }
+        catch(IOException e) {
+            throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
 

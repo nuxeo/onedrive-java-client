@@ -18,6 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -31,17 +32,18 @@ import com.eclipsesource.json.JsonValue;
  */
 public class OneDriveEmailAccount {
 
-    public static String getCurrentUserEmailAccount(OneDriveAPI api) throws OneDriveAPIException {
+    public static String getCurrentUserEmailAccount(OneDriveAPI api) throws IOException {
         URL url = URLTemplate.EMPTY_TEMPLATE.build(api.getEmailURL());
-        OneDriveJsonRequest request = new OneDriveJsonRequest(api, url, "GET");
-        OneDriveJsonResponse response = request.send();
+        OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
         JsonObject jsonObject = response.getContent();
-        if (api.isBusinessConnection()) {
+        if(api.isBusinessConnection()) {
             return Optional.ofNullable(jsonObject.get("Email"))
-                           .filter(JsonValue::isString)
-                           .map(JsonValue::asString)
-                           .orElseGet(() -> searchBusinessEmail(jsonObject.get("UserProfileProperties").asArray()));
-        } else if (api.isGraphConnection()) {
+                    .filter(JsonValue::isString)
+                    .map(JsonValue::asString)
+                    .orElseGet(() -> searchBusinessEmail(jsonObject.get("UserProfileProperties").asArray()));
+        }
+        else if(api.isGraphConnection()) {
             return jsonObject.get("userPrincipalName").asString();
         }
         return jsonObject.get("emails").asObject().get("account").asString();
@@ -49,11 +51,11 @@ public class OneDriveEmailAccount {
 
     private static String searchBusinessEmail(JsonArray properties) {
         return StreamSupport.stream(properties.spliterator(), false)
-                            .map(JsonValue::asObject)
-                            .filter(obj -> "UserName".equals(obj.get("Key").asString()))
-                            .map(obj -> obj.get("Value").asString())
-                            .findFirst()
-                            .get();
+                .map(JsonValue::asObject)
+                .filter(obj -> "UserName".equals(obj.get("Key").asString()))
+                .map(obj -> obj.get("Value").asString())
+                .findFirst()
+                .get();
     }
 
 }

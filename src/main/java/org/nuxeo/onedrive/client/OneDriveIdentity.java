@@ -49,13 +49,15 @@ public class OneDriveIdentity extends OneDriveJsonObject {
         try {
             JsonValue value = member.getValue();
             String memberName = member.getName();
-            if ("id".equals(memberName)) {
+            if("id".equals(memberName)) {
                 id = value.asString();
-            } else if ("displayName".equals(memberName)) {
+            }
+            else if("displayName".equals(memberName)) {
                 displayName = value.asString();
             }
-        } catch (ParseException e) {
-            throw new OneDriveRuntimeException("Parse failed, maybe a bug in client.", e);
+        }
+        catch(ParseException e) {
+            throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
 

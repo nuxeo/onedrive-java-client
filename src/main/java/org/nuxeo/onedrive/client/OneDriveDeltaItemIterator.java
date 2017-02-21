@@ -43,5 +43,4 @@ public class OneDriveDeltaItemIterator extends OneDriveItemIterator {
         JsonValue delta = response.get("@odata.deltaLink");
         deltaLink = delta != null && !delta.isNull() ? delta.asString() : null;
     }
-
 }

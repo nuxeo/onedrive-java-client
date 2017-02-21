@@ -50,10 +50,10 @@ class QueryStringBuilder {
     }
 
     public QueryStringBuilder set(String key, QueryStringCommaParameter... parameters) {
-        if (parameters != null && parameters.length > 0) {
+        if(parameters != null && parameters.length > 0) {
             StringBuilder builder = new StringBuilder();
-            for (QueryStringCommaParameter parameter : parameters) {
-                if (builder.length() > 0) {
+            for(QueryStringCommaParameter parameter : parameters) {
+                if(builder.length() > 0) {
                     builder.append(",");
                 }
                 builder.append(parameter.getKey());
@@ -65,22 +65,23 @@ class QueryStringBuilder {
 
     @Override
     public String toString() {
-        if (parameters.isEmpty()) {
+        if(parameters.isEmpty()) {
             return "";
         }
         try {
             StringBuilder builder = new StringBuilder("?");
-            for (Entry<String, String> entry : parameters.entrySet()) {
-                if (builder.length() != 1) {
+            for(Entry<String, String> entry : parameters.entrySet()) {
+                if(builder.length() != 1) {
                     builder.append("&");
                 }
                 builder.append(entry.getKey())
-                       .append("=")
-                       .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.name()));
+                        .append("=")
+                        .append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8.name()));
             }
             return builder.toString();
-        } catch (UnsupportedEncodingException e) {
-            throw new OneDriveRuntimeException("Error during construction of query string.", e);
+        }
+        catch(UnsupportedEncodingException e) {
+            throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
 

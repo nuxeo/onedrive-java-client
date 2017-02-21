@@ -24,60 +24,32 @@ import java.io.IOException;
  * @since 1.0
  */
 public class OneDriveAPIException extends IOException {
-    
+
     private static final long serialVersionUID = 1L;
 
     private final int responseCode;
-    
-    private final String response;
 
     public OneDriveAPIException(String message) {
         super(message);
-
         this.responseCode = -1;
-        this.response = null;
-    }
-
-    public OneDriveAPIException(String message, int responseCode, String response) {
-        super(message);
-
-        this.responseCode = responseCode;
-        this.response = response;
     }
 
     public OneDriveAPIException(String message, Throwable cause) {
         super(message, cause);
-
         this.responseCode = -1;
-        this.response = null;
     }
 
-    public OneDriveAPIException(String message, OneDriveRuntimeException cause) {
-        super(message, cause);
-
-        if (cause.getCause() instanceof OneDriveAPIException) {
-            OneDriveAPIException subApiException = (OneDriveAPIException) cause.getCause();
-            this.responseCode = subApiException.getResponseCode();
-            this.response = subApiException.getResponse();
-        } else {
-            this.responseCode = -1;
-            this.response = null;
-        }
-    }
-
-    public OneDriveAPIException(String message, int responseCode, String response, Throwable cause) {
-        super(message, cause);
-
+    public OneDriveAPIException(String responseMessage, int responseCode) {
+        super(responseMessage);
         this.responseCode = responseCode;
-        this.response = response;
+    }
+
+    public OneDriveAPIException(OneDriveRuntimeException cause) {
+        super(cause);
+        this.responseCode = cause.getCause().getResponseCode();
     }
 
     public int getResponseCode() {
         return this.responseCode;
     }
-
-    public String getResponse() {
-        return this.response;
-    }
-
 }

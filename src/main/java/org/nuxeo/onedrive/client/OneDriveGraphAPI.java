@@ -21,17 +21,11 @@ package org.nuxeo.onedrive.client;
 /**
  * @since 1.1
  */
-public class OneDriveGraphAPI implements OneDriveAPI {
+public abstract class OneDriveGraphAPI implements OneDriveAPI {
 
-    protected String accessToken;
     protected String userId;
 
-    public OneDriveGraphAPI(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public OneDriveGraphAPI(String accessToken, String userId) {
-        this.accessToken = accessToken;
+    public OneDriveGraphAPI(String userId) {
         this.userId = userId;
     }
 
@@ -47,20 +41,13 @@ public class OneDriveGraphAPI implements OneDriveAPI {
 
     @Override
     public String getBaseURL() {
-        return "https://graph.microsoft.com/v1.0/"+
-                (userId ==null ? "me" : "/users/"+ userId);
+        return "https://graph.microsoft.com/v1.0/" +
+                (userId == null ? "me" : "/users/" + userId);
     }
 
     @Override
     public String getEmailURL() {
-        return "https://graph.microsoft.com/v1.0/"+
-                (userId ==null ? "me" : "/users/"+ userId);
+        return "https://graph.microsoft.com/v1.0/" +
+                (userId == null ? "me" : "/users/" + userId);
     }
-
-    @Override
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-
 }

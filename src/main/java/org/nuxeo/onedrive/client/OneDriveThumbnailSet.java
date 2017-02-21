@@ -26,7 +26,7 @@ import com.eclipsesource.json.ParseException;
 
 /**
  * See documentation at https://dev.onedrive.com/resources/thumbnailSet.htm.
- * 
+ *
  * @since 1.0
  */
 public class OneDriveThumbnailSet extends OneDriveResource {
@@ -108,26 +108,30 @@ public class OneDriveThumbnailSet extends OneDriveResource {
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if ("small".equals(memberName)) {
+                if("small".equals(memberName)) {
                     OneDriveThumbnail thumbnail = initThumbnail(OneDriveThumbnailSize.SMALL);
                     small = thumbnail.new Metadata(value.asObject());
-                } else if ("medium".equals(memberName)) {
+                }
+                else if("medium".equals(memberName)) {
                     OneDriveThumbnail thumbnail = initThumbnail(OneDriveThumbnailSize.MEDIUM);
                     medium = thumbnail.new Metadata(value.asObject());
-                } else if ("large".equals(memberName)) {
+                }
+                else if("large".equals(memberName)) {
                     OneDriveThumbnail thumbnail = initThumbnail(OneDriveThumbnailSize.LARGE);
                     large = thumbnail.new Metadata(value.asObject());
-                } else if ("source".equals(memberName)) {
+                }
+                else if("source".equals(memberName)) {
                     OneDriveThumbnail thumbnail = initThumbnail(OneDriveThumbnailSize.SOURCE);
                     source = thumbnail.new Metadata(value.asObject());
                 }
-            } catch (ParseException e) {
-                throw new OneDriveRuntimeException("Parse failed, maybe a bug in client.", e);
+            }
+            catch(ParseException e) {
+                throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
 
         private OneDriveThumbnail initThumbnail(OneDriveThumbnailSize size) {
-            if (itemId == null) {
+            if(itemId == null) {
                 return new OneDriveThumbnail(getApi(), thumbId, size);
             }
             return new OneDriveThumbnail(getApi(), itemId, thumbId, size);

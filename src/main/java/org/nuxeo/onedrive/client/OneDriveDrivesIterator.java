@@ -41,7 +41,6 @@ public class OneDriveDrivesIterator implements Iterator<OneDriveResource.Metadat
             protected void onResponse(JsonObject response) {
                 OneDriveDrivesIterator.this.onResponse(response);
             }
-
         };
     }
 
@@ -59,7 +58,7 @@ public class OneDriveDrivesIterator implements Iterator<OneDriveResource.Metadat
             OneDriveDrive drive = new OneDriveDrive(api, id);
             return drive.new Metadata(nextObject);
         }
-        throw new OneDriveRuntimeException("The object type is currently not handled.");
+        throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
     }
 
     /**

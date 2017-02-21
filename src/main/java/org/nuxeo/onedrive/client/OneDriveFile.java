@@ -18,6 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -31,30 +32,34 @@ import com.eclipsesource.json.ParseException;
 public class OneDriveFile extends OneDriveItem {
 
     private static final URLTemplate GET_FILE_URL = new URLTemplate("/drive/items/%s");
-
     private static final URLTemplate GET_FILE_CONTENT_URL = new URLTemplate("/drive/items/%s/content");
+
+    private final OneDriveAPI api;
 
     public OneDriveFile(OneDriveAPI api, String id) {
         super(api, id);
+        this.api = api;
     }
 
     @Override
-    public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws OneDriveAPIException {
+    public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
         URL url = GET_FILE_URL.build(getApi().getBaseURL(), query, getId());
-        OneDriveJsonRequest request = new OneDriveJsonRequest(getApi(), url, "GET");
-        OneDriveJsonResponse response = request.send();
+        OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
         return new OneDriveFile.Metadata(response.getContent());
     }
 
-    public InputStream download() throws OneDriveAPIException {
+    public InputStream download() throws IOException {
         URL url = GET_FILE_CONTENT_URL.build(getApi().getBaseURL(), getId());
-        OneDriveRequest request = new OneDriveRequest(getApi(), url, "GET");
-        OneDriveResponse response = request.send();
+        OneDriveRequest request = new OneDriveRequest(url, "GET");
+        OneDriveResponse response = request.sendRequest(api.getExecutor());
         return response.getContent();
     }
 
-    /** See documentation at https://dev.onedrive.com/resources/item.htm. */
+    /**
+     * See documentation at https://dev.onedrive.com/resources/item.htm.
+     */
     public class Metadata extends OneDriveItem.Metadata {
 
         private String cTag;
@@ -63,10 +68,14 @@ public class OneDriveFile extends OneDriveItem {
 
         private String downloadUrl;
 
-        /** Not available for business. */
+        /**
+         * Not available for business.
+         */
         private String crc32Hash;
 
-        /** Not available for business. */
+        /**
+         * Not available for business.
+         */
         private String sha1Hash;
 
         public Metadata(JsonObject json) {
@@ -109,24 +118,28 @@ public class OneDriveFile extends OneDriveItem {
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if ("cTag".equals(memberName)) {
+                if("cTag".equals(memberName)) {
                     cTag = value.asString();
-                } else if ("@content.downloadUrl".equals(memberName)) {
+                }
+                else if("@content.downloadUrl".equals(memberName)) {
                     downloadUrl = value.asString();
-                } else if ("file".equals(memberName)) {
+                }
+                else if("file".equals(memberName)) {
                     parseMember(value.asObject(), this::parseFileMember);
                 }
-            } catch (ParseException e) {
-                throw new OneDriveRuntimeException("Parse failed, maybe a bug in client.", e);
+            }
+            catch(ParseException e) {
+                throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
 
         private void parseFileMember(JsonObject.Member member) {
             JsonValue value = member.getValue();
             String memberName = member.getName();
-            if ("mimeType".equals(memberName)) {
+            if("mimeType".equals(memberName)) {
                 mimeType = value.asString();
-            } else if ("hashes".equals(memberName)) {
+            }
+            else if("hashes".equals(memberName)) {
                 parseMember(value.asObject(), this::parseHashesMember);
             }
         }
@@ -134,9 +147,10 @@ public class OneDriveFile extends OneDriveItem {
         private void parseHashesMember(JsonObject.Member member) {
             JsonValue value = member.getValue();
             String memberName = member.getName();
-            if ("crc32Hash".equals(memberName)) {
+            if("crc32Hash".equals(memberName)) {
                 crc32Hash = value.asString();
-            } else if ("sha1Hash".equals(memberName)) {
+            }
+            else if("sha1Hash".equals(memberName)) {
                 sha1Hash = value.asString();
             }
         }

@@ -93,27 +93,32 @@ public class OneDrivePermission extends OneDriveResource {
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if ("roles".equals(memberName)) {
+                if("roles".equals(memberName)) {
                     this.writable = value.asArray()
-                                         .values()
-                                         .stream()
-                                         .filter(JsonValue::isString)
-                                         .map(JsonValue::asString)
-                                         .anyMatch("write"::equalsIgnoreCase);
-                } else if ("link".equals(memberName)) {
+                            .values()
+                            .stream()
+                            .filter(JsonValue::isString)
+                            .map(JsonValue::asString)
+                            .anyMatch("write"::equalsIgnoreCase);
+                }
+                else if("link".equals(memberName)) {
                     link = new OneDriveSharingLink(value.asObject());
-                } else if ("grantedTo".equals(memberName)) {
+                }
+                else if("grantedTo".equals(memberName)) {
                     grantedTo = new OneDriveIdentitySet(value.asObject());
-                } else if ("inheritedFrom".equals(memberName)) {
+                }
+                else if("inheritedFrom".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
                     String id = valueObject.get("id").asString();
                     OneDriveFolder inheritedFromFolder = new OneDriveFolder(getApi(), id);
                     inheritedFrom = inheritedFromFolder.new Reference(valueObject);
-                } else if ("shareId".equals(memberName)) {
+                }
+                else if("shareId".equals(memberName)) {
                     shareId = value.asString();
                 }
-            } catch (ParseException e) {
-                throw new OneDriveRuntimeException("Parse failed, maybe a bug in client.", e);
+            }
+            catch(ParseException e) {
+                throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
 

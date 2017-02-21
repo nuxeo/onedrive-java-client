@@ -23,6 +23,8 @@ package org.nuxeo.onedrive.client;
  */
 public interface OneDriveAPI {
 
+    RequestExecutor getExecutor();
+
     boolean isBusinessConnection();
 
     /**
@@ -33,7 +35,4 @@ public interface OneDriveAPI {
     String getBaseURL();
 
     String getEmailURL();
-
-    String getAccessToken();
-
 }
