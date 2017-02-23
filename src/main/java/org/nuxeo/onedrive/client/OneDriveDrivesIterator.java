@@ -28,14 +28,15 @@ import com.eclipsesource.json.JsonObject;
  * @since 1.0
  */
 public class OneDriveDrivesIterator implements Iterator<OneDriveResource.Metadata> {
+    private final static URLTemplate DRIVE_LIST_URL = new URLTemplate("/drives");
 
     private final OneDriveAPI api;
 
     private final JsonObjectIterator jsonObjectIterator;
 
-    public OneDriveDrivesIterator(OneDriveAPI api, URL url) {
+    public OneDriveDrivesIterator(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
-        this.jsonObjectIterator = new JsonObjectIterator(api, url) {
+        this.jsonObjectIterator = new JsonObjectIterator(api, DRIVE_LIST_URL.build(api.getBaseURL())) {
 
             @Override
             protected void onResponse(JsonObject response) {
