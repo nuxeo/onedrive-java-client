@@ -18,9 +18,9 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.util.Objects;
-
 import com.eclipsesource.json.JsonObject;
+
+import java.util.Objects;
 
 /**
  * @since 1.0
@@ -28,47 +28,78 @@ import com.eclipsesource.json.JsonObject;
 public class OneDriveResource {
 
     private final OneDriveAPI api;
-    private final String id;
+    private final String resourceIdentifier;
+    private final OneDriveDrive resourceDrive;
+    private final ResourceIdentifierType resourceIdentifierType;
 
     OneDriveResource(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
-        this.id = null;
+        this.resourceDrive = null;
+        this.resourceIdentifier = null;
+        this.resourceIdentifierType = ResourceIdentifierType.Id;
     }
 
-    public OneDriveResource(OneDriveAPI api, String id) {
+    public OneDriveResource(OneDriveAPI api, String resourceIdentifier) {
         this.api = Objects.requireNonNull(api);
-        this.id = Objects.requireNonNull(id);
+        this.resourceIdentifier = Objects.requireNonNull(resourceIdentifier);
+        this.resourceIdentifierType = ResourceIdentifierType.Id;
+        this.resourceDrive = null;
+    }
+
+    public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String path) {
+        this(api, drive, path, ResourceIdentifierType.Path);
+    }
+
+    public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
+        this.api = Objects.requireNonNull(api);
+        this.resourceDrive = Objects.requireNonNull(drive);
+        this.resourceIdentifier = Objects.requireNonNull(resourceIdentifier);
+        this.resourceIdentifierType = resourceIdentifierType;
+
     }
 
     public OneDriveAPI getApi() {
         return api;
     }
 
-    public String getId() {
-        return id;
+    public boolean isRoot() {
+        return resourceIdentifier == null;
     }
 
-    public boolean isRoot() {
-        return id == null;
+    public String getResourceIdentifier() {
+        return resourceIdentifier;
+    }
+
+    public OneDriveDrive getResourceDrive() {
+        return resourceDrive;
+    }
+
+    public ResourceIdentifierType getResourceIdentifierType() {
+        return resourceIdentifierType;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !getClass().equals(obj.getClass())) {
+        if (obj == null || !getClass().equals(obj.getClass())) {
             return false;
         }
 
-        if(this == obj) {
+        if (this == obj) {
             return true;
         }
 
         OneDriveResource oDObj = (OneDriveResource) obj;
-        return getId().equals(oDObj.getId());
+        return getResourceIdentifier().equals(oDObj.getResourceIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return getId().hashCode();
+        return getResourceIdentifier().hashCode();
+    }
+
+    public enum ResourceIdentifierType {
+        Id,
+        Path
     }
 
     public abstract class Metadata extends OneDriveJsonObject {
@@ -78,7 +109,7 @@ public class OneDriveResource {
         }
 
         public String getId() {
-            return OneDriveResource.this.getId();
+            return OneDriveResource.this.getResourceIdentifier();
         }
 
         public abstract OneDriveResource getResource();

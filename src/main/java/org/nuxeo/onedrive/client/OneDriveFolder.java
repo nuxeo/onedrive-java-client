@@ -62,7 +62,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = GET_FOLDER_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = GET_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
+            url = GET_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
         }
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
@@ -93,7 +93,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = GET_CHILDREN_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = GET_CHILDREN_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
+            url = GET_CHILDREN_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
         }
         return new OneDriveItemIterator(getApi(), url);
     }
@@ -105,7 +105,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
+            url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
     }
@@ -119,7 +119,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
         }
         else {
-            url = DELTA_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), getId());
+            url = DELTA_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), getResourceIdentifier());
         }
         return new OneDriveDeltaItemIterator(getApi(), url);
     }

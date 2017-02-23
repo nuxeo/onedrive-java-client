@@ -18,13 +18,13 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @since 1.0
@@ -36,26 +36,47 @@ public class OneDriveFile extends OneDriveItem {
     private static final URLTemplate GET_FILE_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s");
     private static final URLTemplate GET_FILE_CONTENT_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/content");
 
-    private final OneDriveAPI api;
+    public OneDriveFile(OneDriveAPI api, String fileId) {
+        super(api, fileId);
+    }
 
-    public OneDriveFile(OneDriveAPI api, String id, ResourceIdentifierType resourceIdentifierType) {
-        super(api, id, resourceIdentifierType);
-        this.api = api;
+    public OneDriveFile(OneDriveAPI api, OneDriveDrive drive, String path) {
+        super(api, drive, path);
     }
 
     @Override
     public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        URL url = GET_FILE_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
+        final URL url;
+        switch (getResourceIdentifierType()) {
+            case Id:
+                url = GET_FILE_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
+                break;
+            case Path:
+                url = GET_FILE_URL_BY_Path.build(getApi().getBaseURL(), query, getResourceDrive().getResourceIdentifier(), getResourceIdentifier());
+                break;
+            default:
+                throw new IOException("This should never happen");
+        }
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
-        OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
+        OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveFile.Metadata(response.getContent());
     }
 
     public InputStream download() throws IOException {
-        URL url = GET_FILE_CONTENT_URL_BY_ID.build(getApi().getBaseURL(), getId());
+        final URL url;
+        switch (getResourceIdentifierType()) {
+            case Id:
+                url = GET_FILE_CONTENT_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
+                break;
+            case Path:
+                url = GET_FILE_CONTENT_URL_BY_Path.build(getApi().getBaseURL(), query, getResourceDrive().getResourceIdentifier(), getResourceIdentifier());
+                break;
+            default:
+                throw new IOException("This should never happen");
+        }
         OneDriveRequest request = new OneDriveRequest(url, "GET");
-        OneDriveResponse response = request.sendRequest(api.getExecutor());
+        OneDriveResponse response = request.sendRequest(getApi().getExecutor());
         return response.getContent();
     }
 
@@ -120,17 +141,14 @@ public class OneDriveFile extends OneDriveItem {
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if("cTag".equals(memberName)) {
+                if ("cTag".equals(memberName)) {
                     cTag = value.asString();
-                }
-                else if("@content.downloadUrl".equals(memberName)) {
+                } else if ("@content.downloadUrl".equals(memberName)) {
                     downloadUrl = value.asString();
-                }
-                else if("file".equals(memberName)) {
+                } else if ("file".equals(memberName)) {
                     parseMember(value.asObject(), this::parseFileMember);
                 }
-            }
-            catch(ParseException e) {
+            } catch (ParseException e) {
                 throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
@@ -138,10 +156,9 @@ public class OneDriveFile extends OneDriveItem {
         private void parseFileMember(JsonObject.Member member) {
             JsonValue value = member.getValue();
             String memberName = member.getName();
-            if("mimeType".equals(memberName)) {
+            if ("mimeType".equals(memberName)) {
                 mimeType = value.asString();
-            }
-            else if("hashes".equals(memberName)) {
+            } else if ("hashes".equals(memberName)) {
                 parseMember(value.asObject(), this::parseHashesMember);
             }
         }
@@ -149,10 +166,9 @@ public class OneDriveFile extends OneDriveItem {
         private void parseHashesMember(JsonObject.Member member) {
             JsonValue value = member.getValue();
             String memberName = member.getName();
-            if("crc32Hash".equals(memberName)) {
+            if ("crc32Hash".equals(memberName)) {
                 crc32Hash = value.asString();
-            }
-            else if("sha1Hash".equals(memberName)) {
+            } else if ("sha1Hash".equals(memberName)) {
                 sha1Hash = value.asString();
             }
         }
