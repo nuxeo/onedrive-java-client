@@ -37,10 +37,10 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     private static final URLTemplate GET_CHILDREN_ROOT_URL = new URLTemplate("/drive/root/children");
     private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
     private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
-    private static final URLTemplate GET_FOLDER_URL = new URLTemplate("/drive/items/%s");
-    private static final URLTemplate GET_CHILDREN_URL = new URLTemplate("/drive/items/%s/children");
-    private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
-    private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.delta");
+    private static final URLTemplate GET_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s");
+    private static final URLTemplate GET_CHILDREN_URL_BY_ID = new URLTemplate("/drive/items/%s/children");
+    private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.search");
+    private static final URLTemplate DELTA_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.delta");
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
@@ -58,7 +58,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = GET_FOLDER_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = GET_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
+            url = GET_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
         }
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
@@ -89,7 +89,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = GET_CHILDREN_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = GET_CHILDREN_URL.build(getApi().getBaseURL(), query, getId());
+            url = GET_CHILDREN_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
         }
         return new OneDriveItemIterator(getApi(), url);
     }
@@ -101,7 +101,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = SEARCH_IN_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
+            url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
     }
@@ -115,7 +115,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
         }
         else {
-            url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(), getId());
+            url = DELTA_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), getId());
         }
         return new OneDriveDeltaItemIterator(getApi(), url);
     }

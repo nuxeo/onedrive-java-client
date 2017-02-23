@@ -31,8 +31,8 @@ import com.eclipsesource.json.ParseException;
  */
 public class OneDriveFile extends OneDriveItem {
 
-    private static final URLTemplate GET_FILE_URL = new URLTemplate("/drive/items/%s");
-    private static final URLTemplate GET_FILE_CONTENT_URL = new URLTemplate("/drive/items/%s/content");
+    private static final URLTemplate GET_FILE_URL_BY_ID = new URLTemplate("/drive/items/%s");
+    private static final URLTemplate GET_FILE_CONTENT_URL_BY_ID = new URLTemplate("/drive/items/%s/content");
 
     private final OneDriveAPI api;
 
@@ -44,14 +44,14 @@ public class OneDriveFile extends OneDriveItem {
     @Override
     public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        URL url = GET_FILE_URL.build(getApi().getBaseURL(), query, getId());
+        URL url = GET_FILE_URL_BY_ID.build(getApi().getBaseURL(), query, getId());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
         return new OneDriveFile.Metadata(response.getContent());
     }
 
     public InputStream download() throws IOException {
-        URL url = GET_FILE_CONTENT_URL.build(getApi().getBaseURL(), getId());
+        URL url = GET_FILE_CONTENT_URL_BY_ID.build(getApi().getBaseURL(), getId());
         OneDriveRequest request = new OneDriveRequest(url, "GET");
         OneDriveResponse response = request.sendRequest(api.getExecutor());
         return response.getContent();
