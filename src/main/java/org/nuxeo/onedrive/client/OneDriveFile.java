@@ -67,10 +67,10 @@ public class OneDriveFile extends OneDriveItem {
         final URL url;
         switch (getResourceIdentifierType()) {
             case Id:
-                url = GET_FILE_CONTENT_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
+                url = GET_FILE_CONTENT_URL_BY_ID.build(getApi().getBaseURL(), getResourceIdentifier());
                 break;
             case Path:
-                url = GET_FILE_CONTENT_URL_BY_Path.build(getApi().getBaseURL(), query, getResourceDrive().getResourceIdentifier(), getResourceIdentifier());
+                url = GET_FILE_CONTENT_URL_BY_Path.build(getApi().getBaseURL(), getResourceDrive().getResourceIdentifier(), getResourceIdentifier());
                 break;
             default:
                 throw new IOException("This should never happen");
