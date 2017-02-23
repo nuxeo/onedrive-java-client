@@ -57,11 +57,11 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
 
         OneDriveItem.Metadata nextMetadata;
         if(nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
-            OneDriveFolder folder = new OneDriveFolder(api, id, OneDriveItem.ResourceIdentifierType.Id);
+            OneDriveFolder folder = new OneDriveFolder(api, id);
             nextMetadata = folder.new Metadata(nextObject);
         }
         else if(nextObject.get("file") != null && !nextObject.get("file").isNull()) {
-            OneDriveFile file = new OneDriveFile(api, id, OneDriveItem.ResourceIdentifierType.Id);
+            OneDriveFile file = new OneDriveFile(api, id);
             nextMetadata = file.new Metadata(nextObject);
         }
         else {

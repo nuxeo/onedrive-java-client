@@ -38,7 +38,7 @@ public class TestOneDriveFolder extends OneDriveTestCase {
         mockJsonRequest("onedrive_folder.json");
 
         // Test
-        OneDriveFolder folder = new OneDriveFolder(api, "5FGB3N6V49HN725573R8LG588VRDPMJV36", OneDriveItem.ResourceIdentifierType.Id);
+        OneDriveFolder folder = new OneDriveFolder(api, "5FGB3N6V49HN725573R8LG588VRDPMJV36");
         OneDriveFolder.Metadata metadata = folder.getMetadata();
         assertTrue(metadata.isFolder());
         assertEquals("Test", metadata.getName());

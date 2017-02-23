@@ -32,17 +32,10 @@ import com.eclipsesource.json.ParseException;
  * @since 1.0
  */
 public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveItem.Metadata> {
-
-    private static final URLTemplate GET_FOLDER_ROOT_URL = new URLTemplate("/drive/root");
-    private static final URLTemplate GET_CHILDREN_ROOT_URL = new URLTemplate("/drive/root/children");
     private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
     private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
-    private static final URLTemplate GET_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s");
-    private static final URLTemplate GET_CHILDREN_URL_BY_ID = new URLTemplate("/drive/items/%s/children");
     private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.search");
     private static final URLTemplate DELTA_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.delta");
-    private static final URLTemplate GET_FOLDER_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s");
-    private static final URLTemplate GET_CHILDREN_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/children");
     private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/view.search");
     private static final URLTemplate DELTA_IN_FOLDER_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/view.delta");
 
@@ -61,13 +54,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     @Override
     public OneDriveFolder.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        URL url;
-        if(isRoot()) {
-            url = GET_FOLDER_ROOT_URL.build(getApi().getBaseURL(), query);
-        }
-        else {
-            url = GET_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
-        }
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveFolder.Metadata(response.getContent());
@@ -92,13 +79,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
         QueryStringBuilder query = new QueryStringBuilder().set("top", 200);
-        URL url;
-        if(isRoot()) {
-            url = GET_CHILDREN_ROOT_URL.build(getApi().getBaseURL(), query);
-        }
-        else {
-            url = GET_CHILDREN_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
-        }
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
         return new OneDriveItemIterator(getApi(), url);
     }
 
@@ -112,6 +93,14 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
+    }
+
+    public URLTemplate getChildrenURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        resolveWithAction(urlBuilder);
+        urlBuilder.append("/children");
+
+        return new URLTemplate(urlBuilder.toString());
     }
 
     /**

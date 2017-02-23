@@ -30,12 +30,6 @@ import java.net.URL;
  * @since 1.0
  */
 public class OneDriveFile extends OneDriveItem {
-
-    private static final URLTemplate GET_FILE_URL_BY_ID = new URLTemplate("/drive/items/%s");
-    private static final URLTemplate GET_FILE_CONTENT_URL_BY_ID = new URLTemplate("/drive/items/%s/content");
-    private static final URLTemplate GET_FILE_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s");
-    private static final URLTemplate GET_FILE_CONTENT_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/content");
-
     public OneDriveFile(OneDriveAPI api, String fileId) {
         super(api, fileId);
     }
@@ -47,37 +41,25 @@ public class OneDriveFile extends OneDriveItem {
     @Override
     public OneDriveFile.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url;
-        switch (getResourceIdentifierType()) {
-            case Id:
-                url = GET_FILE_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
-                break;
-            case Path:
-                url = GET_FILE_URL_BY_Path.build(getApi().getBaseURL(), query, getResourceDrive().getResourceIdentifier(), getResourceIdentifier());
-                break;
-            default:
-                throw new IOException("This should never happen");
-        }
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveFile.Metadata(response.getContent());
     }
 
     public InputStream download() throws IOException {
-        final URL url;
-        switch (getResourceIdentifierType()) {
-            case Id:
-                url = GET_FILE_CONTENT_URL_BY_ID.build(getApi().getBaseURL(), getResourceIdentifier());
-                break;
-            case Path:
-                url = GET_FILE_CONTENT_URL_BY_Path.build(getApi().getBaseURL(), getResourceDrive().getResourceIdentifier(), getResourceIdentifier());
-                break;
-            default:
-                throw new IOException("This should never happen");
-        }
+        final URL url = getContentURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveRequest request = new OneDriveRequest(url, "GET");
         OneDriveResponse response = request.sendRequest(getApi().getExecutor());
         return response.getContent();
+    }
+
+    public URLTemplate getContentURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        resolveWithAction(urlBuilder);
+        urlBuilder.append("/content");
+
+        return new URLTemplate(urlBuilder.toString());
     }
 
     /**
