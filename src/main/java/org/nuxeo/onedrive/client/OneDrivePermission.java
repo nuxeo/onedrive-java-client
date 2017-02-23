@@ -110,7 +110,7 @@ public class OneDrivePermission extends OneDriveResource {
                 else if("inheritedFrom".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
                     String id = valueObject.get("id").asString();
-                    OneDriveFolder inheritedFromFolder = new OneDriveFolder(getApi(), id);
+                    OneDriveFolder inheritedFromFolder = new OneDriveFolder(getApi(), id, OneDriveItem.ResourceIdentifierType.Id);
                     inheritedFrom = inheritedFromFolder.new Reference(valueObject);
                 }
                 else if("shareId".equals(memberName)) {

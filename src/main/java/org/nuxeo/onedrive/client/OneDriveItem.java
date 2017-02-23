@@ -21,6 +21,7 @@ package org.nuxeo.onedrive.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,12 +42,20 @@ public abstract class OneDriveItem extends OneDriveResource {
 
     private static final URLTemplate CREATE_SHARED_LINK_ROOT_URL = new URLTemplate("/drive/root/action.createLink");
 
+    private final ResourceIdentifierType resourceIdentifierType;
+
     OneDriveItem(OneDriveAPI api) {
         super(api);
+        this.resourceIdentifierType = ResourceIdentifierType.Id;
     }
 
-    public OneDriveItem(OneDriveAPI api, String id) {
-        super(api, id);
+    public OneDriveItem(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
+        super(api, resourceIdentifier);
+        this.resourceIdentifierType = resourceIdentifierType;
+    }
+
+    public ResourceIdentifierType getResourceIdentifierType() {
+        return resourceIdentifierType;
     }
 
     public abstract OneDriveItem.Metadata getMetadata(OneDriveExpand... expand) throws IOException;
@@ -218,7 +227,7 @@ public abstract class OneDriveItem extends OneDriveResource {
                 else if("parentReference".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
                     String id = valueObject.get("id").asString();
-                    OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id);
+                    OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id, ResourceIdentifierType.Id);
                     parentReference = parentFolder.new Reference(valueObject);
                 }
                 else if("webUrl".equals(memberName)) {

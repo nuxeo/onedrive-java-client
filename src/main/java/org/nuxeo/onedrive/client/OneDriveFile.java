@@ -36,8 +36,8 @@ public class OneDriveFile extends OneDriveItem {
 
     private final OneDriveAPI api;
 
-    public OneDriveFile(OneDriveAPI api, String id) {
-        super(api, id);
+    public OneDriveFile(OneDriveAPI api, String id, ResourceIdentifierType resourceIdentifierType) {
+        super(api, id, resourceIdentifierType);
         this.api = api;
     }
 
