@@ -98,6 +98,11 @@ public abstract class OneDriveItem extends OneDriveResource {
         return permission.new Metadata(response.getContent());
     }
 
+    public enum ResourceIdentifierType {
+        Id,
+        Path
+    }
+
     /**
      * See documentation at https://dev.onedrive.com/resources/item.htm.
      */
