@@ -43,12 +43,20 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         super(api);
     }
 
+    OneDriveFolder(OneDriveAPI api, OneDriveDrive drive) {
+        super(api, drive);
+    }
+
     public OneDriveFolder(OneDriveAPI api, String id) {
         super(api, id);
     }
 
     public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path) {
         super(api, drive, path);
+    }
+
+    public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
+        super(api, drive, path, resourceIdentifierType);
     }
 
     @Override

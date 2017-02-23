@@ -49,7 +49,11 @@ public abstract class OneDriveItem extends OneDriveResource {
     }
 
     public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path) {
-        super(api, path);
+        this(api, drive, path, ResourceIdentifierType.Path);
+    }
+
+    public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
+        super(api, drive, path, resourceIdentifierType);
     }
 
     public void resolveBaseUrl(StringBuilder urlBuilder) {
