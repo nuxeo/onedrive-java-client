@@ -45,16 +45,16 @@ public abstract class OneDriveItem extends OneDriveResource {
         super(api);
     }
 
+    OneDriveItem(OneDriveAPI api, OneDriveDrive drive) {
+        super(api, drive);
+    }
+
     public OneDriveItem(OneDriveAPI api, String id) {
         super(api, id);
     }
 
     public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path) {
         super(api, path);
-    }
-
-    public ResourceIdentifierType getResourceIdentifierType() {
-        return resourceIdentifierType;
     }
 
     public abstract OneDriveItem.Metadata getMetadata(OneDriveExpand... expand) throws IOException;
@@ -221,7 +221,7 @@ public abstract class OneDriveItem extends OneDriveResource {
                 else if("parentReference".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
                     String id = valueObject.get("id").asString();
-                    OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id, ResourceIdentifierType.Id);
+                    OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id);
                     parentReference = parentFolder.new Reference(valueObject);
                 }
                 else if("webUrl".equals(memberName)) {
