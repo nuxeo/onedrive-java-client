@@ -32,6 +32,14 @@ public class OneDriveResource {
     private final OneDriveDrive resourceDrive;
     private final ResourceIdentifierType resourceIdentifierType;
 
+    public OneDriveResource(OneDriveAPI api, String id) {
+        this(api, id, ResourceIdentifierType.Id);
+    }
+
+    public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String path) {
+        this(api, drive, path, ResourceIdentifierType.Path);
+    }
+
     OneDriveResource(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
         this.resourceDrive = null;
@@ -46,15 +54,11 @@ public class OneDriveResource {
         this.resourceIdentifierType = ResourceIdentifierType.Path;
     }
 
-    public OneDriveResource(OneDriveAPI api, String resourceIdentifier) {
+    public OneDriveResource(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
         this.api = Objects.requireNonNull(api);
         this.resourceIdentifier = Objects.requireNonNull(resourceIdentifier);
-        this.resourceIdentifierType = ResourceIdentifierType.Id;
+        this.resourceIdentifierType = resourceIdentifierType;
         this.resourceDrive = null;
-    }
-
-    public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String path) {
-        this(api, drive, path, ResourceIdentifierType.Path);
     }
 
     public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {

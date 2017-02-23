@@ -48,8 +48,12 @@ public abstract class OneDriveItem extends OneDriveResource {
         super(api, id);
     }
 
+    public OneDriveItem(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
+        super(api, resourceIdentifier, resourceIdentifierType);
+    }
+
     public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path) {
-        this(api, drive, path, ResourceIdentifierType.Path);
+        super(api, drive, path, ResourceIdentifierType.Path);
     }
 
     public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
