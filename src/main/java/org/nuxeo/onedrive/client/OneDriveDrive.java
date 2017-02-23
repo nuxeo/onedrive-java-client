@@ -20,13 +20,26 @@ package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
 
+import java.net.URL;
+import java.util.Iterator;
+
 /**
  * @since 1.0
  */
-public class OneDriveDrive extends OneDriveResource {
+public class OneDriveDrive extends OneDriveResource implements Iterable<OneDriveItem.Metadata> {
+    private static final URLTemplate DRIVE_CHILDREN_URL = new URLTemplate("/drives/%1$s/root/children");
 
     public OneDriveDrive(OneDriveAPI api, String id) {
         super(api, id);
+    }
+
+    public Iterator<OneDriveItem.Metadata> iterator() {
+        return iterator(new OneDriveExpand[]{});
+    }
+
+    public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
+        final URL url = DRIVE_CHILDREN_URL.build(getApi().getBaseURL(), getResourceIdentifier());
+        return new OneDriveItemIterator(getApi(), url);
     }
 
     public class Metadata extends OneDriveResource.Metadata {
