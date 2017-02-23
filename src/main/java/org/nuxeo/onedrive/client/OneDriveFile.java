@@ -33,6 +33,8 @@ public class OneDriveFile extends OneDriveItem {
 
     private static final URLTemplate GET_FILE_URL_BY_ID = new URLTemplate("/drive/items/%s");
     private static final URLTemplate GET_FILE_CONTENT_URL_BY_ID = new URLTemplate("/drive/items/%s/content");
+    private static final URLTemplate GET_FILE_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s");
+    private static final URLTemplate GET_FILE_CONTENT_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/content");
 
     private final OneDriveAPI api;
 

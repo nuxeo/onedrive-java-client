@@ -41,6 +41,10 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     private static final URLTemplate GET_CHILDREN_URL_BY_ID = new URLTemplate("/drive/items/%s/children");
     private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.search");
     private static final URLTemplate DELTA_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.delta");
+    private static final URLTemplate GET_FOLDER_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s");
+    private static final URLTemplate GET_CHILDREN_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/children");
+    private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/view.search");
+    private static final URLTemplate DELTA_IN_FOLDER_URL_BY_Path = new URLTemplate("/drives/%s/root/:%s:/view.delta");
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
