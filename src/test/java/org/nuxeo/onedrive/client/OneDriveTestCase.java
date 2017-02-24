@@ -27,8 +27,7 @@ import java.net.URL;
 
 import com.eclipsesource.json.JsonObject;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
@@ -53,7 +52,7 @@ public class OneDriveTestCase {
         whenNew(OneDriveJsonRequest.class).withAnyArguments().thenReturn(jsonRequest);
 
         OneDriveJsonResponse jsonResponse = mock(OneDriveJsonResponse.class);
-        when(jsonRequest.sendRequest(api.getExecutor())).thenReturn(jsonResponse);
+        when(jsonRequest.sendRequest(any())).thenReturn(jsonResponse);
 
         String jsonString = IOUtils.toString(getClass().getResource(jsonResponseFile));
         when(jsonResponse.getContent()).thenReturn(JsonObject.readFrom(jsonString));
@@ -61,10 +60,10 @@ public class OneDriveTestCase {
 
     protected void mockJsonRequest(URL url, String jsonResponseFile) throws Exception {
         OneDriveJsonRequest jsonRequest = mock(OneDriveJsonRequest.class);
-        whenNew(OneDriveJsonRequest.class).withArguments(any(), eq(url), any()).thenReturn(jsonRequest);
+        whenNew(OneDriveJsonRequest.class).withArguments(eq(url), anyString()).thenReturn(jsonRequest);
 
         OneDriveJsonResponse jsonResponse = mock(OneDriveJsonResponse.class);
-        when(jsonRequest.sendRequest(api.getExecutor())).thenReturn(jsonResponse);
+        when(jsonRequest.sendRequest(any())).thenReturn(jsonResponse);
 
         String jsonString = IOUtils.toString(getClass().getResource(jsonResponseFile));
         when(jsonResponse.getContent()).thenReturn(JsonObject.readFrom(jsonString));
