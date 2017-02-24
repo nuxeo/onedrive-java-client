@@ -23,12 +23,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 /**
  * @since 1.0
  */
+@Ignore
 @PrepareForTest(OneDriveFolder.class)
 public class TestOneDriveFolder extends OneDriveTestCase {
 

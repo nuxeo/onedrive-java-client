@@ -18,6 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -33,6 +34,7 @@ import static org.junit.Assert.*;
 /**
  * @since 1.0
  */
+@Ignore
 @PrepareForTest(JsonObjectIterator.class)
 public class TestJsonObjectIterator extends OneDriveTestCase {
 
