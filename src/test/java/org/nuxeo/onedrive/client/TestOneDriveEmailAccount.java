@@ -18,11 +18,10 @@
  */
 package org.nuxeo.onedrive.client;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @since 1.0
