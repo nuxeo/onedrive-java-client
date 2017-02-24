@@ -31,6 +31,8 @@ class URLTemplate {
 
     private String template;
 
+    String getTemplate() { return template; }
+
     URLTemplate(String template) {
         this.template = Objects.requireNonNull(template);
     }

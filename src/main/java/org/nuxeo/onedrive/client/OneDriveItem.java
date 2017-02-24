@@ -21,6 +21,7 @@ package org.nuxeo.onedrive.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,17 +37,89 @@ import com.eclipsesource.json.ParseException;
  * @since 1.0
  */
 public abstract class OneDriveItem extends OneDriveResource {
-
-    private static final URLTemplate CREATE_SHARED_LINK_URL = new URLTemplate("/drive/items/%s/action.createLink");
-
-    private static final URLTemplate CREATE_SHARED_LINK_ROOT_URL = new URLTemplate("/drive/root/action.createLink");
-
     OneDriveItem(OneDriveAPI api) {
         super(api);
     }
 
+    OneDriveItem(OneDriveAPI api, OneDriveDrive drive) {
+        super(api, drive);
+    }
+
     public OneDriveItem(OneDriveAPI api, String id) {
         super(api, id);
+    }
+
+    public OneDriveItem(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
+        super(api, resourceIdentifier, resourceIdentifierType);
+    }
+
+    public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path) {
+        super(api, drive, path, ResourceIdentifierType.Path);
+    }
+
+    public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
+        super(api, drive, path, resourceIdentifierType);
+    }
+
+    protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
+        if (getResourceDrive() != null) {
+            urlBuilder.append(String.format("/drives/%1$s", getResourceDrive().getResourceIdentifier()));
+        }
+        else {
+            urlBuilder.append("/drive");
+        }
+    }
+
+    protected void appendItemReferenceResolve(StringBuilder urlBuilder) {
+        if (getResourceIdentifierType() == ResourceIdentifierType.Id){
+            urlBuilder.append("/items");
+        }
+        else {
+            urlBuilder.append("/root");
+        }
+    }
+
+    protected void appendItemReference(StringBuilder urlBuilder) {
+        if (isRoot()) {
+            return;
+        }
+        if (getResourceIdentifierType() == ResourceIdentifierType.Path) {
+            urlBuilder.append(':');
+        }
+
+        urlBuilder.append("/%1$s");
+    }
+
+    protected void appendAction(StringBuilder urlBuilder, String action) {
+        if (!isRoot() && getResourceIdentifierType() == ResourceIdentifierType.Path) {
+            urlBuilder.append(':');
+        }
+        urlBuilder.append(String.format("/%s", action));
+    }
+
+    protected void appendDriveItem(StringBuilder urlBuilder) {
+        appendDriveResourceResolve(urlBuilder);
+        appendItemReferenceResolve(urlBuilder);
+        appendItemReference(urlBuilder);
+    }
+
+    protected void appendDriveItemAction(StringBuilder urlBuilder, String action) {
+        appendDriveItem(urlBuilder);
+        appendAction(urlBuilder, action);
+    }
+
+    public URLTemplate getMetadataURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItem(urlBuilder);
+
+        return new URLTemplate(urlBuilder.toString());
+    }
+
+    public URLTemplate getSharedLinkUrl() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "action.createLink");
+
+        return new URLTemplate(urlBuilder.toString());
     }
 
     public abstract OneDriveItem.Metadata getMetadata(OneDriveExpand... expand) throws IOException;
@@ -65,25 +138,19 @@ public abstract class OneDriveItem extends OneDriveResource {
     }
 
     public OneDriveThumbnail.Metadata getThumbnail(OneDriveThumbnailSize size) throws IOException {
-        return new OneDriveThumbnail(getApi(), getId(), size).getMetadata();
+        return new OneDriveThumbnail(getApi(), getResourceIdentifier(), size).getMetadata();
     }
 
     public InputStream downloadThumbnail(OneDriveThumbnailSize size) throws IOException {
-        return new OneDriveThumbnail(getApi(), getId(), size).download();
+        return new OneDriveThumbnail(getApi(), getResourceIdentifier(), size).download();
     }
 
     Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
-        return () -> new OneDriveThumbnailSetIterator(getApi(), getId());
+        return () -> new OneDriveThumbnailSetIterator(getApi(), getResourceIdentifier());
     }
 
     public OneDrivePermission.Metadata createSharedLink(OneDriveSharingLink.Type type) throws IOException {
-        URL url;
-        if(isRoot()) {
-            url = CREATE_SHARED_LINK_ROOT_URL.build(getApi().getBaseURL());
-        }
-        else {
-            url = CREATE_SHARED_LINK_URL.build(getApi().getBaseURL(), getId());
-        }
+        final URL url = getSharedLinkUrl().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST",
                 new JsonObject().add("type", type.getType()));
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
@@ -93,7 +160,7 @@ public abstract class OneDriveItem extends OneDriveResource {
             permission = new OneDrivePermission(getApi(), permissionId);
         }
         else {
-            permission = new OneDrivePermission(getApi(), getId(), permissionId);
+            permission = new OneDrivePermission(getApi(), getResourceIdentifier(), permissionId);
         }
         return permission.new Metadata(response.getContent());
     }

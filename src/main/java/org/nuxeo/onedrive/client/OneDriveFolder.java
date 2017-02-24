@@ -32,34 +32,41 @@ import com.eclipsesource.json.ParseException;
  * @since 1.0
  */
 public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveItem.Metadata> {
-
-    private static final URLTemplate GET_FOLDER_ROOT_URL = new URLTemplate("/drive/root");
-    private static final URLTemplate GET_CHILDREN_ROOT_URL = new URLTemplate("/drive/root/children");
     private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
     private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
-    private static final URLTemplate GET_FOLDER_URL = new URLTemplate("/drive/items/%s");
-    private static final URLTemplate GET_CHILDREN_URL = new URLTemplate("/drive/items/%s/children");
-    private static final URLTemplate SEARCH_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.search");
-    private static final URLTemplate DELTA_IN_FOLDER_URL = new URLTemplate("/drive/items/%s/view.delta");
+    private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.search");
+    private static final URLTemplate DELTA_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.delta");
+    private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_PATH = new URLTemplate("/drives/%s/root/:%s:/view.search");
+    private static final URLTemplate DELTA_IN_FOLDER_URL_BY_PATH = new URLTemplate("/drives/%s/root/:%s:/view.delta");
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
+    }
+
+    OneDriveFolder(OneDriveAPI api, OneDriveDrive drive) {
+        super(api, drive);
     }
 
     public OneDriveFolder(OneDriveAPI api, String id) {
         super(api, id);
     }
 
+    public OneDriveFolder(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
+        super(api, resourceIdentifier, resourceIdentifierType);
+    }
+
+    public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path) {
+        super(api, drive, path);
+    }
+
+    public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
+        super(api, drive, path, resourceIdentifierType);
+    }
+
     @Override
     public OneDriveFolder.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        URL url;
-        if(isRoot()) {
-            url = GET_FOLDER_ROOT_URL.build(getApi().getBaseURL(), query);
-        }
-        else {
-            url = GET_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
-        }
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveFolder.Metadata(response.getContent());
@@ -84,13 +91,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
         QueryStringBuilder query = new QueryStringBuilder().set("top", 200);
-        URL url;
-        if(isRoot()) {
-            url = GET_CHILDREN_ROOT_URL.build(getApi().getBaseURL(), query);
-        }
-        else {
-            url = GET_CHILDREN_URL.build(getApi().getBaseURL(), query, getId());
-        }
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
         return new OneDriveItemIterator(getApi(), url);
     }
 
@@ -101,9 +102,16 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
         }
         else {
-            url = SEARCH_IN_FOLDER_URL.build(getApi().getBaseURL(), query, getId());
+            url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
+    }
+
+    public URLTemplate getChildrenURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "children");
+
+        return new URLTemplate(urlBuilder.toString());
     }
 
     /**
@@ -115,7 +123,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
         }
         else {
-            url = DELTA_IN_FOLDER_URL.build(getApi().getBaseURL(), getId());
+            url = DELTA_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), getResourceIdentifier());
         }
         return new OneDriveDeltaItemIterator(getApi(), url);
     }
