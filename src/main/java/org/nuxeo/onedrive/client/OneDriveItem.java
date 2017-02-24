@@ -21,6 +21,7 @@ package org.nuxeo.onedrive.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public abstract class OneDriveItem extends OneDriveResource {
         super(api, drive, path, resourceIdentifierType);
     }
 
-    public void resolveDriveUrl(StringBuilder urlBuilder) {
+    protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
             urlBuilder.append(String.format("/drives/%1$s", getResourceDrive().getResourceIdentifier()));
         }
@@ -69,43 +70,54 @@ public abstract class OneDriveItem extends OneDriveResource {
         }
     }
 
-    public void resolveBaseUrl(StringBuilder urlBuilder) {
-        resolveDriveUrl(urlBuilder);
-
+    protected void appendItemReferenceResolve(StringBuilder urlBuilder) {
         if (getResourceIdentifierType() == ResourceIdentifierType.Id){
             urlBuilder.append("/items");
         }
         else {
             urlBuilder.append("/root");
         }
-
-        if (!isRoot()) {
-            if (getResourceIdentifierType() == ResourceIdentifierType.Path) {
-                urlBuilder.append(':');
-            }
-
-            urlBuilder.append("/%1$s");
-        }
     }
 
-    public void resolveWithAction(StringBuilder urlBuilder) {
-        resolveBaseUrl(urlBuilder);
+    protected void appendItemReference(StringBuilder urlBuilder) {
+        if (isRoot()) {
+            return;
+        }
+        if (getResourceIdentifierType() == ResourceIdentifierType.Path) {
+            urlBuilder.append(':');
+        }
+
+        urlBuilder.append("/%1$s");
+    }
+
+    protected void appendAction(StringBuilder urlBuilder, String action) {
         if (!isRoot() && getResourceIdentifierType() == ResourceIdentifierType.Path) {
             urlBuilder.append(':');
         }
+        urlBuilder.append(String.format("/%s", action));
+    }
+
+    protected void appendDriveItem(StringBuilder urlBuilder) {
+        appendDriveResourceResolve(urlBuilder);
+        appendItemReferenceResolve(urlBuilder);
+        appendItemReference(urlBuilder);
+    }
+
+    protected void appendDriveItemAction(StringBuilder urlBuilder, String action) {
+        appendDriveItem(urlBuilder);
+        appendAction(urlBuilder, action);
     }
 
     public URLTemplate getMetadataURL() {
         StringBuilder urlBuilder = new StringBuilder();
-        resolveBaseUrl(urlBuilder);
+        appendDriveItem(urlBuilder);
 
         return new URLTemplate(urlBuilder.toString());
     }
 
     public URLTemplate getSharedLinkUrl() {
         StringBuilder urlBuilder = new StringBuilder();
-        resolveWithAction(urlBuilder);
-        urlBuilder.append("/action.createLink");
+        appendDriveItemAction(urlBuilder, "action.createLink");
 
         return new URLTemplate(urlBuilder.toString());
     }

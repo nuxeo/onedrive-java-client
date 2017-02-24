@@ -109,8 +109,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     public URLTemplate getChildrenURL() {
         StringBuilder urlBuilder = new StringBuilder();
-        resolveWithAction(urlBuilder);
-        urlBuilder.append("/children");
+        appendDriveItemAction(urlBuilder, "children");
 
         return new URLTemplate(urlBuilder.toString());
     }

@@ -56,8 +56,7 @@ public class OneDriveFile extends OneDriveItem {
 
     public URLTemplate getContentURL() {
         StringBuilder urlBuilder = new StringBuilder();
-        resolveWithAction(urlBuilder);
-        urlBuilder.append("/content");
+        appendDriveItemAction(urlBuilder, "content");
 
         return new URLTemplate(urlBuilder.toString());
     }
