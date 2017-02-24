@@ -1,12 +1,13 @@
 package org.nuxeo.onedrive.client;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Set;
 
-public interface RequestExecutor {
+public interface RequestExecutor extends Closeable {
     Upload doPost(URL url, Set<RequestHeader> headers) throws IOException;
 
     Response doGet(URL url, Set<RequestHeader> headers) throws IOException;

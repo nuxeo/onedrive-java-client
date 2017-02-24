@@ -88,6 +88,11 @@ public class JavaNetRequestExecutor implements RequestExecutor {
         return connection;
     }
 
+    @Override
+    public void close() throws IOException {
+        //
+    }
+
     private final class JavaNetResponse extends Response {
 
         private HttpURLConnection connection;
