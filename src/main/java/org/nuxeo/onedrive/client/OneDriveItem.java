@@ -60,13 +60,17 @@ public abstract class OneDriveItem extends OneDriveResource {
         super(api, drive, path, resourceIdentifierType);
     }
 
-    public void resolveBaseUrl(StringBuilder urlBuilder) {
+    public void resolveDriveUrl(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
             urlBuilder.append(String.format("/drives/%1$s", getResourceDrive().getResourceIdentifier()));
         }
         else {
             urlBuilder.append("/drive");
         }
+    }
+
+    public void resolveBaseUrl(StringBuilder urlBuilder) {
+        resolveDriveUrl(urlBuilder);
 
         if (getResourceIdentifierType() == ResourceIdentifierType.Id){
             urlBuilder.append("/items");
