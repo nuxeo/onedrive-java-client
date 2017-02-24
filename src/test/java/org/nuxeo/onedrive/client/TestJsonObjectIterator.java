@@ -34,7 +34,6 @@ import static org.junit.Assert.*;
 /**
  * @since 1.0
  */
-@Ignore
 @PrepareForTest(JsonObjectIterator.class)
 public class TestJsonObjectIterator extends OneDriveTestCase {
 

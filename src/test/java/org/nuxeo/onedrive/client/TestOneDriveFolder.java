@@ -30,7 +30,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 /**
  * @since 1.0
  */
-@Ignore
 @PrepareForTest(OneDriveFolder.class)
 public class TestOneDriveFolder extends OneDriveTestCase {
 

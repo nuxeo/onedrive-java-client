@@ -27,7 +27,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 /**
  * @since 1.0
  */
-@Ignore
 @PrepareForTest(OneDriveEmailAccount.class)
 public class TestOneDriveEmailAccount extends OneDriveTestCase {
 
