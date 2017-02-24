@@ -33,6 +33,10 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         super(api, id);
     }
 
+    public OneDriveFolder getRoot() {
+        return new OneDriveFolder(getApi(), this);
+    }
+
     public Iterator<OneDriveItem.Metadata> iterator() {
         return iterator(new OneDriveExpand[]{});
     }
