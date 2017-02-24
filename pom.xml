@@ -52,12 +52,6 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.bishiboosh</groupId>
-            <artifactId>junit-volkswagen</artifactId>
-            <version>0.2</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -141,11 +135,4 @@
             </build>
         </profile>
     </profiles>
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
 </project>
