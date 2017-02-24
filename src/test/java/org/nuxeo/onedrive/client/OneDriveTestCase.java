@@ -35,6 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 /**
  * @since 1.0
  */
+@Ignore
 @RunWith(PowerMockRunner.class)
 public class OneDriveTestCase {
 
