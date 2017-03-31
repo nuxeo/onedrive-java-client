@@ -50,6 +50,25 @@ public class JavaNetRequestExecutor implements RequestExecutor {
     }
 
     @Override
+    public Upload doPut(URL url, Set<RequestHeader> headers) throws IOException {
+        HttpURLConnection connection = this.createConnection(url, "PUT", headers);
+        this.authorize(connection);
+        connection.setDoOutput(true);
+        connection.connect();
+        return new Upload() {
+            @Override
+            public OutputStream getOutputStream() throws IOException {
+                return connection.getOutputStream();
+            }
+
+            @Override
+            public Response getResponse() throws IOException {
+                return toResponse(connection);
+            }
+        };
+    }
+
+    @Override
     public Response doGet(final URL url, final Set<RequestHeader> headers) throws IOException {
         final HttpURLConnection connection = this.createConnection(url, "GET", headers);
         this.authorize(connection);
