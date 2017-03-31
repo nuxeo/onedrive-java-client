@@ -10,6 +10,8 @@ import java.util.Set;
 public interface RequestExecutor extends Closeable {
     Upload doPost(URL url, Set<RequestHeader> headers) throws IOException;
 
+    Upload doPut(URL url, Set<RequestHeader> headers) throws IOException;
+
     Response doGet(URL url, Set<RequestHeader> headers) throws IOException;
 
     abstract class Response {
