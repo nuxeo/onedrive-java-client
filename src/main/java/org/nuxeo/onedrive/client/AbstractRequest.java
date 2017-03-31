@@ -66,6 +66,11 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
                 IOUtils.copy(body, response.getOutputStream());
                 return this.createResponse(response.getResponse());
             }
+            case "PUT": {
+                final RequestExecutor.Upload response = sender.doPut(url, headers);
+                IOUtils.copy(body, response.getOutputStream());
+                return this.createResponse(response.getResponse());
+            }
             default: {
                 throw new OneDriveAPIException(String.format("Unsupported HTTP method %s", method));
             }
