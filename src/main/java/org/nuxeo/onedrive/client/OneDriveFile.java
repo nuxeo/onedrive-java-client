@@ -68,6 +68,14 @@ public class OneDriveFile extends OneDriveItem {
         return new URLTemplate(urlBuilder.toString());
     }
 
+    public void move(OneDriveFolder newParent) {
+        
+    }
+
+    public void rename(String newFilename) {
+
+    }
+
     public OneDriveUploadSession getUploadSession() throws IOException {
         final URL url = getUploadSessionURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveRequest request = new OneDriveRequest(url, "GET");
