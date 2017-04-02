@@ -18,13 +18,13 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @since 1.0
@@ -71,9 +71,13 @@ public class OneDriveFile extends OneDriveItem {
     public OneDriveUploadSession getUploadSession() throws IOException {
         final URL url = getUploadSessionURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveRequest request = new OneDriveRequest(url, "GET");
-        OneDriveResponse genericResponse = request.sendRequest(getApi().getExecutor();
+        OneDriveResponse genericResponse = request.sendRequest(getApi().getExecutor());
         OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(genericResponse.getResponseCode(), genericResponse.getResponseMessage(), genericResponse.getContent());
-        return new OneDriveUploadSession(jsonResponse.getContent());
+        try {
+            return new OneDriveUploadSession(jsonResponse.getContent());
+        } finally {
+            jsonResponse.close();
+        }
     }
 
     /**
