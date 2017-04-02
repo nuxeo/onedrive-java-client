@@ -166,7 +166,7 @@ public abstract class OneDriveItem extends OneDriveResource {
         return request.sendRequest(getApi().getExecutor());
     }
 
-    public void move(OneDriveFolder newParent) throws IOException {
+    public Metadata move(OneDriveFolder newParent) throws IOException {
         /*
         Builds a JSON Object
 
@@ -180,11 +180,16 @@ public abstract class OneDriveItem extends OneDriveResource {
         newParent.appendDriveItem(builder);
         parentReferenceObject.set("path", builder.toString());
         rootObject.set("parentReference", parentReferenceObject);
+
         OneDriveJsonResponse response = executeRequest(rootObject);
-        response.close();
+        try {
+            return parseResponse(response);
+        } finally {
+            response.close();
+        }
     }
 
-    public void rename(String newFilename) throws IOException {
+    public Metadata rename(String newFilename) throws IOException {
         /*
         Builds a JSON Object
 
@@ -196,8 +201,26 @@ public abstract class OneDriveItem extends OneDriveResource {
         rootObject.set("name", newFilename);
 
         OneDriveJsonResponse response = executeRequest(rootObject);
+        try {
+            return parseResponse(response);
+        } finally {
+            response.close();
+        }
+    }
 
-        response.close();
+    private OneDriveItem.Metadata parseResponse(OneDriveJsonResponse response) throws IOException {
+        JsonObject nextObject = response.getContent();
+        String id = nextObject.get("id").asString();
+
+        OneDriveItem.Metadata nextMetadata = null;
+        if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
+            OneDriveFolder folder = new OneDriveFolder(getApi(), id);
+            nextMetadata = folder.new Metadata(nextObject);
+        } else if (nextObject.get("file") != null && !nextObject.get("file").isNull()) {
+            OneDriveFile file = new OneDriveFile(getApi(), id);
+            nextMetadata = file.new Metadata(nextObject);
+        }
+        return nextMetadata;
     }
 
     /**
