@@ -61,6 +61,21 @@ public class OneDriveFile extends OneDriveItem {
         return new URLTemplate(urlBuilder.toString());
     }
 
+    public URLTemplate getUploadSessionURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "createUploadSession");
+
+        return new URLTemplate(urlBuilder.toString());
+    }
+
+    public OneDriveUploadSession getUploadSession() throws IOException {
+        final URL url = getUploadSessionURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        OneDriveRequest request = new OneDriveRequest(url, "GET");
+        OneDriveResponse genericResponse = request.sendRequest(getApi().getExecutor();
+        OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(genericResponse.getResponseCode(), genericResponse.getResponseMessage(), genericResponse.getContent());
+        return new OneDriveUploadSession(jsonResponse.getContent());
+    }
+
     /**
      * See documentation at https://dev.onedrive.com/resources/item.htm.
      */
