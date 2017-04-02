@@ -68,44 +68,6 @@ public class OneDriveFile extends OneDriveItem {
         return new URLTemplate(urlBuilder.toString());
     }
 
-    public void move(OneDriveFolder newParent) throws IOException {
-        final URL metadataUrl = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
-
-        /*
-        Builds a JSON Object
-
-        {
-            "parentReference": { "path": newParent-DriveItem }
-        }
-        */
-        final JsonObject rootObject = new JsonObject();
-        final JsonObject parentReferenceObject = new JsonObject();
-        final StringBuilder builder = new StringBuilder();
-        newParent.appendDriveItem(builder);
-        parentReferenceObject.set("path", builder.toString());
-        rootObject.set("parentReference", parentReferenceObject);
-
-        OneDriveJsonRequest request = new OneDriveJsonRequest(metadataUrl, "PATCH", rootObject);
-        request.sendRequest(getApi().getExecutor()).close();
-    }
-
-    public void rename(String newFilename) throws IOException {
-        final URL metadataUrl = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
-
-        /*
-        Builds a JSON Object
-
-        {
-            "name": "$newFilename"
-        }
-        */
-        final JsonObject rootObject = new JsonObject();
-        rootObject.set("name", newFilename);
-
-        OneDriveJsonRequest request = new OneDriveJsonRequest(metadataUrl, "PATCH", rootObject);
-        request.sendRequest(getApi().getExecutor()).close();
-    }
-
     public OneDriveUploadSession getUploadSession() throws IOException {
         final URL url = getUploadSessionURL().build(getApi().getBaseURL(), getResourceIdentifier());
         OneDriveRequest request = new OneDriveRequest(url, "GET");
