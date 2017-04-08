@@ -61,6 +61,10 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
                 final RequestExecutor.Response response = sender.doGet(url, headers);
                 return this.createResponse(response);
             }
+            case "DELETE": {
+                final RequestExecutor.Response response = sender.doDelete(url, headers);
+                return this.createResponse(response);
+            }
             case "POST": {
                 final RequestExecutor.Upload response = sender.doPost(url, headers);
                 IOUtils.copy(body, response.getOutputStream());
