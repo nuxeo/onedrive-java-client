@@ -30,6 +30,10 @@ import java.net.URL;
  * @since 1.0
  */
 public class OneDriveFile extends OneDriveItem {
+    OneDriveFile(OneDriveAPI api) {
+        super(api);
+    }
+
     public OneDriveFile(OneDriveAPI api, String fileId) {
         super(api, fileId);
     }

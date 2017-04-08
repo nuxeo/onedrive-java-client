@@ -70,7 +70,8 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         rootObject.add("file", new JsonObject());
         final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
         final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
-        final OneDriveFile.Metadata metadata = new OneDriveFile.Metadata(response.getContent());
+        final OneDriveFile file = new OneDriveFile(getApi());
+        final OneDriveFile.Metadata metadata = file.new Metadata(response.getContent());
         response.close();
         return metadata;
     }
@@ -82,7 +83,8 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         rootObject.add("folder", new JsonObject());
         final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
         final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
-        final OneDriveFolder.Metadata metadata = new OneDriveFolder.Metadata(response.getContent());
+        final OneDriveFolder folder = new OneDriveFolder(getApi());
+        final OneDriveFolder.Metadata metadata = folder.new Metadata(response.getContent());
         response.close();
         return metadata;
     }
