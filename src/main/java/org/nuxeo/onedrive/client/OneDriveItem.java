@@ -60,6 +60,11 @@ public abstract class OneDriveItem extends OneDriveResource {
         super(api, drive, path, resourceIdentifierType);
     }
 
+    public void delete() throws IOException {
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        new OneDriveRequest(url, "DELETE").sendRequest(getApi().getExecutor()).close();
+    }
+
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
             urlBuilder.append(String.format("/drives/%1$s", getResourceDrive().getResourceIdentifier()));
