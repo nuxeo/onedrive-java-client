@@ -63,6 +63,30 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         super(api, drive, path, resourceIdentifierType);
     }
 
+    public OneDriveFile.Metadata createFile(String filename) throws IOException {
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final JsonObject rootObject = new JsonObject();
+        rootObject.add("name", filename);
+        rootObject.add("file", new JsonObject());
+        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
+        final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
+        final OneDriveFile.Metadata metadata = new OneDriveFile.Metadata(response.getContent());
+        response.close();
+        return metadata;
+    }
+
+    public OneDriveFolder.Metadata createDirectory(String directory) throws IOException {
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final JsonObject rootObject = new JsonObject();
+        rootObject.add("name", directory);
+        rootObject.add("folder", new JsonObject());
+        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
+        final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
+        final OneDriveFolder.Metadata metadata = new OneDriveFolder.Metadata(response.getContent());
+        response.close();
+        return metadata;
+    }
+
     @Override
     public OneDriveFolder.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
