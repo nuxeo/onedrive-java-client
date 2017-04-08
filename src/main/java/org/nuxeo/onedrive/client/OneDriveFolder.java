@@ -122,10 +122,9 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
         QueryStringBuilder query = new QueryStringBuilder().set("q", search).set("expand", expands);
         URL url;
-        if(isRoot()) {
+        if (isRoot()) {
             url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
-        }
-        else {
+        } else {
             url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
         }
         return () -> new OneDriveItemIterator(getApi(), url);
@@ -143,10 +142,9 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
      */
     public OneDriveDeltaItemIterator delta() {
         URL url;
-        if(isRoot()) {
+        if (isRoot()) {
             url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
-        }
-        else {
+        } else {
             url = DELTA_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), getResourceIdentifier());
         }
         return new OneDriveDeltaItemIterator(getApi(), url);
@@ -156,21 +154,20 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
      * @since 1.1
      */
     public OneDriveItemIterator delta(String deltaLink) {
-        if(deltaLink == null) {
+        if (deltaLink == null) {
             return delta();
         }
         try {
             URL url = new URL(deltaLink);
             return new OneDriveDeltaItemIterator(getApi(), url);
-        }
-        catch(MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
 
     @Override
     public Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
-        if(isRoot()) {
+        if (isRoot()) {
             return () -> new OneDriveThumbnailSetIterator(getApi());
         }
         return super.getThumbnailSets();
@@ -202,11 +199,10 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if("folder".equals(memberName)) {
+                if ("folder".equals(memberName)) {
                     parseMember(value.asObject(), this::parseChildMember);
                 }
-            }
-            catch(ParseException e) {
+            } catch (ParseException e) {
                 throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
@@ -214,7 +210,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         private void parseChildMember(JsonObject.Member member) {
             JsonValue value = member.getValue();
             String memberName = member.getName();
-            if("childCount".equals(memberName)) {
+            if ("childCount".equals(memberName)) {
                 childCount = value.asLong();
             }
         }
@@ -268,14 +264,12 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if("driveId".equals(memberName)) {
+                if ("driveId".equals(memberName)) {
                     driveId = value.asString();
-                }
-                else if("path".equals(memberName)) {
+                } else if ("path".equals(memberName)) {
                     path = value.asString();
                 }
-            }
-            catch(ParseException e) {
+            } catch (ParseException e) {
                 throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
