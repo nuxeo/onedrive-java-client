@@ -46,6 +46,7 @@ public class OneDriveFile extends OneDriveItem {
     public OneDriveFile.Metadata create(String mimeType) throws IOException {
         final URL url = getContentURL().build(getApi().getBaseURL(), getResourceIdentifier());
         final OneDriveRequest request = new OneDriveRequest(url, "PUT");
+        request.addHeader("Content-Type", mimeType);
         final OneDriveResponse response = request.sendRequest(getApi().getExecutor(), new NullInputStream(0));
         final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getContent());
         JsonObject jsonObject = jsonResponse.getContent();
