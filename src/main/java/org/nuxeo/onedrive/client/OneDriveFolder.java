@@ -63,7 +63,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         super(api, drive, path, resourceIdentifierType);
     }
 
-    public OneDriveFile.Metadata createFile(String filename) throws IOException {
+    /*public OneDriveFile.Metadata createFile(String filename) throws IOException {
         final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
         final JsonObject rootObject = new JsonObject();
         rootObject.add("name", filename);
@@ -74,9 +74,9 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         final OneDriveFile.Metadata metadata = file.new Metadata(response.getContent());
         response.close();
         return metadata;
-    }
+    }*/
 
-    public OneDriveFolder.Metadata createDirectory(String directory) throws IOException {
+    public OneDriveFolder.Metadata create(String directory) throws IOException {
         final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
         final JsonObject rootObject = new JsonObject();
         rootObject.add("name", directory);

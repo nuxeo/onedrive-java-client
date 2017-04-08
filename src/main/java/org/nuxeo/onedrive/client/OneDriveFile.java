@@ -21,6 +21,7 @@ package org.nuxeo.onedrive.client;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+import org.apache.commons.io.input.NullInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +41,16 @@ public class OneDriveFile extends OneDriveItem {
 
     public OneDriveFile(OneDriveAPI api, OneDriveDrive drive, String path) {
         super(api, drive, path);
+    }
+
+    public OneDriveFile.Metadata create(String mimeType) throws IOException {
+        final URL url = getContentURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final OneDriveRequest request = new OneDriveRequest(url, "PUT");
+        final OneDriveResponse response = request.sendRequest(getApi().getExecutor(), new NullInputStream(0));
+        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getContent());
+        JsonObject jsonObject = jsonResponse.getContent();
+        jsonResponse.close();
+        return new Metadata(jsonObject);
     }
 
     @Override
