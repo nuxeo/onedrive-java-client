@@ -76,6 +76,33 @@ public class JavaNetRequestExecutor implements RequestExecutor {
         return this.toResponse(connection);
     }
 
+    @Override
+    public Response doDelete(URL url, Set<RequestHeader> headers) throws IOException {
+        final HttpURLConnection connection = this.createConnection(url, "DELETE", headers);
+        this.authorize(connection);
+        connection.connect();
+        return this.toResponse(connection);
+    }
+
+    @Override
+    public Upload doPatch(URL url, Set<RequestHeader> headers) throws IOException {
+        HttpURLConnection connection = this.createConnection(url, "PATCH", headers);
+        this.authorize(connection);
+        connection.setDoOutput(true);
+        connection.connect();
+        return new Upload() {
+            @Override
+            public OutputStream getOutputStream() throws IOException {
+                return connection.getOutputStream();
+            }
+
+            @Override
+            public Response getResponse() throws IOException {
+                return toResponse(connection);
+            }
+        };
+    }
+
     protected void authorize(final HttpURLConnection connection) {
         connection.setRequestProperty("User-Agent", userAgent);
         connection.addRequestProperty("Authorization", String.format("Bearer %s", accessToken));
