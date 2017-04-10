@@ -84,11 +84,10 @@ public class OneDriveFile extends OneDriveItem {
         return new URLTemplate(urlBuilder.toString());
     }
 
-    public OneDriveUploadSession getUploadSession() throws IOException {
+    public OneDriveUploadSession createUploadSession() throws IOException {
         final URL url = getUploadSessionURL().build(getApi().getBaseURL(), getResourceIdentifier());
-        OneDriveRequest request = new OneDriveRequest(url, "GET");
-        OneDriveResponse genericResponse = request.sendRequest(getApi().getExecutor());
-        OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(genericResponse.getResponseCode(), genericResponse.getResponseMessage(), genericResponse.getContent());
+        OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST");
+        OneDriveJsonResponse jsonResponse = request.sendRequest(getApi().getExecutor(), new NullInputStream(0L));
         try {
             return new OneDriveUploadSession(getApi(), jsonResponse.getContent());
         } finally {
