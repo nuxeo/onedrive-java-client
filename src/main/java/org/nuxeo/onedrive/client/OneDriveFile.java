@@ -79,7 +79,7 @@ public class OneDriveFile extends OneDriveItem {
 
     public URLTemplate getUploadSessionURL() {
         StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, "oneDrive.createUploadSession");
+        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "createUploadSession" : "oneDrive.createUploadSession");
 
         return new URLTemplate(urlBuilder.toString());
     }
