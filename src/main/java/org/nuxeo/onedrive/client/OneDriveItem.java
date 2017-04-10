@@ -18,20 +18,19 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0
@@ -61,20 +60,23 @@ public abstract class OneDriveItem extends OneDriveResource {
         super(api, drive, path, resourceIdentifierType);
     }
 
+    public void delete() throws IOException {
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        new OneDriveRequest(url, "DELETE").sendRequest(getApi().getExecutor()).close();
+    }
+
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
             urlBuilder.append(String.format("/drives/%1$s", getResourceDrive().getResourceIdentifier()));
-        }
-        else {
+        } else {
             urlBuilder.append("/drive");
         }
     }
 
     protected void appendItemReferenceResolve(StringBuilder urlBuilder) {
-        if (getResourceIdentifierType() == ResourceIdentifierType.Id){
+        if (getResourceIdentifierType() == ResourceIdentifierType.Id) {
             urlBuilder.append("/items");
-        }
-        else {
+        } else {
             urlBuilder.append("/root");
         }
     }
@@ -127,11 +129,10 @@ public abstract class OneDriveItem extends OneDriveResource {
     public OneDriveThumbnailSet.Metadata getThumbnailSet() throws OneDriveAPIException {
         try {
             Iterator<OneDriveThumbnailSet.Metadata> iterator = getThumbnailSets().iterator();
-            if(iterator.hasNext()) {
+            if (iterator.hasNext()) {
                 return iterator.next();
             }
-        }
-        catch(OneDriveRuntimeException e) {
+        } catch (OneDriveRuntimeException e) {
             throw new OneDriveAPIException(e);
         }
         return null;
@@ -156,13 +157,75 @@ public abstract class OneDriveItem extends OneDriveResource {
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         String permissionId = response.getContent().asObject().get("id").asString();
         OneDrivePermission permission;
-        if(isRoot()) {
+        if (isRoot()) {
             permission = new OneDrivePermission(getApi(), permissionId);
-        }
-        else {
+        } else {
             permission = new OneDrivePermission(getApi(), getResourceIdentifier(), permissionId);
         }
         return permission.new Metadata(response.getContent());
+    }
+
+    protected OneDriveJsonResponse executeRequest(JsonObject jsonObject) throws IOException {
+        final URL metadataUrl = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        OneDriveJsonRequest request = new OneDriveJsonRequest(metadataUrl, "PATCH", jsonObject);
+        return request.sendRequest(getApi().getExecutor());
+    }
+
+    public Metadata move(OneDriveFolder newParent) throws IOException {
+        /*
+        Builds a JSON Object
+
+        {
+            "parentReference": { "path": newParent-DriveItem }
+        }
+        */
+        final JsonObject rootObject = new JsonObject();
+        final JsonObject parentReferenceObject = new JsonObject();
+        final StringBuilder builder = new StringBuilder();
+        newParent.appendDriveItem(builder);
+        parentReferenceObject.set("path", builder.toString());
+        rootObject.set("parentReference", parentReferenceObject);
+
+        OneDriveJsonResponse response = executeRequest(rootObject);
+        try {
+            return parseResponse(response);
+        } finally {
+            response.close();
+        }
+    }
+
+    public Metadata rename(String newFilename) throws IOException {
+        /*
+        Builds a JSON Object
+
+        {
+            "name": "$newFilename"
+        }
+        */
+        final JsonObject rootObject = new JsonObject();
+        rootObject.set("name", newFilename);
+
+        OneDriveJsonResponse response = executeRequest(rootObject);
+        try {
+            return parseResponse(response);
+        } finally {
+            response.close();
+        }
+    }
+
+    private OneDriveItem.Metadata parseResponse(OneDriveJsonResponse response) throws IOException {
+        JsonObject nextObject = response.getContent();
+        String id = nextObject.get("id").asString();
+
+        OneDriveItem.Metadata nextMetadata = null;
+        if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
+            OneDriveFolder folder = new OneDriveFolder(getApi(), id);
+            nextMetadata = folder.new Metadata(nextObject);
+        } else if (nextObject.get("file") != null && !nextObject.get("file").isNull()) {
+            OneDriveFile file = new OneDriveFile(getApi(), id);
+            nextMetadata = file.new Metadata(nextObject);
+        }
+        return nextMetadata;
     }
 
     /**
@@ -256,54 +319,42 @@ public abstract class OneDriveItem extends OneDriveResource {
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if("name".equals(memberName)) {
+                if ("name".equals(memberName)) {
                     name = value.asString();
-                }
-                else if("eTag".equals(memberName)) {
+                } else if ("eTag".equals(memberName)) {
                     eTag = value.asString();
-                }
-                else if("createdBy".equals(memberName)) {
+                } else if ("createdBy".equals(memberName)) {
                     createdBy = new OneDriveIdentitySet(value.asObject());
-                }
-                else if("createdDateTime".equals(memberName)) {
+                } else if ("createdDateTime".equals(memberName)) {
                     createdDateTime = ZonedDateTime.parse(value.asString());
-                }
-                else if("lastModifiedBy".equals(memberName)) {
+                } else if ("lastModifiedBy".equals(memberName)) {
                     lastModifiedBy = new OneDriveIdentitySet(value.asObject());
-                }
-                else if("lastModifiedDateTime".equals(memberName)) {
+                } else if ("lastModifiedDateTime".equals(memberName)) {
                     lastModifiedDateTime = ZonedDateTime.parse(value.asString());
-                }
-                else if("size".equals(memberName)) {
+                } else if ("size".equals(memberName)) {
                     size = value.asLong();
-                }
-                else if("parentReference".equals(memberName)) {
+                } else if ("parentReference".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
                     String id = valueObject.get("id").asString();
                     OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id);
                     parentReference = parentFolder.new Reference(valueObject);
-                }
-                else if("webUrl".equals(memberName)) {
+                } else if ("webUrl".equals(memberName)) {
                     webUrl = value.asString();
-                }
-                else if("description".equals(memberName)) {
+                } else if ("description".equals(memberName)) {
                     description = value.asString();
-                }
-                else if("deleted".equals(memberName)) {
+                } else if ("deleted".equals(memberName)) {
                     deleted = true;
-                }
-                else if("thumbnailSets".equals(memberName)) {
+                } else if ("thumbnailSets".equals(memberName)) {
                     parseThumbnailsMember(value.asArray());
                 }
-            }
-            catch(ParseException e) {
+            } catch (ParseException e) {
                 throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
 
         private void parseThumbnailsMember(JsonArray thumbnails) {
             thumbnailSets = new ArrayList<>(thumbnails.size());
-            for(JsonValue value : thumbnails) {
+            for (JsonValue value : thumbnails) {
                 JsonObject thumbnail = value.asObject();
                 int id = Integer.parseInt(thumbnail.get("id").asString());
                 OneDriveThumbnailSet thumbnailSet = new OneDriveThumbnailSet(getApi(), getId(), id);

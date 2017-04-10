@@ -14,6 +14,10 @@ public interface RequestExecutor extends Closeable {
 
     Response doGet(URL url, Set<RequestHeader> headers) throws IOException;
 
+    Response doDelete(URL url, Set<RequestHeader> headers) throws IOException;
+
+    Upload doPatch(URL url, Set<RequestHeader> headers) throws IOException;
+
     abstract class Response {
         private final InputStream responseBody;
 

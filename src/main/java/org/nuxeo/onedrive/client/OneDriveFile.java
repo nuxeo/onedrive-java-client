@@ -18,24 +18,40 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+import org.apache.commons.io.input.NullInputStream;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @since 1.0
  */
 public class OneDriveFile extends OneDriveItem {
+    OneDriveFile(OneDriveAPI api) {
+        super(api);
+    }
+
     public OneDriveFile(OneDriveAPI api, String fileId) {
         super(api, fileId);
     }
 
     public OneDriveFile(OneDriveAPI api, OneDriveDrive drive, String path) {
         super(api, drive, path);
+    }
+
+    public OneDriveFile.Metadata create(String mimeType) throws IOException {
+        final URL url = getContentURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final OneDriveRequest request = new OneDriveRequest(url, "PUT");
+        request.addHeader("Content-Type", mimeType);
+        final OneDriveResponse response = request.sendRequest(getApi().getExecutor(), new NullInputStream(0));
+        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getContent());
+        JsonObject jsonObject = jsonResponse.getContent();
+        jsonResponse.close();
+        return new Metadata(jsonObject);
     }
 
     @Override
@@ -59,6 +75,25 @@ public class OneDriveFile extends OneDriveItem {
         appendDriveItemAction(urlBuilder, "content");
 
         return new URLTemplate(urlBuilder.toString());
+    }
+
+    public URLTemplate getUploadSessionURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "createUploadSession");
+
+        return new URLTemplate(urlBuilder.toString());
+    }
+
+    public OneDriveUploadSession getUploadSession() throws IOException {
+        final URL url = getUploadSessionURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        OneDriveRequest request = new OneDriveRequest(url, "GET");
+        OneDriveResponse genericResponse = request.sendRequest(getApi().getExecutor());
+        OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(genericResponse.getResponseCode(), genericResponse.getResponseMessage(), genericResponse.getContent());
+        try {
+            return new OneDriveUploadSession(jsonResponse.getContent());
+        } finally {
+            jsonResponse.close();
+        }
     }
 
     /**

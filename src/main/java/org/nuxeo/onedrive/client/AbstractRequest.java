@@ -56,12 +56,21 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
     }
 
     public R sendRequest(final RequestExecutor sender, final InputStream body) throws IOException {
-        switch(method) {
+        switch (method) {
             case "GET": {
                 final RequestExecutor.Response response = sender.doGet(url, headers);
                 return this.createResponse(response);
             }
+            case "DELETE": {
+                final RequestExecutor.Response response = sender.doDelete(url, headers);
+                return this.createResponse(response);
+            }
             case "POST": {
+                final RequestExecutor.Upload response = sender.doPost(url, headers);
+                IOUtils.copy(body, response.getOutputStream());
+                return this.createResponse(response.getResponse());
+            }
+            case "PATCH": {
                 final RequestExecutor.Upload response = sender.doPost(url, headers);
                 IOUtils.copy(body, response.getOutputStream());
                 return this.createResponse(response.getResponse());
