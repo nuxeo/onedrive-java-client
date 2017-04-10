@@ -5,17 +5,24 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
 
 public class OneDriveUploadSession extends OneDriveJsonObject {
+    private final OneDriveAPI api;
     private URL uploadUrl;
     private ZonedDateTime expirationDateTime;
     private String[] nextExpectedRanges;
 
-    public OneDriveUploadSession(JsonObject json) {
+    public OneDriveUploadSession(OneDriveAPI api, JsonObject json) {
         super(json);
+        this.api = api;
+    }
+
+    public OneDriveAPI getApi() {
+        return api;
     }
 
     public URL getUploadUrl() {
@@ -35,6 +42,14 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
             return null;
         }
         return nextExpectedRanges[0];
+    }
+
+    public OneDriveUploadSession getUploadStatus() throws IOException {
+        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "GET");
+        OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
+        JsonObject jsonObject = response.getContent();
+        response.close();
+        return new OneDriveUploadSession(api, jsonObject);
     }
 
     @Override
