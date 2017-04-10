@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Objects;
@@ -67,17 +68,23 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
             }
             case "POST": {
                 final RequestExecutor.Upload response = sender.doPost(url, headers);
-                IOUtils.copy(body, response.getOutputStream());
+                final OutputStream out = response.getOutputStream();
+                IOUtils.copy(body, out);
+                out.close();
                 return this.createResponse(response.getResponse());
             }
             case "PATCH": {
                 final RequestExecutor.Upload response = sender.doPost(url, headers);
-                IOUtils.copy(body, response.getOutputStream());
+                final OutputStream out = response.getOutputStream();
+                IOUtils.copy(body, out);
+                out.close();
                 return this.createResponse(response.getResponse());
             }
             case "PUT": {
                 final RequestExecutor.Upload response = sender.doPut(url, headers);
-                IOUtils.copy(body, response.getOutputStream());
+                final OutputStream out = response.getOutputStream();
+                IOUtils.copy(body, out);
+                out.close();
                 return this.createResponse(response.getResponse());
             }
             default: {
