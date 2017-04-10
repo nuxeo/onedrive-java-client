@@ -5,6 +5,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,6 +51,20 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
         JsonObject jsonObject = response.getContent();
         response.close();
         return new OneDriveUploadSession(api, jsonObject);
+    }
+
+    public OneDriveJsonObject uploadFragment(String contentRange, byte[] content) throws IOException {
+        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "PUT");
+        request.addHeader("Content-Range", contentRange);
+        OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor(), new ByteArrayInputStream(content));
+        JsonObject jsonObject = response.getContent();
+        response.close();
+        if (response.getResponseCode() == 202) {
+            return new OneDriveUploadSession(getApi(), jsonObject);
+        } else if (response.getResponseCode() == 201 || response.getResponseCode() == 200) {
+            return (new OneDriveFile(getApi())).new Metadata(jsonObject);
+        }
+        return null;
     }
 
     @Override
