@@ -55,7 +55,7 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
 
     public OneDriveJsonObject uploadFragment(String contentRange, byte[] content) throws IOException {
         OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "PUT");
-        request.addHeader("Content-Range", contentRange);
+        request.addHeader("Content-Range", String.format("bytes %s", contentRange));
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor(), new ByteArrayInputStream(content));
         JsonObject jsonObject = response.getContent();
         response.close();
