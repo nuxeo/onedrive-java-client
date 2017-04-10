@@ -90,7 +90,7 @@ public class OneDriveFile extends OneDriveItem {
         OneDriveResponse genericResponse = request.sendRequest(getApi().getExecutor());
         OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(genericResponse.getResponseCode(), genericResponse.getResponseMessage(), genericResponse.getContent());
         try {
-            return new OneDriveUploadSession(jsonResponse.getContent());
+            return new OneDriveUploadSession(getApi(), jsonResponse.getContent());
         } finally {
             jsonResponse.close();
         }
