@@ -25,6 +25,11 @@ import org.apache.commons.io.output.NullOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 
 /**
  * @since 1.0
@@ -41,7 +46,7 @@ public abstract class AbstractResponse<C> implements Closeable {
 
     private boolean closed;
 
-    public AbstractResponse(final int responseCode, final String responseMessage, final InputStream inputStream) throws OneDriveAPIException {
+    public AbstractResponse(final int responseCode, final String responseMessage, final InputStream inputStream) throws IOException {
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
         this.inputStream = inputStream;
@@ -49,6 +54,12 @@ public abstract class AbstractResponse<C> implements Closeable {
     }
 
     public abstract C getContent() throws IOException;
+
+    public JsonObject getError() throws IOException {
+        try (InputStreamReader in = new InputStreamReader(this.getBody(), StandardCharsets.UTF_8)) {
+            return Json.parse(in).asObject();
+        }
+    }
 
     protected InputStream getBody() throws OneDriveAPIException {
         return new ResponseInputStream();
@@ -77,9 +88,9 @@ public abstract class AbstractResponse<C> implements Closeable {
         closed = true;
     }
 
-    protected void validate() throws OneDriveAPIException {
+    protected void validate() throws IOException {
         if(!this.isSuccess()) {
-            throw new OneDriveAPIException(responseMessage, responseCode);
+            throw new OneDriveAPIException(responseMessage, responseCode, this.getError());
         }
     }
 
