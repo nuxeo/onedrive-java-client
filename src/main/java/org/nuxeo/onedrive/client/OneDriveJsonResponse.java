@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 /**
@@ -30,7 +31,7 @@ import com.eclipsesource.json.JsonObject;
  */
 public class OneDriveJsonResponse extends AbstractResponse<JsonObject> {
 
-    public OneDriveJsonResponse(final int responseCode, final String responseMessage, final InputStream inputStream) throws OneDriveAPIException {
+    public OneDriveJsonResponse(final int responseCode, final String responseMessage, final InputStream inputStream) throws IOException {
         super(responseCode, responseMessage, inputStream);
     }
 
@@ -40,7 +41,7 @@ public class OneDriveJsonResponse extends AbstractResponse<JsonObject> {
     @Override
     public JsonObject getContent() throws IOException {
         try (InputStreamReader in = new InputStreamReader(this.getBody(), StandardCharsets.UTF_8)) {
-            return JsonObject.readFrom(in);
+            return Json.parse(in).asObject();
         }
     }
 }
