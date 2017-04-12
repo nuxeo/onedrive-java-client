@@ -20,6 +20,8 @@ package org.nuxeo.onedrive.client;
 
 import java.io.IOException;
 
+import com.eclipsesource.json.JsonObject;
+
 /**
  * @since 1.0
  */
@@ -28,28 +30,43 @@ public class OneDriveAPIException extends IOException {
     private static final long serialVersionUID = 1L;
 
     private final int responseCode;
+    private final String errorMessage;
 
     public OneDriveAPIException(String message) {
         super(message);
         this.responseCode = -1;
+        this.errorMessage = null;
     }
 
     public OneDriveAPIException(String message, Throwable cause) {
         super(message, cause);
         this.responseCode = -1;
+        this.errorMessage = null;
     }
 
     public OneDriveAPIException(String responseMessage, int responseCode) {
         super(responseMessage);
         this.responseCode = responseCode;
+        this.errorMessage = null;
     }
 
     public OneDriveAPIException(OneDriveRuntimeException cause) {
         super(cause);
         this.responseCode = cause.getCause().getResponseCode();
+        this.errorMessage = cause.getCause().getErrorMessage();
+    }
+
+    public OneDriveAPIException(final String responseMessage, final int responseCode, final JsonObject error) {
+        super(responseMessage);
+        this.responseCode = responseCode;
+        this.errorMessage = error.get("error").asObject().get("message").asString();
     }
 
     public int getResponseCode() {
         return this.responseCode;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

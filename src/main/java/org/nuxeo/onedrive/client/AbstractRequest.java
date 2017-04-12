@@ -43,9 +43,6 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
     public AbstractRequest(final URL url, final String method) {
         this.url = Objects.requireNonNull(url);
         this.method = Objects.requireNonNull(method);
-
-        this.addHeader("Accept-Encoding", "gzip");
-        this.addHeader("Accept-Charset", "utf-8");
     }
 
     public void addHeader(final String key, final String value) {
