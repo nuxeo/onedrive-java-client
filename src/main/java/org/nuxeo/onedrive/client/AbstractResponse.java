@@ -84,6 +84,8 @@ public abstract class AbstractResponse<C> implements Closeable {
         if(closed) {
             return;
         }
+        // We need to manually read from the stream in case there are any remaining bytes.
+        IOUtils.copy(inputStream, new NullOutputStream());
         inputStream.close();
         closed = true;
     }
@@ -107,9 +109,7 @@ public abstract class AbstractResponse<C> implements Closeable {
         @Override
         public void close() throws IOException {
             // Don't close the stream, it will be done by the response
-            // We need to manually read from the stream in case there are any remaining bytes.
-            IOUtils.copy(inputStream, new NullOutputStream());
-            super.close();
+            AbstractResponse.this.close();
         }
     }
 }
