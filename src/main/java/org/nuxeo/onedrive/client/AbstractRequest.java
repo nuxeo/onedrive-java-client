@@ -71,7 +71,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
                 return this.createResponse(response.getResponse());
             }
             case "PATCH": {
-                final RequestExecutor.Upload response = sender.doPost(url, headers);
+                final RequestExecutor.Upload response = sender.doPatch(url, headers);
                 final OutputStream out = response.getOutputStream();
                 IOUtils.copy(body, out);
                 out.close();
