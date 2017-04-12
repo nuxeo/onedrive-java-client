@@ -28,7 +28,6 @@ public class OneDriveRequest extends AbstractRequest<OneDriveResponse> {
 
     public OneDriveRequest(final URL url, final String method) {
         super(url, method);
-        this.addHeader("Accept", "application/json");
     }
 
     @Override
