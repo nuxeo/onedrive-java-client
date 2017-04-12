@@ -70,6 +70,16 @@ public class OneDriveFile extends OneDriveItem {
         return response.getContent();
     }
 
+    public InputStream download(String range) throws IOException {
+        final URL url = getContentURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        OneDriveRequest request = new OneDriveRequest(url, "GET");
+        request.addHeader("Range", String.format("bytes=%s", range));
+        // Disable compression
+        request.addHeader("Accept-Encoding", "identity");
+        OneDriveResponse response = request.sendRequest(getApi().getExecutor());
+        return response.getContent();
+    }
+
     public URLTemplate getContentURL() {
         StringBuilder urlBuilder = new StringBuilder();
         appendDriveItemAction(urlBuilder, "content");
