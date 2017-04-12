@@ -87,6 +87,9 @@ class JsonObjectIterator implements Iterator<JsonObject> {
                 url = new URL(nextUrl.asString());
             }
         }
+        catch(OneDriveAPIException e) {
+            throw new OneDriveRuntimeException(e);
+        }
         catch(IOException e) {
             throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
