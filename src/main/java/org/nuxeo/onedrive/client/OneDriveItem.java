@@ -67,7 +67,7 @@ public abstract class OneDriveItem extends OneDriveResource {
 
     public void patch(OneDrivePatchOperation patchOperation) throws IOException {
         final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
-        new OneDriveJsonRequest(url, "PATCH", patchOperation.build()).sendRequest(getApi().getExecutor());
+        new OneDriveJsonRequest(url, "PATCH", patchOperation.build()).sendRequest(getApi().getExecutor()).close();
     }
 
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
