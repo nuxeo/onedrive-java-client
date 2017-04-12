@@ -110,6 +110,12 @@ public abstract class OneDriveItem extends OneDriveResource {
         appendAction(urlBuilder, action);
     }
 
+    public String getDrivePath() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItem(urlBuilder);
+        return String.format(urlBuilder.toString(), getResourceIdentifier());
+    }
+
     public URLTemplate getMetadataURL() {
         StringBuilder urlBuilder = new StringBuilder();
         appendDriveItem(urlBuilder);
