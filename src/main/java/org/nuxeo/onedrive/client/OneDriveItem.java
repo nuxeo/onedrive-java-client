@@ -166,14 +166,15 @@ public abstract class OneDriveItem extends OneDriveResource {
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST",
                 new JsonObject().add("type", type.getType()));
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
-        String permissionId = response.getContent().asObject().get("id").asString();
+        final JsonObject json = response.getContent();
+        String permissionId = json.asObject().get("id").asString();
         OneDrivePermission permission;
         if (isRoot()) {
             permission = new OneDrivePermission(getApi(), permissionId);
         } else {
             permission = new OneDrivePermission(getApi(), getResourceIdentifier(), permissionId);
         }
-        return permission.new Metadata(response.getContent());
+        return permission.new Metadata(json);
     }
 
     protected OneDriveJsonResponse executeRequest(JsonObject jsonObject) throws IOException {
