@@ -130,7 +130,7 @@ public abstract class OneDriveItem extends OneDriveResource {
 
     public URLTemplate getSharedLinkUrl() {
         StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, "action.createLink");
+        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "createLink" : "oneDrive.createLink");
 
         return new URLTemplate(urlBuilder.toString());
     }
