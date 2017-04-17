@@ -51,7 +51,7 @@ public class OneDriveDrivesIterator implements Iterator<OneDriveResource.Metadat
     }
 
     @Override
-    public OneDriveResource.Metadata next() throws OneDriveRuntimeException {
+    public OneDriveDrive.Metadata next() throws OneDriveRuntimeException {
         JsonObject nextObject = jsonObjectIterator.next();
         String id = nextObject.get("id").asString();
 

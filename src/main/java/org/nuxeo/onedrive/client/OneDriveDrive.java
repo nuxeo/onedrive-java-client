@@ -19,6 +19,8 @@
 package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
 
 import java.net.URL;
 import java.util.Iterator;
@@ -47,6 +49,10 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
     }
 
     public class Metadata extends OneDriveResource.Metadata {
+        private Long total;
+        private Long used;
+        private Long remaining;
+
         public Metadata(final JsonObject json) {
             super(json);
         }
@@ -54,6 +60,44 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         @Override
         public OneDriveResource getResource() {
             return OneDriveDrive.this;
+        }
+
+        @Override
+        protected void parseMember(JsonObject.Member member) {
+            super.parseMember(member);
+            try {
+                JsonValue value = member.getValue();
+                String memberName = member.getName();
+                if ("quota".equals(memberName)) {
+                    parseMember(value.asObject(), this::parseQuotaMember);
+                }
+            } catch (ParseException e) {
+                throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
+            }
+        }
+
+        private void parseQuotaMember(JsonObject.Member member) {
+            JsonValue value = member.getValue();
+            String memberName = member.getName();
+            if ("total".equals(memberName)) {
+                total = value.asLong();
+            } else if ("used".equals(memberName)) {
+                used = value.asLong();
+            } else if ("remaining".equals(memberName)) {
+                remaining = value.asLong();
+            }
+        }
+
+        public Long getTotal() {
+            return total;
+        }
+
+        public Long getUsed() {
+            return used;
+        }
+
+        public Long getRemaining() {
+            return remaining;
         }
     }
 }
