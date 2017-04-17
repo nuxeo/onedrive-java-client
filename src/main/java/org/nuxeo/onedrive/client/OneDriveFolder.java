@@ -36,8 +36,6 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
     private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.search");
     private static final URLTemplate DELTA_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.delta");
-    private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_PATH = new URLTemplate("/drives/%s/root/:%s:/view.search");
-    private static final URLTemplate DELTA_IN_FOLDER_URL_BY_PATH = new URLTemplate("/drives/%s/root/:%s:/view.delta");
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
@@ -62,19 +60,6 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
         super(api, drive, path, resourceIdentifierType);
     }
-
-    /*public OneDriveFile.Metadata createFile(String filename) throws IOException {
-        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
-        final JsonObject rootObject = new JsonObject();
-        rootObject.add("name", filename);
-        rootObject.add("file", new JsonObject());
-        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
-        final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
-        final OneDriveFile file = new OneDriveFile(getApi());
-        final OneDriveFile.Metadata metadata = file.new Metadata(response.getContent());
-        response.close();
-        return metadata;
-    }*/
 
     public OneDriveFolder.Metadata create(String directory) throws IOException {
         final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
