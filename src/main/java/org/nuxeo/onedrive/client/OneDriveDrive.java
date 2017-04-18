@@ -68,12 +68,11 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
     }
 
     public Iterator<OneDriveItem.Metadata> iterator() {
-        return iterator(new OneDriveExpand[]{});
+        return iterator();
     }
 
     public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
-        final URL url = DRIVE_CHILDREN_URL.build(getApi().getBaseURL(), getResourceIdentifier());
-        return new OneDriveItemIterator(getApi(), url);
+        return getRoot().iterator(expands);
     }
 
     public class Metadata extends OneDriveResource.Metadata {
