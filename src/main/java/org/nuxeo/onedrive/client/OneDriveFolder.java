@@ -103,12 +103,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
-        URL url;
-        if (isRoot()) {
-            url = new URLTemplate(getApi().isGraphConnection() ? "/drive/root/search(q='%s')" : "/drive/root/oneDrive.search(q='%s')").build(getApi().getBaseURL(), search);
-        } else {
-            url = new URLTemplate(getApi().isGraphConnection() ? "/drive/items/%s/search(q='%s')" : "/drive/items/%s/oneDrive.search(q='%s')").build(getApi().getBaseURL(), getResourceIdentifier(), search);
-        }
+        final URL url = getSearchUrl().build(getApi().getBaseURL(), search);
         return () -> new OneDriveItemIterator(getApi(), url);
     }
 
