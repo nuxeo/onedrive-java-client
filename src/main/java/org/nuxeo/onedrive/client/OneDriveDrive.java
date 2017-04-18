@@ -80,6 +80,7 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         private Long total;
         private Long used;
         private Long remaining;
+        private String id;
 
         public Metadata(final JsonObject json) {
             super(json);
@@ -96,7 +97,9 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if ("quota".equals(memberName)) {
+                if ("id".equals(memberName)) {
+                    id = value.asString();
+                } else if ("quota".equals(memberName)) {
                     parseMember(value.asObject(), this::parseQuotaMember);
                 }
             } catch (ParseException e) {
@@ -126,6 +129,15 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
 
         public Long getRemaining() {
             return remaining;
+        }
+
+        @Override
+        public String getId() {
+            String id = super.getId();
+            if (id == null || id.equals(null)) {
+                id = this.id;
+            }
+            return id;
         }
     }
 }
