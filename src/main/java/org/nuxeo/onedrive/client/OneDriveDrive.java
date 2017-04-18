@@ -22,6 +22,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 
@@ -29,10 +30,21 @@ import java.util.Iterator;
  * @since 1.0
  */
 public class OneDriveDrive extends OneDriveResource implements Iterable<OneDriveItem.Metadata> {
+    private static final URLTemplate DRIVE_METADATA_URL = new URLTemplate("/drives/%1$s");
     private static final URLTemplate DRIVE_CHILDREN_URL = new URLTemplate("/drives/%1$s/root/children");
 
     public OneDriveDrive(OneDriveAPI api, String id) {
         super(api, id);
+    }
+
+    public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
+        QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
+        final URL url = DRIVE_METADATA_URL.build(getApi().getBaseURL(), query, getResourceIdentifier());
+        OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
+        JsonObject jsonObject = response.getContent();
+        response.close();
+        return new OneDriveDrive.Metadata(jsonObject);
     }
 
     public OneDriveFolder getRoot() {
