@@ -109,7 +109,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     public URLTemplate getSearchUrl() {
         StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, "search(q='%2$s')");
+        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "search(q='%2$s')" : "oneDrive.search(q='%2$s')");
 
         return new URLTemplate(urlBuilder.toString());
     }
