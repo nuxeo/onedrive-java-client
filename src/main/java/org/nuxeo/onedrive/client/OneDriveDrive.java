@@ -46,7 +46,7 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
 
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = DRIVE_METADATA_URL.build(getApi().getBaseURL(), query, getResourceIdentifier());
+        final URL url = getDrivePathUrl().build(getApi().getBaseURL(), query, null);
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();
