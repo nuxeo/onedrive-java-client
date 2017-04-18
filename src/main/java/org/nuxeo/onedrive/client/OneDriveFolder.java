@@ -32,10 +32,6 @@ import com.eclipsesource.json.ParseException;
  * @since 1.0
  */
 public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveItem.Metadata> {
-    private static final URLTemplate SEARCH_IN_ROOT_URL = new URLTemplate("/drive/root/view.search");
-    private static final URLTemplate DELTA_IN_ROOT_URL = new URLTemplate("/drive/root/view.delta");
-    private static final URLTemplate SEARCH_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.search");
-    private static final URLTemplate DELTA_IN_FOLDER_URL_BY_ID = new URLTemplate("/drive/items/%s/view.delta");
 
     OneDriveFolder(OneDriveAPI api) {
         super(api);
@@ -107,12 +103,11 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
-        QueryStringBuilder query = new QueryStringBuilder().set("q", search).set("expand", expands);
         URL url;
         if (isRoot()) {
-            url = SEARCH_IN_ROOT_URL.build(getApi().getBaseURL(), query);
+            url = new URLTemplate(getApi().isGraphConnection() ? "/drive/root/search(q='%s')" : "/drive/root/oneDrive.search(q='%s')").build(getApi().getBaseURL(), search);
         } else {
-            url = SEARCH_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), query, getResourceIdentifier());
+            url = new URLTemplate(getApi().isGraphConnection() ? "/drive/items/%s/search(q='%s')" : "/drive/items/%s/oneDrive.search(q='%s')").build(getApi().getBaseURL(), getResourceIdentifier(), search);
         }
         return () -> new OneDriveItemIterator(getApi(), url);
     }
@@ -130,9 +125,9 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     public OneDriveDeltaItemIterator delta() {
         URL url;
         if (isRoot()) {
-            url = DELTA_IN_ROOT_URL.build(getApi().getBaseURL());
+            url = new URLTemplate(getApi().isGraphConnection() ? "/drive/root/view.delta" : "/drive/root/oneDrive.delta").build(getApi().getBaseURL());
         } else {
-            url = DELTA_IN_FOLDER_URL_BY_ID.build(getApi().getBaseURL(), getResourceIdentifier());
+            url = new URLTemplate(getApi().isGraphConnection() ? "/drive/items/%s/view.delta" : "/drive/items/%s/oneDrive.delta").build(getApi().getBaseURL(), getResourceIdentifier());
         }
         return new OneDriveDeltaItemIterator(getApi(), url);
     }
