@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 public class OneDriveUploadSession extends OneDriveJsonObject {
     private final OneDriveAPI api;
@@ -54,7 +55,12 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
     }
 
     public OneDriveJsonObject uploadFragment(String contentRange, byte[] content) throws IOException {
-        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "PUT");
+        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "PUT") {
+            @Override
+            protected void addAuthorizationHeader(final RequestExecutor executor, final Set<RequestHeader> headers) {
+                // PUT requests for fragment uploads are pre-authenticated and cannot have an Authorization header
+            }
+        };
         request.addHeader("Content-Range", String.format("bytes %s", contentRange));
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor(), new ByteArrayInputStream(content));
         JsonObject jsonObject = response.getContent();

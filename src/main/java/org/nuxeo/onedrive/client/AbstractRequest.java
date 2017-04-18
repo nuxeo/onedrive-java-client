@@ -90,6 +90,10 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
         }
     }
 
+    protected void addAuthorizationHeader(final RequestExecutor executor, final Set<RequestHeader> headers) {
+        executor.addAuthorizationHeader(headers);
+    }
+
     protected abstract R createResponse(RequestExecutor.Response response) throws IOException;
 
 }
