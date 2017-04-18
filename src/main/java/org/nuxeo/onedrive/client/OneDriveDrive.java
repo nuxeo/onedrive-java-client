@@ -30,8 +30,6 @@ import java.util.Iterator;
  * @since 1.0
  */
 public class OneDriveDrive extends OneDriveResource implements Iterable<OneDriveItem.Metadata> {
-    private static final URLTemplate DRIVE_METADATA_URL = new URLTemplate("/drives/%1$s");
-
     private OneDriveDrive(OneDriveAPI api) {
         super(api);
     }
