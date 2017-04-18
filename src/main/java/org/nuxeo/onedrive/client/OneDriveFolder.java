@@ -18,15 +18,15 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0
@@ -110,6 +110,13 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
             url = new URLTemplate(getApi().isGraphConnection() ? "/drive/items/%s/search(q='%s')" : "/drive/items/%s/oneDrive.search(q='%s')").build(getApi().getBaseURL(), getResourceIdentifier(), search);
         }
         return () -> new OneDriveItemIterator(getApi(), url);
+    }
+
+    public URLTemplate getSearchUrl() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "search(q='%2$s')");
+
+        return new URLTemplate(urlBuilder.toString());
     }
 
     public URLTemplate getChildrenURL() {
