@@ -44,12 +44,16 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
 
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = getDrivePathUrl().build(getApi().getBaseURL(), query, null);
+        final URL url = getMetadataUrl().build(getApi().getBaseURL(), query, null);
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();
         response.close();
         return new OneDriveDrive.Metadata(jsonObject);
+    }
+
+    public URLTemplate getMetadataUrl() {
+        return new URLTemplate(getDrivePath());
     }
 
     public String getDrivePath() {
@@ -58,10 +62,6 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         } else {
             return String.format("/drives/%s", getResourceIdentifier());
         }
-    }
-
-    public URLTemplate getDrivePathUrl() {
-        return new URLTemplate(getDrivePath());
     }
 
     public OneDriveFolder getRoot() {
