@@ -33,8 +33,16 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
     private static final URLTemplate DRIVE_METADATA_URL = new URLTemplate("/drives/%1$s");
     private static final URLTemplate DRIVE_CHILDREN_URL = new URLTemplate("/drives/%1$s/root/children");
 
+    private OneDriveDrive(OneDriveAPI api) {
+        super(api);
+    }
+
     public OneDriveDrive(OneDriveAPI api, String id) {
         super(api, id);
+    }
+
+    public static OneDriveDrive getDefaultDrive(OneDriveAPI api) {
+        return new OneDriveDrive(api);
     }
 
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
@@ -45,6 +53,14 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         JsonObject jsonObject = response.getContent();
         response.close();
         return new OneDriveDrive.Metadata(jsonObject);
+    }
+
+    public String getDrivePath() {
+        if (isRoot()) {
+            return "/drive";
+        } else {
+            return String.format("/drives/%s", getResourceIdentifier());
+        }
     }
 
     public OneDriveFolder getRoot() {
