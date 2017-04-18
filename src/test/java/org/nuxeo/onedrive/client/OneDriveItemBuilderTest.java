@@ -2,9 +2,6 @@ package org.nuxeo.onedrive.client;
 
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.URL;
-
 import static org.junit.Assert.assertEquals;
 
 public class OneDriveItemBuilderTest extends OneDriveTestCase {
@@ -18,6 +15,18 @@ public class OneDriveItemBuilderTest extends OneDriveTestCase {
     | Folder Path Available | /drive/root:/FolderPath | /drives/DriveID/root:/FolderPath |
     +-----------------------+-------------------------+----------------------------------+
      */
+    @Test
+    public void testDriveDefault() {
+        OneDriveDrive drive = OneDriveDrive.getDefaultDrive(api);
+        assertEquals("/v1.0/drive", drive.getMetadataUrl().build(api.getBaseURL()).getPath());
+    }
+
+    @Test
+    public void testDriveId() {
+        OneDriveDrive drive = new OneDriveDrive(api, "DRIVE");
+        assertEquals("/v1.0/drives/DRIVE", drive.getMetadataUrl().build(api.getBaseURL()).getPath());
+    }
+
     @Test
     public void testDriveNullFolderNull() {
         OneDriveFolder folder = new OneDriveFolder(api);

@@ -30,16 +30,21 @@ import java.util.Iterator;
  * @since 1.0
  */
 public class OneDriveDrive extends OneDriveResource implements Iterable<OneDriveItem.Metadata> {
-    private static final URLTemplate DRIVE_METADATA_URL = new URLTemplate("/drives/%1$s");
-    private static final URLTemplate DRIVE_CHILDREN_URL = new URLTemplate("/drives/%1$s/root/children");
+    private OneDriveDrive(OneDriveAPI api) {
+        super(api);
+    }
 
     public OneDriveDrive(OneDriveAPI api, String id) {
         super(api, id);
     }
 
+    public static OneDriveDrive getDefaultDrive(OneDriveAPI api) {
+        return new OneDriveDrive(api);
+    }
+
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = DRIVE_METADATA_URL.build(getApi().getBaseURL(), query, getResourceIdentifier());
+        final URL url = getMetadataUrl().build(getApi().getBaseURL(), query, null);
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();
@@ -47,17 +52,28 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         return new OneDriveDrive.Metadata(jsonObject);
     }
 
+    public URLTemplate getMetadataUrl() {
+        return new URLTemplate(getDrivePath());
+    }
+
+    public String getDrivePath() {
+        if (isRoot()) {
+            return "/drive";
+        } else {
+            return String.format("/drives/%s", getResourceIdentifier());
+        }
+    }
+
     public OneDriveFolder getRoot() {
         return new OneDriveFolder(getApi(), this);
     }
 
     public Iterator<OneDriveItem.Metadata> iterator() {
-        return iterator(new OneDriveExpand[]{});
+        return iterator();
     }
 
     public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
-        final URL url = DRIVE_CHILDREN_URL.build(getApi().getBaseURL(), getResourceIdentifier());
-        return new OneDriveItemIterator(getApi(), url);
+        return getRoot().iterator(expands);
     }
 
     public class Metadata extends OneDriveResource.Metadata {

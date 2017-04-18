@@ -72,7 +72,7 @@ public abstract class OneDriveItem extends OneDriveResource {
 
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
-            urlBuilder.append(String.format("/drives/%1$s", getResourceDrive().getResourceIdentifier()));
+            urlBuilder.append(getResourceDrive().getDrivePath());
         } else {
             urlBuilder.append("/drive");
         }
