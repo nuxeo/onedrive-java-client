@@ -18,6 +18,8 @@ public interface RequestExecutor extends Closeable {
 
     Upload doPatch(URL url, Set<RequestHeader> headers) throws IOException;
 
+    void addAuthorizationHeader(Set<RequestHeader> headers);
+
     abstract class Response {
         private final InputStream responseBody;
 
