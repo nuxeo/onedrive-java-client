@@ -131,7 +131,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
 
     public URLTemplate getDeltaUrl() {
         StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "view.delta" : "oneDrive.delta");
+        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "delta" : "oneDrive.delta");
 
         return new URLTemplate(urlBuilder.toString());
     }
