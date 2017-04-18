@@ -133,10 +133,6 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
 
         @Override
         public String getId() {
-            String id = super.getId();
-            if (id == null || id.equals(null)) {
-                id = this.id;
-            }
             return id;
         }
     }
