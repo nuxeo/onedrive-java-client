@@ -54,6 +54,7 @@ public abstract class AbstractRequest<R extends AbstractResponse> {
     }
 
     public R sendRequest(final RequestExecutor sender, final InputStream body) throws IOException {
+        this.addAuthorizationHeader(sender, headers);
         switch (method) {
             case "GET": {
                 final RequestExecutor.Response response = sender.doGet(url, headers);
