@@ -103,7 +103,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
-        final URL url = getSearchUrl().build(getApi().getBaseURL(), search);
+        final URL url = getSearchUrl().build(getApi().getBaseURL(), getResourceIdentifier(), search);
         return () -> new OneDriveItemIterator(getApi(), url);
     }
 
@@ -125,7 +125,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
      * @since 1.1
      */
     public OneDriveDeltaItemIterator delta() {
-        final URL url = getDeltaUrl().build(getApi().getBaseURL());
+        final URL url = getDeltaUrl().build(getApi().getBaseURL(), getResourceIdentifier());
         return new OneDriveDeltaItemIterator(getApi(), url);
     }
 
