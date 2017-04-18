@@ -31,7 +31,6 @@ import java.util.Iterator;
  */
 public class OneDriveDrive extends OneDriveResource implements Iterable<OneDriveItem.Metadata> {
     private static final URLTemplate DRIVE_METADATA_URL = new URLTemplate("/drives/%1$s");
-    private static final URLTemplate DRIVE_CHILDREN_URL = new URLTemplate("/drives/%1$s/root/children");
 
     private OneDriveDrive(OneDriveAPI api) {
         super(api);
@@ -61,6 +60,10 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         } else {
             return String.format("/drives/%s", getResourceIdentifier());
         }
+    }
+
+    public URLTemplate getDrivePathUrl() {
+        return new URLTemplate(getDrivePath());
     }
 
     public OneDriveFolder getRoot() {
