@@ -103,13 +103,13 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
-        final URL url = getSearchUrl().build(getApi().getBaseURL(), search);
+        final URL url = getSearchUrl().build(getApi().getBaseURL(), getResourceIdentifier(), search);
         return () -> new OneDriveItemIterator(getApi(), url);
     }
 
     public URLTemplate getSearchUrl() {
         StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "search(q='%2$s')" : "oneDrive.search(q='%2$s')");
+        appendDriveItemAction(urlBuilder, "search(q='%2$s')");
 
         return new URLTemplate(urlBuilder.toString());
     }
@@ -125,7 +125,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
      * @since 1.1
      */
     public OneDriveDeltaItemIterator delta() {
-        final URL url = getDeltaUrl().build(getApi().getBaseURL());
+        final URL url = getDeltaUrl().build(getApi().getBaseURL(), getResourceIdentifier());
         return new OneDriveDeltaItemIterator(getApi(), url);
     }
 
