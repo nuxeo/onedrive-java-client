@@ -101,7 +101,11 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
                 if ("id".equals(memberName)) {
                     id = value.asString();
                 } else if ("driveType".equals(memberName)) {
-                    driveType = DriveType.valueOf(value.asString());
+                    try {
+                        driveType = DriveType.valueOf(value.asString());
+                    } catch (IllegalArgumentException e) {
+                        driveType = DriveType.unknown;
+                    }
                 } else if ("quota".equals(memberName)) {
                     parseMember(value.asObject(), this::parseQuotaMember);
                 }
@@ -145,6 +149,7 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
     }
 
     public enum DriveType {
+        unknown,
         personal,
         business,
         documentLibrary
