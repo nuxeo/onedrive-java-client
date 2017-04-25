@@ -81,6 +81,7 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         private Long used;
         private Long remaining;
         private String id;
+        private DriveType driveType;
 
         public Metadata(final JsonObject json) {
             super(json);
@@ -99,6 +100,8 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
                 String memberName = member.getName();
                 if ("id".equals(memberName)) {
                     id = value.asString();
+                } else if ("driveType".equals(memberName)) {
+                    driveType = DriveType.valueOf(value.asString());
                 } else if ("quota".equals(memberName)) {
                     parseMember(value.asObject(), this::parseQuotaMember);
                 }
@@ -131,9 +134,19 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
             return remaining;
         }
 
+        public DriveType getDriveType() {
+            return driveType;
+        }
+
         @Override
         public String getId() {
             return id;
         }
+    }
+
+    public enum DriveType {
+        personal,
+        business,
+        documentLibrary
     }
 }
