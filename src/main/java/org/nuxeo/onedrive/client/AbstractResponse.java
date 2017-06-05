@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0
@@ -58,6 +59,10 @@ public abstract class AbstractResponse<C> implements Closeable {
     public JsonObject getError() throws IOException {
         try (InputStreamReader in = new InputStreamReader(this.getBody(), StandardCharsets.UTF_8)) {
             return Json.parse(in).asObject();
+        }
+        catch(ParseException e) {
+            // Response body is empty for failing GET requests
+            return null;
         }
     }
 
@@ -92,7 +97,11 @@ public abstract class AbstractResponse<C> implements Closeable {
 
     protected void validate() throws IOException {
         if(!this.isSuccess()) {
-            throw new OneDriveAPIException(responseMessage, responseCode, this.getError());
+            final JsonObject error = this.getError();
+            if(null == error) {
+                throw new OneDriveAPIException(responseMessage, responseCode);
+            }
+            throw new OneDriveAPIException(responseMessage, responseCode, error);
         }
     }
 
