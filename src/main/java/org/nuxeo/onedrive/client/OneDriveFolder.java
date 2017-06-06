@@ -73,7 +73,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     @Override
     public OneDriveFolder.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), query, getResourceIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveFolder.Metadata(response.getContent());
@@ -97,8 +97,14 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     }
 
     public Iterator<OneDriveItem.Metadata> iterator(OneDriveExpand... expands) {
-        QueryStringBuilder query = new QueryStringBuilder().set("top", 200);
-        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        return iterator(200, expands);
+    }
+
+    public Iterator<OneDriveItem.Metadata> iterator(int limit, OneDriveExpand... expands) {
+        QueryStringBuilder query = new QueryStringBuilder()
+                .set("orderby", "name asc")
+                .set("top", limit);
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), query, getResourceIdentifier());
         return new OneDriveItemIterator(getApi(), url);
     }
 
