@@ -61,6 +61,7 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
                 // PUT requests for fragment uploads are pre-authenticated and cannot have an Authorization header
             }
         };
+        request.addHeader("Content-Length", String.valueOf(content.length));
         request.addHeader("Content-Range", String.format("bytes %s", contentRange));
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor(), new ByteArrayInputStream(content));
         JsonObject jsonObject = response.getContent();
