@@ -74,6 +74,12 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
         return null;
     }
 
+    public void cancelUpload() throws IOException {
+        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "DELETE");
+        OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
+        response.close();
+    }
+
     @Override
     protected void parseMember(JsonObject.Member member) {
         super.parseMember(member);
