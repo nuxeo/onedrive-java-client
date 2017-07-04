@@ -70,6 +70,11 @@ public abstract class OneDriveItem extends OneDriveResource {
         new OneDriveJsonRequest(url, "PATCH", patchOperation.build()).sendRequest(getApi().getExecutor()).close();
     }
 
+    public void copy(OneDriveCopyOperation copyOperation) throws IOException {
+        final URL url = getCopyURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        new OneDriveJsonRequest(url, "POST", copyOperation.build()).sendRequest(getApi().getExecutor()).close();
+    }
+
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
             urlBuilder.append(getResourceDrive().getDrivePath());
@@ -128,6 +133,13 @@ public abstract class OneDriveItem extends OneDriveResource {
         return new URLTemplate(urlBuilder.toString());
     }
 
+    public URLTemplate getCopyURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "copy");
+
+        return new URLTemplate(urlBuilder.toString());
+    }
+
     public URLTemplate getSharedLinkUrl() {
         StringBuilder urlBuilder = new StringBuilder();
         appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "createLink" : "oneDrive.createLink");
@@ -175,54 +187,6 @@ public abstract class OneDriveItem extends OneDriveResource {
             permission = new OneDrivePermission(getApi(), getResourceIdentifier(), permissionId);
         }
         return permission.new Metadata(json);
-    }
-
-    protected OneDriveJsonResponse executeRequest(JsonObject jsonObject) throws IOException {
-        final URL metadataUrl = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
-        OneDriveJsonRequest request = new OneDriveJsonRequest(metadataUrl, "PATCH", jsonObject);
-        return request.sendRequest(getApi().getExecutor());
-    }
-
-    public Metadata move(OneDriveFolder newParent) throws IOException {
-        /*
-        Builds a JSON Object
-
-        {
-            "parentReference": { "path": newParent-DriveItem }
-        }
-        */
-        final JsonObject rootObject = new JsonObject();
-        final JsonObject parentReferenceObject = new JsonObject();
-        final StringBuilder builder = new StringBuilder();
-        newParent.appendDriveItem(builder);
-        parentReferenceObject.set("path", builder.toString());
-        rootObject.set("parentReference", parentReferenceObject);
-
-        OneDriveJsonResponse response = executeRequest(rootObject);
-        try {
-            return parseResponse(response);
-        } finally {
-            response.close();
-        }
-    }
-
-    public Metadata rename(String newFilename) throws IOException {
-        /*
-        Builds a JSON Object
-
-        {
-            "name": "$newFilename"
-        }
-        */
-        final JsonObject rootObject = new JsonObject();
-        rootObject.set("name", newFilename);
-
-        OneDriveJsonResponse response = executeRequest(rootObject);
-        try {
-            return parseResponse(response);
-        } finally {
-            response.close();
-        }
     }
 
     private OneDriveItem.Metadata parseResponse(OneDriveJsonResponse response) throws IOException {
