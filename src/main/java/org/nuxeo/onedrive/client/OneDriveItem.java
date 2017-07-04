@@ -70,6 +70,11 @@ public abstract class OneDriveItem extends OneDriveResource {
         new OneDriveJsonRequest(url, "PATCH", patchOperation.build()).sendRequest(getApi().getExecutor()).close();
     }
 
+    public void copy(OneDriveCopyOperation copyOperation) throws IOException {
+        final URL url = getCopyURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        new OneDriveJsonRequest(url, "POST", copyOperation.build()).sendRequest(getApi().getExecutor()).close();
+    }
+
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
         if (getResourceDrive() != null) {
             urlBuilder.append(getResourceDrive().getDrivePath());
@@ -124,6 +129,13 @@ public abstract class OneDriveItem extends OneDriveResource {
     public URLTemplate getMetadataURL() {
         StringBuilder urlBuilder = new StringBuilder();
         appendDriveItem(urlBuilder);
+
+        return new URLTemplate(urlBuilder.toString());
+    }
+
+    public URLTemplate getCopyURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+        appendDriveItemAction(urlBuilder, "copy");
 
         return new URLTemplate(urlBuilder.toString());
     }
