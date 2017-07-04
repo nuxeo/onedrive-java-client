@@ -177,54 +177,6 @@ public abstract class OneDriveItem extends OneDriveResource {
         return permission.new Metadata(json);
     }
 
-    protected OneDriveJsonResponse executeRequest(JsonObject jsonObject) throws IOException {
-        final URL metadataUrl = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
-        OneDriveJsonRequest request = new OneDriveJsonRequest(metadataUrl, "PATCH", jsonObject);
-        return request.sendRequest(getApi().getExecutor());
-    }
-
-    public Metadata move(OneDriveFolder newParent) throws IOException {
-        /*
-        Builds a JSON Object
-
-        {
-            "parentReference": { "path": newParent-DriveItem }
-        }
-        */
-        final JsonObject rootObject = new JsonObject();
-        final JsonObject parentReferenceObject = new JsonObject();
-        final StringBuilder builder = new StringBuilder();
-        newParent.appendDriveItem(builder);
-        parentReferenceObject.set("path", builder.toString());
-        rootObject.set("parentReference", parentReferenceObject);
-
-        OneDriveJsonResponse response = executeRequest(rootObject);
-        try {
-            return parseResponse(response);
-        } finally {
-            response.close();
-        }
-    }
-
-    public Metadata rename(String newFilename) throws IOException {
-        /*
-        Builds a JSON Object
-
-        {
-            "name": "$newFilename"
-        }
-        */
-        final JsonObject rootObject = new JsonObject();
-        rootObject.set("name", newFilename);
-
-        OneDriveJsonResponse response = executeRequest(rootObject);
-        try {
-            return parseResponse(response);
-        } finally {
-            response.close();
-        }
-    }
-
     private OneDriveItem.Metadata parseResponse(OneDriveJsonResponse response) throws IOException {
         JsonObject nextObject = response.getContent();
         String id = nextObject.get("id").asString();
