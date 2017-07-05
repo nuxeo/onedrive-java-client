@@ -154,5 +154,10 @@ public class JavaNetRequestExecutor implements RequestExecutor {
         public String getStatusMessage() throws IOException {
             return connection.getResponseMessage();
         }
+
+        @Override
+        public String getLocation() {
+            return connection.getHeaderField("Location");
+        }
     }
 }

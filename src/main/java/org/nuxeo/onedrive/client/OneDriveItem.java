@@ -70,9 +70,11 @@ public abstract class OneDriveItem extends OneDriveResource {
         new OneDriveJsonRequest(url, "PATCH", patchOperation.build()).sendRequest(getApi().getExecutor()).close();
     }
 
-    public void copy(OneDriveCopyOperation copyOperation) throws IOException {
+    public OneDriveLongRunningAction copy(OneDriveCopyOperation copyOperation) throws IOException {
         final URL url = getCopyURL().build(getApi().getBaseURL(), getResourceIdentifier());
-        new OneDriveJsonRequest(url, "POST", copyOperation.build()).sendRequest(getApi().getExecutor()).close();
+        OneDriveJsonResponse jsonResponse = new OneDriveJsonRequest(url, "POST", copyOperation.build()).sendRequest(getApi().getExecutor());
+        final URL locationUrl = new URL(jsonResponse.getLocation());
+        return new OneDriveLongRunningAction(locationUrl, getApi());
     }
 
     protected void appendDriveResourceResolve(StringBuilder urlBuilder) {

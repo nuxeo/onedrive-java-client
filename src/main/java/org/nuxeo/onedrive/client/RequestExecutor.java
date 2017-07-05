@@ -31,6 +31,8 @@ public interface RequestExecutor extends Closeable {
 
         public abstract String getStatusMessage() throws IOException;
 
+        public abstract String getLocation();
+
         public InputStream getInputStream() {
             return responseBody;
         }

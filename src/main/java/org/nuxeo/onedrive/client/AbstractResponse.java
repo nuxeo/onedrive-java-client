@@ -18,9 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
-import org.apache.commons.io.output.NullOutputStream;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,6 +37,7 @@ public abstract class AbstractResponse<C> implements Closeable {
 
     private final int responseCode;
     private final String responseMessage;
+    private final String location;
 
     /**
      * The regular InputStream is the right stream to read body with raw or gzip content.
@@ -47,9 +46,10 @@ public abstract class AbstractResponse<C> implements Closeable {
 
     private boolean closed;
 
-    public AbstractResponse(final int responseCode, final String responseMessage, final InputStream inputStream) throws IOException {
+    public AbstractResponse(final int responseCode, final String responseMessage, final String location, final InputStream inputStream) throws IOException {
         this.responseCode = responseCode;
         this.responseMessage = responseMessage;
+        this.location = location;
         this.inputStream = inputStream;
         this.validate();
     }
@@ -72,6 +72,10 @@ public abstract class AbstractResponse<C> implements Closeable {
 
     public int getResponseCode() {
         return responseCode;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     /**
