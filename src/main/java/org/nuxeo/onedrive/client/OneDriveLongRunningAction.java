@@ -4,6 +4,7 @@ import com.eclipsesource.json.JsonObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
 public class OneDriveLongRunningAction {
     private final URL monitorUrl;
@@ -41,7 +42,12 @@ public class OneDriveLongRunningAction {
     }
 
     public StatusObject getStatus() throws IOException {
-        final OneDriveJsonResponse jsonRequest = new OneDriveJsonRequest(monitorUrl, "GET").sendRequest(oneDriveAPI.getExecutor());
+        final OneDriveJsonResponse jsonRequest = new OneDriveJsonRequest(monitorUrl, "GET") {
+            @Override
+            protected void addAuthorizationHeader(RequestExecutor executor, Set<RequestHeader> headers) {
+                // Monitor URL is preauthenticated and must not have an authorization header
+            }
+        }.sendRequest(oneDriveAPI.getExecutor());
         return new StatusObject(jsonRequest.getContent());
     }
 
