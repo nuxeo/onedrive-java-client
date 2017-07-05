@@ -48,7 +48,7 @@ public class OneDriveFile extends OneDriveItem {
         final OneDriveRequest request = new OneDriveRequest(url, "PUT");
         request.addHeader("Content-Type", mimeType);
         final OneDriveResponse response = request.sendRequest(getApi().getExecutor(), new NullInputStream(0));
-        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getContent());
+        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getLocation(), response.getContent());
         JsonObject jsonObject = jsonResponse.getContent();
         response.close();
         return new Metadata(jsonObject);
