@@ -76,6 +76,18 @@ public class OneDriveLongRunningAction {
             }
             super.parseMember(member);
         }
+
+        public Status getStatus() {
+            return status;
+        }
+
+        public float getPercentage() {
+            return percentage;
+        }
+
+        public String getOperation() {
+            return operation;
+        }
     }
 
     public interface ProgressCallback {
