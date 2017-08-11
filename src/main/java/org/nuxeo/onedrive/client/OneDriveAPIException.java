@@ -59,7 +59,12 @@ public class OneDriveAPIException extends IOException {
     public OneDriveAPIException(final String responseMessage, final int responseCode, final JsonObject error) {
         super(responseMessage);
         this.responseCode = responseCode;
-        this.errorMessage = error.get("error").asObject().get("message").asString();
+        if(error.get("error").isObject()) {
+            this.errorMessage = error.get("error").asObject().get("message").asString();
+        }
+        else {
+            this.errorMessage = error.toString();
+        }
     }
 
     public int getResponseCode() {
