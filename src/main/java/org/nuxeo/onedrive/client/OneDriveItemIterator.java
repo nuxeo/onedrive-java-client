@@ -18,11 +18,11 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Objects;
-
-import com.eclipsesource.json.JsonObject;
 
 /**
  * @since 1.0
@@ -63,6 +63,10 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
         else if(nextObject.get("file") != null && !nextObject.get("file").isNull()) {
             OneDriveFile file = new OneDriveFile(api, id);
             nextMetadata = file.new Metadata(nextObject);
+        }
+        else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
+            OneDrivePackageItem packageItem = new OneDrivePackageItem(api, id);
+            nextMetadata = packageItem.new Metadata(nextObject);
         }
         else {
             throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
