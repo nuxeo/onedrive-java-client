@@ -313,9 +313,15 @@ public abstract class OneDriveItem extends OneDriveResource {
                     size = value.asLong();
                 } else if ("parentReference".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
-                    String id = valueObject.get("id").asString();
-                    OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id);
-                    parentReference = parentFolder.new Reference(valueObject);
+                    if(valueObject.names().contains("id")) {
+                        String id = valueObject.get("id").asString();
+                        OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id);
+                        parentReference = parentFolder.new Reference(valueObject);
+                    } else if(valueObject.names().contains("driveId")) {
+                        String driveId = valueObject.get("driveId").asString();
+                        OneDriveFolder parentFolder = new OneDriveFolder(getApi(), driveId);
+                        parentReference = parentFolder.new Reference(valueObject);
+                    }
                 } else if ("webUrl".equals(memberName)) {
                     webUrl = value.asString();
                 } else if ("description".equals(memberName)) {
