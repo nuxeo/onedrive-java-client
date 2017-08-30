@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.iterate.onedrive</groupId>
     <artifactId>onedrive-java-client</artifactId>
-    <version>2.0.9</version>
+    <version>2.0.10-SNAPSHOT</version>
     <name>OneDrive Java client</name>
     <description>The OneDrive client for Java.</description>
     <licenses>
@@ -99,7 +99,7 @@
         <connection>scm:git:https://github.com/iterate-ch/onedrive-java-client.git</connection>
         <developerConnection>scm:git:https://github.com/iterate-ch/onedrive-java-client.git</developerConnection>
         <url>https://github.com/iterate-ch/onedrive-java-client</url>
-    <tag>onedrive-java-client-2.0.9</tag>
+    <tag>HEAD</tag>
   </scm>
 
     <distributionManagement>
