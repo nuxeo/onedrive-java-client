@@ -75,7 +75,12 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
     }
 
     public void cancelUpload() throws IOException {
-        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "DELETE");
+        OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "DELETE") {
+            @Override
+            protected void addAuthorizationHeader(RequestExecutor executor, Set<RequestHeader> headers) {
+                // DELETE requests for upload session are pre-authenticated and cannot have an Authorization header
+            }
+        };
         OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
         response.close();
     }
