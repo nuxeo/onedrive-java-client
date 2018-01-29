@@ -286,6 +286,10 @@ public abstract class OneDriveItem extends OneDriveResource {
             return deleted;
         }
 
+        public FileSystemInfoFacet getFileSystemInfo() {
+            return fileSystemInfo;
+        }
+
         public OneDriveThumbnailSet.Metadata getThumbnailSet() {
             return thumbnailSets.stream().findFirst().orElse(null);
         }
