@@ -22,6 +22,7 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+import org.nuxeo.onedrive.client.facets.FileSystemInfoFacet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -233,6 +234,8 @@ public abstract class OneDriveItem extends OneDriveResource {
 
         private boolean deleted;
 
+        private FileSystemInfoFacet fileSystemInfo;
+
         private List<OneDriveThumbnailSet.Metadata> thumbnailSets = Collections.emptyList();
 
         public Metadata(JsonObject json) {
@@ -283,6 +286,10 @@ public abstract class OneDriveItem extends OneDriveResource {
             return deleted;
         }
 
+        public FileSystemInfoFacet getFileSystemInfo() {
+            return fileSystemInfo;
+        }
+
         public OneDriveThumbnailSet.Metadata getThumbnailSet() {
             return thumbnailSets.stream().findFirst().orElse(null);
         }
@@ -322,6 +329,9 @@ public abstract class OneDriveItem extends OneDriveResource {
                         OneDriveFolder parentFolder = new OneDriveFolder(getApi(), driveId);
                         parentReference = parentFolder.new Reference(valueObject);
                     }
+                } else if ("fileSystemInfo".equals(memberName)) {
+                    fileSystemInfo = new FileSystemInfoFacet();
+                    fileSystemInfo.fromJson(value.asObject());
                 } else if ("webUrl".equals(memberName)) {
                     webUrl = value.asString();
                 } else if ("description".equals(memberName)) {
