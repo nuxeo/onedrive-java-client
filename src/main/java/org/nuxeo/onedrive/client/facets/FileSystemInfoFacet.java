@@ -3,39 +3,40 @@ package org.nuxeo.onedrive.client.facets;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
 public class FileSystemInfoFacet extends Facet {
     // The UTC date and time the file was created on a client.
-    private ZonedDateTime createdDateTime;
+    private OffsetDateTime createdDateTime;
 
     // The UTC date and time the file was last accessed.
-    private ZonedDateTime lastAccessedDateTime;
+    private OffsetDateTime lastAccessedDateTime;
 
     // The UTC date and time the file was last modified on a client.
-    private ZonedDateTime lastModifiedDateTime;
+    private OffsetDateTime lastModifiedDateTime;
 
-    public ZonedDateTime getCreatedDateTime() {
+    public OffsetDateTime getCreatedDateTime() {
         return createdDateTime;
     }
 
-    public ZonedDateTime getLastAccessedDateTime() {
+    public OffsetDateTime getLastAccessedDateTime() {
         return lastAccessedDateTime;
     }
 
-    public ZonedDateTime getLastModifiedDateTime() {
+    public OffsetDateTime getLastModifiedDateTime() {
         return lastModifiedDateTime;
     }
 
-    public void setCreatedDateTime(ZonedDateTime createdDateTime) {
+    public void setCreatedDateTime(OffsetDateTime createdDateTime) {
         this.createdDateTime = createdDateTime;
     }
 
-    public void setLastAccessedDateTime(ZonedDateTime lastAccessedDateTime) {
+    public void setLastAccessedDateTime(OffsetDateTime lastAccessedDateTime) {
         this.lastAccessedDateTime = lastAccessedDateTime;
     }
 
-    public void setLastModifiedDateTime(ZonedDateTime lastModifiedDateTime) {
+    public void setLastModifiedDateTime(OffsetDateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
     }
 
@@ -45,13 +46,13 @@ public class FileSystemInfoFacet extends Facet {
         String memberName = member.getName();
         switch (memberName) {
             case "createdDateTime":
-                createdDateTime = ZonedDateTime.parse(value.asString());
+                createdDateTime = OffsetDateTime.parse(value.asString());
                 break;
             case "lastModifiedDateTime":
-                lastModifiedDateTime = ZonedDateTime.parse(value.asString());
+                lastModifiedDateTime = OffsetDateTime.parse(value.asString());
                 break;
             case "lastAccessedDateTime":
-                lastAccessedDateTime = ZonedDateTime.parse(value.asString());
+                lastAccessedDateTime = OffsetDateTime.parse(value.asString());
                 break;
         }
     }
