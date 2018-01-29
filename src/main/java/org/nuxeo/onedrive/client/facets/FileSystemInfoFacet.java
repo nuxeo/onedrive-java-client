@@ -6,10 +6,13 @@ import com.eclipsesource.json.JsonValue;
 import java.time.ZonedDateTime;
 
 public class FileSystemInfoFacet extends Facet {
+    // The UTC date and time the file was created on a client.
     private ZonedDateTime createdDateTime;
 
+    // The UTC date and time the file was last accessed.
     private ZonedDateTime lastAccessedDateTime;
 
+    // The UTC date and time the file was last modified on a client.
     private ZonedDateTime lastModifiedDateTime;
 
     public ZonedDateTime getCreatedDateTime() {
@@ -37,24 +40,10 @@ public class FileSystemInfoFacet extends Facet {
     }
 
     @Override
-    protected void populateJsonObject(JsonObject jsonObject) {
-        if (null != createdDateTime) {
-            jsonObject.add("createdDateTime", createdDateTime.toString());
-        }
-        if (null != lastAccessedDateTime) {
-            jsonObject.add("lastAccessedDateTime", lastAccessedDateTime.toString());
-        }
-        if (null != lastModifiedDateTime) {
-            jsonObject.add("lastModifiedDateTime", lastModifiedDateTime.toString());
-        }
-    }
-
-    @Override
     protected void parseMember(JsonObject.Member member) {
         JsonValue value = member.getValue();
         String memberName = member.getName();
-        switch (memberName)
-        {
+        switch (memberName) {
             case "createdDateTime":
                 createdDateTime = ZonedDateTime.parse(value.asString());
                 break;
@@ -64,6 +53,19 @@ public class FileSystemInfoFacet extends Facet {
             case "lastAccessedDateTime":
                 lastAccessedDateTime = ZonedDateTime.parse(value.asString());
                 break;
+        }
+    }
+
+    @Override
+    protected void populateJsonObject(JsonObject jsonObject) {
+        if (null != createdDateTime) {
+            jsonObject.add("createdDateTime", createdDateTime.toString());
+        }
+        if (null != lastAccessedDateTime) {
+            jsonObject.add("lastAccessedDateTime", lastAccessedDateTime.toString());
+        }
+        if (null != lastModifiedDateTime) {
+            jsonObject.add("lastModifiedDateTime", lastModifiedDateTime.toString());
         }
     }
 }
