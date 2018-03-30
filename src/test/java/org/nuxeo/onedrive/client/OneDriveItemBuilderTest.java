@@ -71,4 +71,13 @@ public class OneDriveItemBuilderTest extends OneDriveTestCase {
         assertEquals("/v1.0/drives/DRIVEID/root:/FOLDERPATH", folder.getMetadataURL().build(api.getBaseURL(), folder.getResourceIdentifier()).getPath());
         assertEquals("/v1.0/drives/DRIVEID/root:/FOLDERPATH:/children", folder.getChildrenURL().build(api.getBaseURL(), folder.getResourceIdentifier()).getPath());
     }
+
+    @Test
+    public void testParent() {
+        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
+        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "FOLDERID", OneDriveResource.ResourceIdentifierType.Id);
+        OneDriveFolder child = new OneDriveFolder(api,testDrive, folder, "Test");
+        assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID:/Test", child.getMetadataURL().build(api.getBaseURL(), folder.getResourceIdentifier()).getPath());
+        assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID:/Test:/children", child.getChildrenURL().build(api.getBaseURL(), folder.getResourceIdentifier()).getPath());
+    }
 }
