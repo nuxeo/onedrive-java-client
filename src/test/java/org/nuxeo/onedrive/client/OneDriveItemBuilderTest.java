@@ -74,7 +74,7 @@ public class OneDriveItemBuilderTest extends OneDriveTestCase {
         assertEquals("/v1.0/drives/DRIVEID/root:/FOLDERPATH", folder.getMetadataURL().build(api.getBaseURL()).getPath());
         assertEquals("/v1.0/drives/DRIVEID/root:/FOLDERPATH:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
     }
-    
+
     @Test
     public void testParent() {
         OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
@@ -82,5 +82,21 @@ public class OneDriveItemBuilderTest extends OneDriveTestCase {
         OneDriveFolder child = new OneDriveFolder(api, folder, "Test", OneDriveItem.ItemIdentifierType.Path);
         assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID:/Test", child.getMetadataURL().build(api.getBaseURL()).getPath());
         assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID:/Test:/children", child.getChildrenURL().build(api.getBaseURL()).getPath());
+    }
+
+    @Test
+    public void testSpace() {
+        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
+        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "SPACE SPACE", OneDriveItem.ItemIdentifierType.Path);
+        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE SPACE", folder.getMetadataURL().build(api.getBaseURL()).getPath());
+        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE SPACE:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+    }
+
+    @Test
+    public void testEscapedSpace() {
+        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
+        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "SPACE%20SPACE", OneDriveItem.ItemIdentifierType.Path);
+        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE%20SPACE", folder.getMetadataURL().build(api.getBaseURL()).getPath());
+        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE%20SPACE:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
     }
 }
