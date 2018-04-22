@@ -167,19 +167,24 @@ public abstract class OneDriveItem extends OneDriveResource {
         return permission.new Metadata(json);
     }
 
-    private OneDriveItem.Metadata parseResponse(OneDriveJsonResponse response) throws IOException {
-        JsonObject nextObject = response.getContent();
-        String id = nextObject.get("id").asString();
-        OneDriveDrive drive = new OneDriveDrive(getApi(), nextObject.get("parentReference").asObject().get("driveId").asString());
+    public static OneDriveItem.Metadata parseJson(OneDriveAPI api, final JsonObject nextObject) {
+        final String id = nextObject.get("id").asString();
+        final OneDriveDrive drive = new OneDriveDrive(api, nextObject.get("parentReference").asObject().get("driveId").asString());
 
-        OneDriveItem.Metadata nextMetadata = null;
+        OneDriveItem.Metadata nextMetadata;
         if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
-            OneDriveFolder folder = new OneDriveFolder(getApi(), drive, id, ItemIdentifierType.Id);
+            OneDriveFolder folder = new OneDriveFolder(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
             nextMetadata = folder.new Metadata(nextObject);
         } else if (nextObject.get("file") != null && !nextObject.get("file").isNull()) {
-            OneDriveFile file = new OneDriveFile(getApi(), drive, id, ItemIdentifierType.Id);
+            OneDriveFile file = new OneDriveFile(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
             nextMetadata = file.new Metadata(nextObject);
+        } else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
+            OneDrivePackageItem packageItem = new OneDrivePackageItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+            nextMetadata = packageItem.new Metadata(nextObject);
+        } else {
+            throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
         }
+
         return nextMetadata;
     }
 
@@ -219,6 +224,8 @@ public abstract class OneDriveItem extends OneDriveResource {
 
         private List<OneDriveThumbnailSet.Metadata> thumbnailSets = Collections.emptyList();
 
+        private OneDriveItem.Metadata remoteItem;
+
         public Metadata(JsonObject json) {
             super(json);
         }
@@ -253,6 +260,10 @@ public abstract class OneDriveItem extends OneDriveResource {
 
         public OneDriveFolder.Reference getParentReference() {
             return parentReference;
+        }
+
+        public OneDriveItem.Metadata getRemoteItem() {
+            return remoteItem;
         }
 
         public String getWebUrl() {
@@ -313,6 +324,8 @@ public abstract class OneDriveItem extends OneDriveResource {
                 } else if ("fileSystemInfo".equals(memberName)) {
                     fileSystemInfo = new FileSystemInfoFacet();
                     fileSystemInfo.fromJson(value.asObject());
+                } else if ("remoteItem".equals(memberName)) {
+                    remoteItem = OneDriveItem.parseJson(getApi(), value.asObject());
                 } else if ("webUrl".equals(memberName)) {
                     webUrl = value.asString();
                 } else if ("description".equals(memberName)) {
