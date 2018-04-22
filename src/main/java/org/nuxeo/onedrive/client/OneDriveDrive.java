@@ -1,18 +1,18 @@
 /*
  * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  * Contributors:
  *     Kevin Leturc
  */
@@ -44,7 +44,7 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
 
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = getMetadataUrl().build(getApi().getBaseURL(), query, getResourceIdentifier());
+        final URL url = getMetadataUrl().build(getApi().getBaseURL(), query, getItemIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();
@@ -60,8 +60,13 @@ public class OneDriveDrive extends OneDriveResource implements Iterable<OneDrive
         if (isRoot()) {
             return "/drive";
         } else {
-            return String.format("/drives/%s", getResourceIdentifier());
+            return String.format("/drives/%s", getItemIdentifier());
         }
+    }
+
+    @Override
+    public String getFullyQualifiedPath() {
+        return getDrivePath();
     }
 
     public OneDriveFolder getRoot() {

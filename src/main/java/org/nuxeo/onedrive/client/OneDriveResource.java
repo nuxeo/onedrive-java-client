@@ -29,44 +29,15 @@ public class OneDriveResource {
 
     private final OneDriveAPI api;
     private final String resourceIdentifier;
-    private final OneDriveDrive resourceDrive;
-    private final ResourceIdentifierType resourceIdentifierType;
 
-    public OneDriveResource(OneDriveAPI api, String id) {
-        this(api, id, ResourceIdentifierType.Id);
-    }
-
-    public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String path) {
-        this(api, drive, path, ResourceIdentifierType.Path);
-    }
-
-    OneDriveResource(OneDriveAPI api) {
+    public OneDriveResource(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
-        this.resourceDrive = null;
         this.resourceIdentifier = null;
-        this.resourceIdentifierType = ResourceIdentifierType.Path;
     }
 
-    OneDriveResource(OneDriveAPI api, OneDriveDrive drive) {
-        this.api = Objects.requireNonNull(api);
-        this.resourceDrive = Objects.requireNonNull(drive);
-        this.resourceIdentifier = null;
-        this.resourceIdentifierType = ResourceIdentifierType.Path;
-    }
-
-    public OneDriveResource(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
+    public OneDriveResource(OneDriveAPI api, String resourceIdentifier) {
         this.api = Objects.requireNonNull(api);
         this.resourceIdentifier = Objects.requireNonNull(resourceIdentifier);
-        this.resourceIdentifierType = resourceIdentifierType;
-        this.resourceDrive = null;
-    }
-
-    public OneDriveResource(OneDriveAPI api, OneDriveDrive drive, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
-        this.api = Objects.requireNonNull(api);
-        this.resourceDrive = Objects.requireNonNull(drive);
-        this.resourceIdentifier = Objects.requireNonNull(resourceIdentifier);
-        this.resourceIdentifierType = resourceIdentifierType;
-
     }
 
     public OneDriveAPI getApi() {
@@ -77,16 +48,13 @@ public class OneDriveResource {
         return resourceIdentifier == null;
     }
 
-    public String getResourceIdentifier() {
+    public String getItemIdentifier() {
         return resourceIdentifier;
     }
 
-    public OneDriveDrive getResourceDrive() {
-        return resourceDrive;
-    }
 
-    public ResourceIdentifierType getResourceIdentifierType() {
-        return resourceIdentifierType;
+    public String getFullyQualifiedPath() {
+        return "";
     }
 
     @Override
@@ -100,17 +68,12 @@ public class OneDriveResource {
         }
 
         OneDriveResource oDObj = (OneDriveResource) obj;
-        return getResourceIdentifier().equals(oDObj.getResourceIdentifier());
+        return getItemIdentifier().equals(oDObj.getItemIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return getResourceIdentifier().hashCode();
-    }
-
-    public enum ResourceIdentifierType {
-        Id,
-        Path
+        return getItemIdentifier().hashCode();
     }
 
     public abstract class Metadata extends OneDriveJsonObject {
@@ -120,7 +83,7 @@ public class OneDriveResource {
         }
 
         public String getId() {
-            return OneDriveResource.this.getResourceIdentifier();
+            return OneDriveResource.this.getItemIdentifier();
         }
 
         public abstract OneDriveResource getResource();

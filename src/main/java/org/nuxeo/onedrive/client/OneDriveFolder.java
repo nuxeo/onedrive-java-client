@@ -1,18 +1,18 @@
 /*
  * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  * Contributors:
  *     Kevin Leturc
  */
@@ -32,39 +32,22 @@ import java.util.List;
  * @since 1.0
  */
 public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveItem.Metadata> {
-
-    OneDriveFolder(OneDriveAPI api) {
-        super(api);
+    public OneDriveFolder(OneDriveAPI api, OneDriveResource parent) {
+        super(api, parent);
     }
 
-    OneDriveFolder(OneDriveAPI api, OneDriveDrive drive) {
-        super(api, drive);
-    }
-
-    public OneDriveFolder(OneDriveAPI api, String id) {
-        super(api, id);
-    }
-
-    public OneDriveFolder(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
-        super(api, resourceIdentifier, resourceIdentifierType);
-    }
-
-    public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path) {
-        super(api, drive, path);
-    }
-
-    public OneDriveFolder(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
-        super(api, drive, path, resourceIdentifierType);
+    public OneDriveFolder(OneDriveAPI api, OneDriveResource parent, String resourceIdentifier, ItemIdentifierType itemIdentifierType) {
+        super(api, parent, resourceIdentifier, itemIdentifierType);
     }
 
     public OneDriveFolder.Metadata create(String directory) throws IOException {
-        final URL url = getChildrenURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), getItemIdentifier());
         final JsonObject rootObject = new JsonObject();
         rootObject.add("name", directory);
         rootObject.add("folder", new JsonObject());
         final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
         final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
-        final OneDriveFolder folder = new OneDriveFolder(getApi());
+        final OneDriveFolder folder = new OneDriveFolder(getApi(), this, directory, ItemIdentifierType.Path);
         final OneDriveFolder.Metadata metadata = folder.new Metadata(response.getContent());
         response.close();
         return metadata;
@@ -73,14 +56,10 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
     @Override
     public OneDriveFolder.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = getMetadataURL().build(getApi().getBaseURL(), query, getResourceIdentifier());
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), query, getItemIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveFolder.Metadata(response.getContent());
-    }
-
-    public static OneDriveFolder getRoot(OneDriveAPI api) {
-        return new OneDriveFolder(api);
     }
 
     public Iterable<OneDriveItem.Metadata> getChildren() {
@@ -104,42 +83,36 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         QueryStringBuilder query = new QueryStringBuilder()
                 .set("orderby", "name asc")
                 .set("top", limit);
-        final URL url = getChildrenURL().build(getApi().getBaseURL(), query, getResourceIdentifier());
+        final URL url = getChildrenURL().build(getApi().getBaseURL(), query, getItemIdentifier());
         return new OneDriveItemIterator(getApi(), url);
     }
 
     public Iterable<OneDriveItem.Metadata> search(String search, OneDriveExpand... expands) {
-        final URL url = getSearchUrl().build(getApi().getBaseURL(), getResourceIdentifier(), search);
+        final URL url = getSearchUrl().build(getApi().getBaseURL(), getItemIdentifier(), search);
         return () -> new OneDriveItemIterator(getApi(), url);
     }
 
     public URLTemplate getSearchUrl() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "search(q='%2$s')" : "oneDrive.search(q='%2$s')");
+        final String action = getApi().isGraphConnection() ? "search(q='%2$s')" : "oneDrive.search(q='%2$s')";
 
-        return new URLTemplate(urlBuilder.toString());
+        return new URLTemplate(getActionPath(action));
     }
 
     public URLTemplate getChildrenURL() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, "children");
-
-        return new URLTemplate(urlBuilder.toString());
+        return new URLTemplate(getActionPath("children"));
     }
 
     /**
      * @since 1.1
      */
     public OneDriveDeltaItemIterator delta() {
-        final URL url = getDeltaUrl().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getDeltaUrl().build(getApi().getBaseURL(), getItemIdentifier());
         return new OneDriveDeltaItemIterator(getApi(), url);
     }
 
     public URLTemplate getDeltaUrl() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "delta" : "oneDrive.delta");
-
-        return new URLTemplate(urlBuilder.toString());
+        final String action = getApi().isGraphConnection() ? "delta" : "oneDrive.delta";
+        return new URLTemplate(getActionPath(action));
     }
 
     /**

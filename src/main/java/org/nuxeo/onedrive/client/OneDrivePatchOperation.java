@@ -12,7 +12,7 @@ public class OneDrivePatchOperation {
 
     public void move(OneDriveFolder newParent) {
         final JsonObject parentReference = new JsonObject();
-        parentReference.add("path", newParent.getDrivePath());
+        parentReference.add("path", newParent.getFullyQualifiedPath());
         jsonObject.add("parentReference", parentReference);
     }
 

@@ -52,26 +52,7 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
 
     @Override
     public OneDriveItem.Metadata next() throws OneDriveRuntimeException {
-        JsonObject nextObject = jsonObjectIterator.next();
-        String id = nextObject.get("id").asString();
-
-        OneDriveItem.Metadata nextMetadata;
-        if(nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
-            OneDriveFolder folder = new OneDriveFolder(api, id);
-            nextMetadata = folder.new Metadata(nextObject);
-        }
-        else if(nextObject.get("file") != null && !nextObject.get("file").isNull()) {
-            OneDriveFile file = new OneDriveFile(api, id);
-            nextMetadata = file.new Metadata(nextObject);
-        }
-        else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
-            OneDrivePackageItem packageItem = new OneDrivePackageItem(api, id);
-            nextMetadata = packageItem.new Metadata(nextObject);
-        }
-        else {
-            throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
-        }
-        return nextMetadata;
+        return OneDriveItem.parseJson(api, jsonObjectIterator.next());
     }
 
     /**

@@ -1,18 +1,18 @@
 /*
  * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  * Contributors:
  *     Kevin Leturc
  */
@@ -28,126 +28,101 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @since 1.0
  */
 public abstract class OneDriveItem extends OneDriveResource {
+    private final OneDriveResource parent;
+    private final ItemIdentifierType itemIdentifierType;
+
     OneDriveItem(OneDriveAPI api) {
         super(api);
+        parent = null;
+        itemIdentifierType = null;
     }
 
-    OneDriveItem(OneDriveAPI api, OneDriveDrive drive) {
-        super(api, drive);
+    public OneDriveItem(OneDriveAPI api, OneDriveResource parent) {
+        super(api);
+        this.parent = Objects.requireNonNull(parent);
+        this.itemIdentifierType = null;
     }
 
-    public OneDriveItem(OneDriveAPI api, String id) {
-        super(api, id);
+    public OneDriveItem(OneDriveAPI api, OneDriveResource parent, String resourceIdentifier, ItemIdentifierType itemIdentifierType) {
+        super(api, resourceIdentifier);
+        this.parent = Objects.requireNonNull(parent);
+        this.itemIdentifierType = itemIdentifierType;
     }
 
-    public OneDriveItem(OneDriveAPI api, String resourceIdentifier, ResourceIdentifierType resourceIdentifierType) {
-        super(api, resourceIdentifier, resourceIdentifierType);
-    }
-
-    public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path) {
-        super(api, drive, path, ResourceIdentifierType.Path);
-    }
-
-    public OneDriveItem(OneDriveAPI api, OneDriveDrive drive, String path, ResourceIdentifierType resourceIdentifierType) {
-        super(api, drive, path, resourceIdentifierType);
+    public ItemIdentifierType getItemIdentifierType() {
+        return itemIdentifierType;
     }
 
     public void delete() throws IOException {
-        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getMetadataURL().build(getApi().getBaseURL());
         new OneDriveRequest(url, "DELETE").sendRequest(getApi().getExecutor()).close();
     }
 
     public void patch(OneDrivePatchOperation patchOperation) throws IOException {
-        final URL url = getMetadataURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getMetadataURL().build(getApi().getBaseURL());
         new OneDriveJsonRequest(url, "PATCH", patchOperation.build()).sendRequest(getApi().getExecutor()).close();
     }
 
     public OneDriveLongRunningAction copy(OneDriveCopyOperation copyOperation) throws IOException {
-        final URL url = getCopyURL().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getCopyURL().build(getApi().getBaseURL());
         OneDriveJsonResponse jsonResponse = new OneDriveJsonRequest(url, "POST", copyOperation.build()).sendRequest(getApi().getExecutor());
         final URL locationUrl = new URL(jsonResponse.getLocation());
         return new OneDriveLongRunningAction(locationUrl, getApi());
     }
 
-    protected void appendDriveResourceResolve(StringBuilder urlBuilder) {
-        if (getResourceDrive() != null) {
-            urlBuilder.append(getResourceDrive().getDrivePath());
-        } else {
-            urlBuilder.append("/drive");
-        }
-    }
-
-    protected void appendItemReferenceResolve(StringBuilder urlBuilder) {
-        if (getResourceIdentifierType() == ResourceIdentifierType.Id) {
-            urlBuilder.append("/items");
-        } else {
-            urlBuilder.append("/root");
-        }
-    }
-
-    protected void appendItemReference(StringBuilder urlBuilder) {
-        if (isRoot()) {
-            return;
-        }
-        if (getResourceIdentifierType() == ResourceIdentifierType.Path) {
-            urlBuilder.append(':');
-        }
-
-        urlBuilder.append("/%1$s");
-    }
-
-    protected void appendAction(StringBuilder urlBuilder, String action) {
-        if (!isRoot() && getResourceIdentifierType() == ResourceIdentifierType.Path) {
-            urlBuilder.append(':');
-        }
-        urlBuilder.append(String.format("/%s", action));
-    }
-
-    protected void appendDriveItem(StringBuilder urlBuilder) {
-        appendDriveResourceResolve(urlBuilder);
-        appendItemReferenceResolve(urlBuilder);
-        appendItemReference(urlBuilder);
-    }
-
-    protected void appendDriveItemAction(StringBuilder urlBuilder, String action) {
-        appendDriveItem(urlBuilder);
-        appendAction(urlBuilder, action);
-    }
-
-    public String getDrivePath() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItem(urlBuilder);
-        return String.format(urlBuilder.toString(), getResourceIdentifier());
-    }
-
     public URLTemplate getMetadataURL() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItem(urlBuilder);
-
-        return new URLTemplate(urlBuilder.toString());
+        return new URLTemplate(getFullyQualifiedPath());
     }
 
     public URLTemplate getCopyURL() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, "copy");
-
-        return new URLTemplate(urlBuilder.toString());
+        return new URLTemplate(getActionPath("copy"));
     }
 
     public URLTemplate getSharedLinkUrl() {
-        StringBuilder urlBuilder = new StringBuilder();
-        appendDriveItemAction(urlBuilder, getApi().isGraphConnection() ? "createLink" : "oneDrive.createLink");
+        final String action = getApi().isGraphConnection() ? "createLink" : "oneDrive.createLink";
+        return new URLTemplate(getActionPath(action));
+    }
 
-        return new URLTemplate(urlBuilder.toString());
+    @Override
+    public String getFullyQualifiedPath() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(parent.getFullyQualifiedPath());
+
+        final String identifier = getItemIdentifier();
+        if (identifier != null) {
+            final ItemIdentifierType itemIdentifierType = getItemIdentifierType();
+            if (itemIdentifierType == ItemIdentifierType.Id) {
+                builder.append("/items");
+            } else if (itemIdentifierType == ItemIdentifierType.Path) {
+                if (parent instanceof OneDriveDrive) {
+                    builder.append("/root");
+                }
+                builder.append(':');
+            }
+            builder.append(String.format("/%s", getItemIdentifier()));
+        } else {
+            builder.append("/root");
+        }
+
+        return builder.toString();
+    }
+
+    protected String getActionPath(String action) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(getFullyQualifiedPath());
+
+        if (getItemIdentifierType() == ItemIdentifierType.Path) {
+            builder.append(':');
+        }
+        builder.append(String.format("/%s", action));
+
+        return builder.toString();
     }
 
     public abstract OneDriveItem.Metadata getMetadata(OneDriveExpand... expand) throws IOException;
@@ -165,19 +140,19 @@ public abstract class OneDriveItem extends OneDriveResource {
     }
 
     public OneDriveThumbnail.Metadata getThumbnail(OneDriveThumbnailSize size) throws IOException {
-        return new OneDriveThumbnail(getApi(), getResourceIdentifier(), size).getMetadata();
+        return new OneDriveThumbnail(getApi(), getItemIdentifier(), size).getMetadata();
     }
 
     public InputStream downloadThumbnail(OneDriveThumbnailSize size) throws IOException {
-        return new OneDriveThumbnail(getApi(), getResourceIdentifier(), size).download();
+        return new OneDriveThumbnail(getApi(), getItemIdentifier(), size).download();
     }
 
     Iterable<OneDriveThumbnailSet.Metadata> getThumbnailSets() {
-        return () -> new OneDriveThumbnailSetIterator(getApi(), getResourceIdentifier());
+        return () -> new OneDriveThumbnailSetIterator(getApi(), getItemIdentifier());
     }
 
     public OneDrivePermission.Metadata createSharedLink(OneDriveSharingLink.Type type) throws IOException {
-        final URL url = getSharedLinkUrl().build(getApi().getBaseURL(), getResourceIdentifier());
+        final URL url = getSharedLinkUrl().build(getApi().getBaseURL(), getItemIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST",
                 new JsonObject().add("type", type.getType()));
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
@@ -187,24 +162,38 @@ public abstract class OneDriveItem extends OneDriveResource {
         if (isRoot()) {
             permission = new OneDrivePermission(getApi(), permissionId);
         } else {
-            permission = new OneDrivePermission(getApi(), getResourceIdentifier(), permissionId);
+            permission = new OneDrivePermission(getApi(), getItemIdentifier(), permissionId);
         }
         return permission.new Metadata(json);
     }
 
-    private OneDriveItem.Metadata parseResponse(OneDriveJsonResponse response) throws IOException {
-        JsonObject nextObject = response.getContent();
-        String id = nextObject.get("id").asString();
+    public static OneDriveItem.Metadata parseJson(OneDriveAPI api, final JsonObject nextObject) {
+        final String id = nextObject.get("id").asString();
+        final OneDriveDrive drive = new OneDriveDrive(api, nextObject.get("parentReference").asObject().get("driveId").asString());
 
-        OneDriveItem.Metadata nextMetadata = null;
+        OneDriveItem.Metadata nextMetadata;
         if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
-            OneDriveFolder folder = new OneDriveFolder(getApi(), id);
+            OneDriveFolder folder = new OneDriveFolder(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
             nextMetadata = folder.new Metadata(nextObject);
         } else if (nextObject.get("file") != null && !nextObject.get("file").isNull()) {
-            OneDriveFile file = new OneDriveFile(getApi(), id);
+            OneDriveFile file = new OneDriveFile(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
             nextMetadata = file.new Metadata(nextObject);
+        } else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
+            OneDrivePackageItem packageItem = new OneDrivePackageItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+            nextMetadata = packageItem.new Metadata(nextObject);
+        } else if (nextObject.get("remoteItem") != null && !nextObject.get("remoteItem").isNull()) {
+            OneDriveRemoteItem remoteItem = new OneDriveRemoteItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+            nextMetadata = remoteItem.new Metadata(nextObject);
+        } else {
+            throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
         }
+
         return nextMetadata;
+    }
+
+    public enum ItemIdentifierType {
+        Id,
+        Path
     }
 
     /**
@@ -320,14 +309,14 @@ public abstract class OneDriveItem extends OneDriveResource {
                     size = value.asLong();
                 } else if ("parentReference".equals(memberName)) {
                     JsonObject valueObject = value.asObject();
-                    if(valueObject.names().contains("id")) {
+                    OneDriveDrive drive = new OneDriveDrive(getApi(), valueObject.get("driveId").asString());
+
+                    if (valueObject.names().contains("id")) {
                         String id = valueObject.get("id").asString();
-                        OneDriveFolder parentFolder = new OneDriveFolder(getApi(), id);
+                        OneDriveFolder parentFolder = new OneDriveFolder(getApi(), drive, id, ItemIdentifierType.Id);
                         parentReference = parentFolder.new Reference(valueObject);
-                    } else if(valueObject.names().contains("driveId")) {
-                        String driveId = valueObject.get("driveId").asString();
-                        OneDriveFolder parentFolder = new OneDriveFolder(getApi(), driveId);
-                        parentReference = parentFolder.new Reference(valueObject);
+                    } else {
+                        parentReference = drive.getRoot().new Reference(valueObject);
                     }
                 } else if ("fileSystemInfo".equals(memberName)) {
                     fileSystemInfo = new FileSystemInfoFacet();
@@ -362,6 +351,11 @@ public abstract class OneDriveItem extends OneDriveResource {
 
         public boolean isFile() {
             return false;
+        }
+
+        @Override
+        public OneDriveItem getResource() {
+            return OneDriveItem.this;
         }
 
         public OneDriveFolder.Metadata asFolder() {

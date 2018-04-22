@@ -7,22 +7,14 @@ import java.net.URL;
 
 public class OneDrivePackageItem extends OneDriveItem {
 
-    OneDrivePackageItem(OneDriveAPI api) {
-        super(api);
-    }
-
-    public OneDrivePackageItem(OneDriveAPI api, String fileId) {
-        super(api, fileId);
-    }
-
-    public OneDrivePackageItem(OneDriveAPI api, OneDriveDrive drive, String path) {
-        super(api, drive, path);
+    public OneDrivePackageItem(OneDriveAPI api, OneDriveResource parent, String resourceIdentifier, ItemIdentifierType itemIdentifierType) {
+        super(api, parent, resourceIdentifier, itemIdentifierType);
     }
 
     @Override
     public OneDriveItem.Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = getMetadataURL().build(getApi().getBaseURL(), query, getResourceIdentifier());
+        final URL url = getMetadataURL().build(getApi().getBaseURL(), query, getItemIdentifier());
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new Metadata(response.getContent());
@@ -35,7 +27,7 @@ public class OneDrivePackageItem extends OneDriveItem {
         }
 
         @Override
-        public OneDriveResource getResource() {
+        public OneDrivePackageItem getResource() {
             return OneDrivePackageItem.this;
         }
     }
