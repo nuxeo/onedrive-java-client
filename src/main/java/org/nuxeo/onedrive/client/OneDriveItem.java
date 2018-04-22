@@ -181,6 +181,9 @@ public abstract class OneDriveItem extends OneDriveResource {
         } else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
             OneDrivePackageItem packageItem = new OneDrivePackageItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
             nextMetadata = packageItem.new Metadata(nextObject);
+        } else if (nextObject.get("remoteItem") != null && !nextObject.get("remoteItem").isNull()) {
+            OneDriveRemoteItem remoteItem = new OneDriveRemoteItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+            nextMetadata = remoteItem.new Metadata(nextObject);
         } else {
             throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
         }
@@ -224,8 +227,6 @@ public abstract class OneDriveItem extends OneDriveResource {
 
         private List<OneDriveThumbnailSet.Metadata> thumbnailSets = Collections.emptyList();
 
-        private OneDriveItem.Metadata remoteItem;
-
         public Metadata(JsonObject json) {
             super(json);
         }
@@ -260,10 +261,6 @@ public abstract class OneDriveItem extends OneDriveResource {
 
         public OneDriveFolder.Reference getParentReference() {
             return parentReference;
-        }
-
-        public OneDriveItem.Metadata getRemoteItem() {
-            return remoteItem;
         }
 
         public String getWebUrl() {
@@ -324,8 +321,6 @@ public abstract class OneDriveItem extends OneDriveResource {
                 } else if ("fileSystemInfo".equals(memberName)) {
                     fileSystemInfo = new FileSystemInfoFacet();
                     fileSystemInfo.fromJson(value.asObject());
-                } else if ("remoteItem".equals(memberName)) {
-                    remoteItem = OneDriveItem.parseJson(getApi(), value.asObject());
                 } else if ("webUrl".equals(memberName)) {
                     webUrl = value.asString();
                 } else if ("description".equals(memberName)) {
