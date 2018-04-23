@@ -55,6 +55,16 @@ public abstract class OneDriveItem extends OneDriveResource {
         this.itemIdentifierType = itemIdentifierType;
     }
 
+    public OneDriveDrive getDrive() {
+        if (parent instanceof OneDriveDrive) {
+            return (OneDriveDrive) parent;
+        }
+        else if (parent instanceof OneDriveItem) {
+            return ((OneDriveItem) parent).getDrive();
+        }
+        return  null;
+    }
+
     public ItemIdentifierType getItemIdentifierType() {
         return itemIdentifierType;
     }

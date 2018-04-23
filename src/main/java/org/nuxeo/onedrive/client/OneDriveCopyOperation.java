@@ -11,7 +11,15 @@ public class OneDriveCopyOperation {
 
     public void copy(OneDriveFolder newParent) {
         final JsonObject parentReference = new JsonObject();
-        parentReference.add("path", newParent.getFullyQualifiedPath());
+
+        final OneDriveDrive rootDrive = newParent.getDrive();
+        if (null != rootDrive) {
+            parentReference.add("driveId", newParent.getDrive().getItemIdentifier());
+            parentReference.add("id", newParent.getItemIdentifier());
+        }
+        else if (OneDriveItem.ItemIdentifierType.Path == newParent.getItemIdentifierType()) {
+            parentReference.add("path", newParent.getFullyQualifiedPath());
+        }
         jsonObject.add("parentReference", parentReference);
     }
 
