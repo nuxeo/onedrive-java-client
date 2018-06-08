@@ -38,6 +38,11 @@ public class GroupItem extends DirectoryObject {
             super(json);
         }
 
+        @Override
+        public GroupItem asDirectoryObject() {
+            return new GroupItem(getId());
+        }
+
         public boolean isAllowExternalSenders() {
             return allowExternalSenders;
         }

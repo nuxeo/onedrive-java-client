@@ -15,13 +15,7 @@ public class GroupsIterator implements Iterator<GroupItem.Metadata> {
 
     public GroupsIterator(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
-        this.jsonObjectIterator = new JsonObjectIterator(api, GROUP_LIST_URL.build(api.getBaseURL())) {
-
-            @Override
-            protected void onResponse(JsonObject response) {
-                GroupsIterator.this.onResponse(response);
-            }
-        };
+        this.jsonObjectIterator = new JsonObjectIterator(api, GROUP_LIST_URL.build(api.getBaseURL()));
     }
 
     @Override
@@ -33,12 +27,5 @@ public class GroupsIterator implements Iterator<GroupItem.Metadata> {
     public GroupItem.Metadata next() {
         JsonObject nextObject = jsonObjectIterator.next();
         return new GroupItem.Metadata(nextObject);
-    }
-
-    /**
-     * @since 1.1
-     */
-    protected void onResponse(JsonObject response) {
-        // Hook method
     }
 }

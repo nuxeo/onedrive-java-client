@@ -14,14 +14,20 @@ public abstract class DirectoryObject {
         return id;
     }
 
-    public static class Metadata extends OneDriveJsonObject {
+    public static abstract class Metadata extends OneDriveJsonObject {
         private String id;
 
-        public Metadata() {
+        protected Metadata() {
         }
 
-        public Metadata(JsonObject jsonObject) {
+        protected Metadata(JsonObject jsonObject) {
             super(jsonObject);
+        }
+
+        public abstract DirectoryObject asDirectoryObject();
+
+        public String getId() {
+            return id;
         }
 
         @Override
