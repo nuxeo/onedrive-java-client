@@ -10,12 +10,10 @@ public class GroupDrivesIterator implements Iterator<OneDriveDrive.Metadata> {
     private final static URLTemplate GROUP_DRIVELIST_URL = new URLTemplate("/groups/%1/drives");
 
     private final OneDriveAPI api;
-    private final GroupItem group;
     private final JsonObjectIterator jsonObjectIterator;
 
     public GroupDrivesIterator(final OneDriveAPI api, final GroupItem group) {
         this.api = api;
-        this.group = group;
         this.jsonObjectIterator = new JsonObjectIterator(api,
                 GROUP_DRIVELIST_URL.build(api.getBaseURL(), group.getId()));
     }

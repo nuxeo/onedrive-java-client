@@ -5,11 +5,12 @@ import org.nuxeo.onedrive.client.resources.GroupItem;
 import java.util.Iterator;
 import java.util.Objects;
 
+import com.eclipsesource.json.JsonObject;
+
 public class GroupsIterator implements Iterator<GroupItem.Metadata> {
     private final static URLTemplate GROUP_LIST_URL = new URLTemplate("/groups");
 
     private final OneDriveAPI api;
-
     private final JsonObjectIterator jsonObjectIterator;
 
     public GroupsIterator(OneDriveAPI api) {
@@ -24,6 +25,9 @@ public class GroupsIterator implements Iterator<GroupItem.Metadata> {
 
     @Override
     public GroupItem.Metadata next() {
-        return new GroupItem.Metadata(jsonObjectIterator.next());
+        final JsonObject jsonObject = jsonObjectIterator.next();
+        final String id = jsonObject.get("id").asString();
+        final GroupItem groupItem = new GroupItem(api, id);
+        return groupItem.new Metadata(jsonObjectIterator.next());
     }
 }
