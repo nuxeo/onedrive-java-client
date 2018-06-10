@@ -1,6 +1,7 @@
 package org.nuxeo.onedrive.client.resources;
 
 import com.eclipsesource.json.JsonObject;
+
 import org.nuxeo.onedrive.client.OneDriveJsonObject;
 
 public abstract class DirectoryObject {

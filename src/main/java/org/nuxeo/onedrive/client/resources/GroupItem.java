@@ -3,13 +3,14 @@ package org.nuxeo.onedrive.client.resources;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.time.ZonedDateTime;
 
 public class GroupItem extends DirectoryObject {
-    public GroupItem(String id) {
+    public GroupItem(final String id) {
         super(id);
     }
 

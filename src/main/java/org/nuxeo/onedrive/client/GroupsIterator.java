@@ -1,6 +1,5 @@
 package org.nuxeo.onedrive.client;
 
-import com.eclipsesource.json.JsonObject;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 
 import java.util.Iterator;
@@ -25,7 +24,6 @@ public class GroupsIterator implements Iterator<GroupItem.Metadata> {
 
     @Override
     public GroupItem.Metadata next() {
-        JsonObject nextObject = jsonObjectIterator.next();
-        return new GroupItem.Metadata(nextObject);
+        return new GroupItem.Metadata(jsonObjectIterator.next());
     }
 }
