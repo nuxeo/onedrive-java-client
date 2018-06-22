@@ -51,7 +51,7 @@ public class OneDriveFile extends OneDriveItem {
         final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getLocation(), response.getContent());
         JsonObject jsonObject = jsonResponse.getContent();
         response.close();
-        return new Metadata(jsonObject);
+        return parseJson(getApi(), jsonObject);
     }
 
     @Override
@@ -98,6 +98,13 @@ public class OneDriveFile extends OneDriveItem {
         } finally {
             jsonResponse.close();
         }
+    }
+
+    public static Metadata parseJson(OneDriveAPI api, JsonObject nextObject) {
+        final String id = nextObject.get("id").asString();
+        final OneDriveDrive drive = new OneDriveDrive(api, nextObject.get("parentReference").asObject().get("driveId").asString());
+        final OneDriveFile file = new OneDriveFile(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+        return file.new Metadata(nextObject);
     }
 
     /**
