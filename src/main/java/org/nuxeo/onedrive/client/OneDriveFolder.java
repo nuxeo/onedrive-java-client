@@ -49,7 +49,7 @@ public class OneDriveFolder extends OneDriveItem implements Iterable<OneDriveIte
         final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         final JsonObject responseObject = response.getContent();
         response.close();
-        return parseJson(responseObject);
+        return parseJson(getApi(), responseObject);
     }
 
     @Override
