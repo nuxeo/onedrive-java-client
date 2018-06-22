@@ -20,6 +20,13 @@ public class OneDriveRemoteItem extends OneDriveItem {
         return new Metadata(response.getContent());
     }
 
+    public static Metadata parseJson(OneDriveAPI api, JsonObject nextObject) {
+        final String id = nextObject.get("id").asString();
+        final OneDriveDrive drive = new OneDriveDrive(api, nextObject.get("parentReference").asObject().get("driveId").asString());
+        final OneDriveRemoteItem remoteItem = new OneDriveRemoteItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+        return remoteItem.new Metadata(nextObject);
+    }
+
     public class Metadata extends OneDriveItem.Metadata {
 
         private OneDriveItem.Metadata remoteItem;

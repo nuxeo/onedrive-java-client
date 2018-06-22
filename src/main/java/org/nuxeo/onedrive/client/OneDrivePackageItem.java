@@ -20,6 +20,13 @@ public class OneDrivePackageItem extends OneDriveItem {
         return new Metadata(response.getContent());
     }
 
+    public static Metadata parseJson(OneDriveAPI api, JsonObject nextObject) {
+        final String id = nextObject.get("id").asString();
+        final OneDriveDrive drive = new OneDriveDrive(api, nextObject.get("parentReference").asObject().get("driveId").asString());
+        final OneDrivePackageItem packageItem = new OneDrivePackageItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
+        return packageItem.new Metadata(nextObject);
+    }
+
     public class Metadata extends OneDriveItem.Metadata {
 
         public Metadata(JsonObject json) {

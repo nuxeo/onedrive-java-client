@@ -69,7 +69,7 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
         if (response.getResponseCode() == 202) {
             return new OneDriveUploadSession(getApi(), jsonObject);
         } else if (response.getResponseCode() == 201 || response.getResponseCode() == 200) {
-            return (new OneDriveFile(getApi())).new Metadata(jsonObject);
+            return OneDriveFile.parseJson(api, jsonObject);
         }
         return null;
     }
