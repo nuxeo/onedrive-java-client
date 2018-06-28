@@ -58,11 +58,10 @@ public abstract class OneDriveItem extends OneDriveResource {
     public OneDriveDrive getDrive() {
         if (parent instanceof OneDriveDrive) {
             return (OneDriveDrive) parent;
-        }
-        else if (parent instanceof OneDriveItem) {
+        } else if (parent instanceof OneDriveItem) {
             return ((OneDriveItem) parent).getDrive();
         }
-        return  null;
+        return null;
     }
 
     public ItemIdentifierType getItemIdentifierType() {
@@ -178,27 +177,17 @@ public abstract class OneDriveItem extends OneDriveResource {
     }
 
     public static OneDriveItem.Metadata parseJson(OneDriveAPI api, final JsonObject nextObject) {
-        final String id = nextObject.get("id").asString();
-        final OneDriveDrive drive = new OneDriveDrive(api, nextObject.get("parentReference").asObject().get("driveId").asString());
-
-        OneDriveItem.Metadata nextMetadata;
         if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
-            OneDriveFolder folder = new OneDriveFolder(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
-            nextMetadata = folder.new Metadata(nextObject);
+            return OneDriveFolder.parseJson(api, nextObject);
         } else if (nextObject.get("file") != null && !nextObject.get("file").isNull()) {
-            OneDriveFile file = new OneDriveFile(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
-            nextMetadata = file.new Metadata(nextObject);
+            return OneDriveFile.parseJson(api, nextObject);
         } else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
-            OneDrivePackageItem packageItem = new OneDrivePackageItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
-            nextMetadata = packageItem.new Metadata(nextObject);
+            return OneDrivePackageItem.parseJson(api, nextObject);
         } else if (nextObject.get("remoteItem") != null && !nextObject.get("remoteItem").isNull()) {
-            OneDriveRemoteItem remoteItem = new OneDriveRemoteItem(api, drive, id, OneDriveItem.ItemIdentifierType.Id);
-            nextMetadata = remoteItem.new Metadata(nextObject);
+            return OneDriveRemoteItem.parseJson(api, nextObject);
         } else {
             throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
         }
-
-        return nextMetadata;
     }
 
     public enum ItemIdentifierType {
