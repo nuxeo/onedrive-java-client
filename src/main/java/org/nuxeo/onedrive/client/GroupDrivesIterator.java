@@ -7,7 +7,7 @@ import com.eclipsesource.json.JsonObject;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 
 public class GroupDrivesIterator implements Iterator<OneDriveDrive.Metadata> {
-    private final static URLTemplate GROUP_DRIVELIST_URL = new URLTemplate("/groups/%1/drives");
+    private final static URLTemplate GROUP_DRIVELIST_URL = new URLTemplate("/groups/%s/drives");
 
     private final OneDriveAPI api;
     private final JsonObjectIterator jsonObjectIterator;
