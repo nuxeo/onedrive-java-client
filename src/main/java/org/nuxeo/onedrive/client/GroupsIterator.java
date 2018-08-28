@@ -28,6 +28,6 @@ public class GroupsIterator implements Iterator<GroupItem.Metadata> {
         final JsonObject jsonObject = jsonObjectIterator.next();
         final String id = jsonObject.get("id").asString();
         final GroupItem groupItem = new GroupItem(api, id);
-        return groupItem.new Metadata(jsonObjectIterator.next());
+        return groupItem.new Metadata(jsonObject);
     }
 }
