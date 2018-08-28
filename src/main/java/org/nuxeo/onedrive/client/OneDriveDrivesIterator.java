@@ -27,7 +27,7 @@ import com.eclipsesource.json.JsonObject;
 /**
  * @since 1.0
  */
-public class OneDriveDrivesIterator implements Iterator<OneDriveResource.Metadata> {
+public class OneDriveDrivesIterator implements Iterator<OneDriveDrive.Metadata> {
     private final static URLTemplate DRIVE_LIST_URL = new URLTemplate("/drives");
 
     private final OneDriveAPI api;
