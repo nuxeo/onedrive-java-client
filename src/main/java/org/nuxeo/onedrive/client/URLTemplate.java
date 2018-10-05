@@ -25,21 +25,21 @@ import java.util.Objects;
 /**
  * @since 1.0
  */
-class URLTemplate {
+public class URLTemplate {
 
     public static final URLTemplate EMPTY_TEMPLATE = new URLTemplate("");
 
     private String template;
 
-    String getTemplate() {
+    public String getTemplate() {
         return template;
     }
 
-    URLTemplate(String template) {
+    public URLTemplate(String template) {
         this.template = Objects.requireNonNull(template);
     }
 
-    URL build(String base) {
+    public URL build(String base) {
         String urlString = base + this.template;
         try {
             return new URL(urlString);
@@ -48,7 +48,7 @@ class URLTemplate {
         }
     }
 
-    URL build(String base, Object... values) {
+    public URL build(String base, Object... values) {
         String urlString = String.format(base + this.template, values);
         try {
             return new URL(urlString);
@@ -57,7 +57,7 @@ class URLTemplate {
         }
     }
 
-    URL build(String base, QueryStringBuilder query, Object... values) {
+    public URL build(String base, QueryStringBuilder query, Object... values) {
         String urlString = String.format(base + this.template, values) + query.toString();
         try {
             return new URL(urlString);
@@ -65,5 +65,4 @@ class URLTemplate {
             throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
         }
     }
-
 }

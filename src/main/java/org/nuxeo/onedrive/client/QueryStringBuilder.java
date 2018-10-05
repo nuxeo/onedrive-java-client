@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 /**
  * @since 1.0
  */
-class QueryStringBuilder {
+public class QueryStringBuilder {
 
     private Map<String, String> parameters = new HashMap<>();
 
