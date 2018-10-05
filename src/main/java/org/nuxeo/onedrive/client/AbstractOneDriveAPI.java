@@ -21,17 +21,16 @@ package org.nuxeo.onedrive.client;
 /**
  * @since 1.0
  */
-abstract class AbstractOneDriveAPI implements OneDriveAPI {
+public abstract class AbstractOneDriveAPI implements OneDriveAPI {
 
-    private final String accessToken;
+    private final RequestExecutor executor;
 
-    public AbstractOneDriveAPI(String accessToken) {
-        this.accessToken = accessToken;
+    public AbstractOneDriveAPI(final RequestExecutor executor) {
+        this.executor = executor;
     }
 
     @Override
-    public String getAccessToken() {
-        return accessToken;
+    public RequestExecutor getExecutor() {
+        return executor;
     }
-
 }

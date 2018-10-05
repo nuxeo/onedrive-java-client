@@ -18,8 +18,10 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.net.HttpURLConnection;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 import com.eclipsesource.json.JsonObject;
 
@@ -28,25 +30,30 @@ import com.eclipsesource.json.JsonObject;
  */
 public class OneDriveJsonRequest extends AbstractRequest<OneDriveJsonResponse> {
 
-    public OneDriveJsonRequest(URL url, String method) {
+    private JsonObject body;
+
+    public OneDriveJsonRequest(final URL url, final String method) {
         super(url, method);
     }
 
-    public OneDriveJsonRequest(OneDriveAPI api, URL url, String method) {
-        super(api, url, method);
-        if (!"GET".equals(method)) {
-            addHeader("Content-Type", "application/json");
-        }
-        addHeader("accept", "application/json");
+    public OneDriveJsonRequest(final URL url, final String method, final JsonObject body) {
+        super(url, method);
+        this.body = body;
+        this.addHeader("Content-Type", "application/json");
+        this.addHeader("Accept", "application/json");
     }
 
     @Override
-    protected OneDriveJsonResponse createResponse(HttpURLConnection connection) throws OneDriveAPIException {
-        return new OneDriveJsonResponse(connection);
+    public OneDriveJsonResponse sendRequest(final RequestExecutor sender) throws IOException {
+        if(body != null) {
+            byte[] bytes = body.toString().getBytes(StandardCharsets.UTF_8);
+            return this.sendRequest(sender, new ByteArrayInputStream(bytes));
+        }
+        return super.sendRequest(sender);
     }
 
-    public void setBody(JsonObject body) {
-        setBody(body.toString());
+    @Override
+    protected OneDriveJsonResponse createResponse(final RequestExecutor.Response response) throws IOException {
+        return new OneDriveJsonResponse(response.getStatusCode(), response.getStatusMessage(), response.getLocation(), response.getInputStream());
     }
-
 }

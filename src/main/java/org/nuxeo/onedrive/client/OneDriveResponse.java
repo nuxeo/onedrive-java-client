@@ -18,21 +18,20 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 
 /**
  * @since 1.0
  */
 public class OneDriveResponse extends AbstractResponse<InputStream> {
 
-    public OneDriveResponse(HttpURLConnection connection) throws OneDriveAPIException {
-        super(connection);
+    public OneDriveResponse(final int responseCode, final String responseMessage, final String location, final InputStream inputStream) throws IOException {
+        super(responseCode, responseMessage, location, inputStream);
     }
 
     @Override
     public InputStream getContent() throws OneDriveAPIException {
         return getBody();
     }
-
 }

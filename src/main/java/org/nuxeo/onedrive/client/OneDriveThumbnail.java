@@ -18,6 +18,7 @@
  */
 package org.nuxeo.onedrive.client;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Objects;
@@ -28,25 +29,20 @@ import com.eclipsesource.json.ParseException;
 
 /**
  * See documentation at https://dev.onedrive.com/resources/thumbnail.htm
- * 
+ *
  * @since 1.0
  */
 public class OneDriveThumbnail extends OneDriveResource {
 
     private static final URLTemplate GET_THUMBNAIL_URL = new URLTemplate("/drive/items/%s/thumbnails/%s/%s");
-
     private static final URLTemplate GET_THUMBNAIL_ROOT_URL = new URLTemplate("/drive/root/thumbnails/%s/%s");
-
     private static final URLTemplate GET_THUMBNAIL_CONTENT_URL = new URLTemplate(
             "/drive/items/%s/thumbnails/%s/%s/content");
-
     private static final URLTemplate GET_THUMBNAIL_CONTENT_ROOT_URL = new URLTemplate(
             "/drive/root/thumbnails/%s/%s/content");
 
     private final String itemId;
-
     private final int thumbId;
-
     private final OneDriveThumbnailSize size;
 
     OneDriveThumbnail(OneDriveAPI api, int thumbId, OneDriveThumbnailSize size) {
@@ -67,27 +63,29 @@ public class OneDriveThumbnail extends OneDriveResource {
         this(api, itemId, 0, size);
     }
 
-    public OneDriveThumbnail.Metadata getMetadata() throws OneDriveAPIException {
+    public OneDriveThumbnail.Metadata getMetadata() throws IOException {
         URL url;
-        if (isRoot()) {
+        if(isRoot()) {
             url = GET_THUMBNAIL_ROOT_URL.build(getApi().getBaseURL(), thumbId, size.getKey());
-        } else {
+        }
+        else {
             url = GET_THUMBNAIL_URL.build(getApi().getBaseURL(), itemId, thumbId, size.getKey());
         }
-        OneDriveJsonRequest request = new OneDriveJsonRequest(getApi(), url, "GET");
-        OneDriveJsonResponse response = request.send();
+        OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         return new OneDriveThumbnail.Metadata(response.getContent());
     }
 
-    public InputStream download() throws OneDriveAPIException {
+    public InputStream download() throws IOException {
         URL url;
-        if (isRoot()) {
+        if(isRoot()) {
             url = GET_THUMBNAIL_CONTENT_ROOT_URL.build(getApi().getBaseURL(), thumbId, size.getKey());
-        } else {
+        }
+        else {
             url = GET_THUMBNAIL_CONTENT_URL.build(getApi().getBaseURL(), itemId, thumbId, size.getKey());
         }
-        OneDriveRequest request = new OneDriveRequest(getApi(), url, "GET");
-        OneDriveResponse response = request.send();
+        OneDriveRequest request = new OneDriveRequest(url, "GET");
+        OneDriveResponse response = request.sendRequest(getApi().getExecutor());
         return response.getContent();
     }
 
@@ -126,15 +124,18 @@ public class OneDriveThumbnail extends OneDriveResource {
             try {
                 JsonValue value = member.getValue();
                 String memberName = member.getName();
-                if ("height".equals(memberName)) {
+                if("height".equals(memberName)) {
                     height = value.asInt();
-                } else if ("width".equals(memberName)) {
+                }
+                else if("width".equals(memberName)) {
                     width = value.asInt();
-                } else if ("url".equals(memberName)) {
+                }
+                else if("url".equals(memberName)) {
                     url = value.asString();
                 }
-            } catch (ParseException e) {
-                throw new OneDriveRuntimeException("Parse failed, maybe a bug in client.", e);
+            }
+            catch(ParseException e) {
+                throw new OneDriveRuntimeException(new OneDriveAPIException(e.getMessage(), e));
             }
         }
 

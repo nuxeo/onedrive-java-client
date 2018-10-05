@@ -18,30 +18,30 @@
  */
 package org.nuxeo.onedrive.client;
 
-import com.eclipsesource.json.JsonObject;
-
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Objects;
 
+import com.eclipsesource.json.JsonObject;
+
 /**
  * @since 1.0
  */
-public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
+public class OneDriveDrivesIterator implements Iterator<OneDriveDrive.Metadata> {
+    private final static URLTemplate DRIVE_LIST_URL = new URLTemplate("/drives");
 
     private final OneDriveAPI api;
 
     private final JsonObjectIterator jsonObjectIterator;
 
-    public OneDriveItemIterator(OneDriveAPI api, URL url) {
+    public OneDriveDrivesIterator(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
-        this.jsonObjectIterator = new JsonObjectIterator(api, url) {
+        this.jsonObjectIterator = new JsonObjectIterator(api, DRIVE_LIST_URL.build(api.getBaseURL())) {
 
             @Override
             protected void onResponse(JsonObject response) {
-                OneDriveItemIterator.this.onResponse(response);
+                OneDriveDrivesIterator.this.onResponse(response);
             }
-
         };
     }
 
@@ -51,8 +51,15 @@ public class OneDriveItemIterator implements Iterator<OneDriveItem.Metadata> {
     }
 
     @Override
-    public OneDriveItem.Metadata next() throws OneDriveRuntimeException {
-        return OneDriveItem.parseJson(api, jsonObjectIterator.next());
+    public OneDriveDrive.Metadata next() throws OneDriveRuntimeException {
+        JsonObject nextObject = jsonObjectIterator.next();
+        String id = nextObject.get("id").asString();
+
+        if(nextObject.get("driveType") != null && !nextObject.get("driveType").isNull()) {
+            OneDriveDrive drive = new OneDriveDrive(api, id);
+            return drive.new Metadata(nextObject);
+        }
+        throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
     }
 
     /**

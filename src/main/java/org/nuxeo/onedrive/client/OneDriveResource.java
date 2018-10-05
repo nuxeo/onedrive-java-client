@@ -18,9 +18,9 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.util.Objects;
-
 import com.eclipsesource.json.JsonObject;
+
+import java.util.Objects;
 
 /**
  * @since 1.0
@@ -28,29 +28,33 @@ import com.eclipsesource.json.JsonObject;
 public class OneDriveResource {
 
     private final OneDriveAPI api;
+    private final String resourceIdentifier;
 
-    private final String id;
-
-    OneDriveResource(OneDriveAPI api) {
+    public OneDriveResource(OneDriveAPI api) {
         this.api = Objects.requireNonNull(api);
-        this.id = null;
+        this.resourceIdentifier = null;
     }
 
-    public OneDriveResource(OneDriveAPI api, String id) {
+    public OneDriveResource(OneDriveAPI api, String resourceIdentifier) {
         this.api = Objects.requireNonNull(api);
-        this.id = Objects.requireNonNull(id);
+        this.resourceIdentifier = Objects.requireNonNull(resourceIdentifier);
     }
 
     public OneDriveAPI getApi() {
         return api;
     }
 
-    public String getId() {
-        return id;
+    public boolean isRoot() {
+        return resourceIdentifier == null;
     }
 
-    public boolean isRoot() {
-        return id == null;
+    public String getItemIdentifier() {
+        return resourceIdentifier;
+    }
+
+
+    public String getFullyQualifiedPath() {
+        return "";
     }
 
     @Override
@@ -64,12 +68,12 @@ public class OneDriveResource {
         }
 
         OneDriveResource oDObj = (OneDriveResource) obj;
-        return getId().equals(oDObj.getId());
+        return getItemIdentifier().equals(oDObj.getItemIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return getId().hashCode();
+        return getItemIdentifier().hashCode();
     }
 
     public abstract class Metadata extends OneDriveJsonObject {
@@ -79,7 +83,7 @@ public class OneDriveResource {
         }
 
         public String getId() {
-            return OneDriveResource.this.getId();
+            return OneDriveResource.this.getItemIdentifier();
         }
 
         public abstract OneDriveResource getResource();

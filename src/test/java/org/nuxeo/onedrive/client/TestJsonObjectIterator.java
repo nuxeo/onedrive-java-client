@@ -18,19 +18,17 @@
  */
 package org.nuxeo.onedrive.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URL;
-import java.util.NoSuchElementException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
+import java.net.URL;
+import java.util.NoSuchElementException;
+
 import com.eclipsesource.json.JsonObject;
+
+import static org.junit.Assert.*;
 
 /**
  * @since 1.0

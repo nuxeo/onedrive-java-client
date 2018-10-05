@@ -18,168 +18,103 @@
  */
 package org.nuxeo.onedrive.client;
 
+import org.apache.commons.io.input.ProxyInputStream;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.GZIPInputStream;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0
  */
 public abstract class AbstractResponse<C> implements Closeable {
 
-    private static final int BUFFER_SIZE = 8192;
+    private final int responseCode;
+    private final String responseMessage;
+    private final String location;
 
-    private final HttpURLConnection connection;
-
-    private int responseCode;
-
-    private String errorString;
-
-    /** The regular InputStream is the right stream to read body with raw or gzip content. */
-    private InputStream inputStream;
+    /**
+     * The regular InputStream is the right stream to read body with raw or gzip content.
+     */
+    private final InputStream inputStream;
 
     private boolean closed;
 
-    /**
-     * @param connection a connection which has already sent a request to the API
-     */
-    public AbstractResponse(HttpURLConnection connection) throws OneDriveAPIException {
-        this.connection = connection;
+    public AbstractResponse(final int responseCode, final String responseMessage, final String location, final InputStream inputStream) throws IOException {
+        this.responseCode = responseCode;
+        this.responseMessage = responseMessage;
+        this.location = location;
+        this.inputStream = inputStream;
+        this.validate();
+    }
 
-        try {
-            responseCode = connection.getResponseCode();
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
-        }
+    public abstract C getContent() throws IOException;
 
-        if (!isSuccess(responseCode)) {
-            throw new OneDriveAPIException("The API returned an error code: " + responseCode, responseCode,
-                    getErrorString());
+    public JsonObject getError() throws IOException {
+        try (InputStreamReader in = new InputStreamReader(this.getBody(), StandardCharsets.UTF_8)) {
+            return Json.parse(in).asObject();
         }
+        catch(ParseException e) {
+            // Response body is empty for failing GET requests
+            return null;
+        }
+    }
+
+    protected InputStream getBody() throws OneDriveAPIException {
+        return new ResponseInputStream();
     }
 
     public int getResponseCode() {
         return responseCode;
     }
 
-    public abstract C getContent() throws OneDriveAPIException;
-
-    protected InputStream getBody() throws OneDriveAPIException {
-        if (inputStream == null) {
-            try {
-                inputStream = handleGZIPStream(connection.getInputStream());
-            } catch (IOException e) {
-                throw new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", e);
-            }
-        }
-        return new ResponseInputStream();
+    public String getLocation() {
+        return location;
     }
 
     /**
      * Returns a string representation of error. Method returns the content of error stream.
      */
-    protected String getErrorString() {
-        if (errorString == null && !isSuccess(responseCode)) {
-            errorString = readErrorStream();
-        }
-        return errorString;
-    }
-
-    private String readErrorStream() {
-        try {
-            return readStream(getErrorStream());
-        } catch (OneDriveAPIException e) {
-            return null;
-        }
-    }
-
-    private InputStream getErrorStream() {
-        InputStream errorStream = connection.getErrorStream();
-        try {
-            return handleGZIPStream(errorStream);
-        } catch (IOException e) {
-            return errorStream;
-        }
-    }
-
-    /**
-     * Returns a gzip input stream if the connection has gzip content encoding, else returns input stream.
-     */
-    private InputStream handleGZIPStream(InputStream stream) throws IOException {
-        if (stream != null && "gzip".equalsIgnoreCase(connection.getContentEncoding())) {
-            return new GZIPInputStream(stream);
-        }
-        return stream;
+    protected String getResponseMessage() {
+        return responseMessage;
     }
 
     /**
      * Disconnects the response, close the input stream, so body can no longer be read after.
      */
     @Override
-    public void close() throws OneDriveAPIException {
-        if (closed) {
+    public void close() throws IOException {
+        if(closed) {
             return;
         }
-        try {
-            InputStream stream = connection.getInputStream();
+        inputStream.close();
+        closed = true;
+    }
 
-            // We need to manually read from the connection's input stream in case there are any remaining bytes.
-            // Else JVM won't return the connection to the pool
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int n = stream.read(buffer);
-            while (n != -1) {
-                n = stream.read(buffer);
+    protected void validate() throws IOException {
+        if(!this.isSuccess()) {
+            final JsonObject error = this.getError();
+            if(null == error) {
+                throw new OneDriveAPIException(responseMessage, responseCode);
             }
-            stream.close();
-
-            if (inputStream != null) {
-                inputStream.close();
-            }
-
-            closed = true;
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't close the connection to OneDrive API due to a network error.", e);
+            throw new OneDriveAPIException(responseMessage, responseCode, error);
         }
     }
 
-    private static boolean isSuccess(int responseCode) {
+    public boolean isSuccess() {
         return responseCode >= 200 && responseCode < 300;
     }
 
-    /**
-     * Returns the input stream as a string, then close it.
-     */
-    protected static String readStream(InputStream stream) throws OneDriveAPIException {
-        if (stream == null) {
-            return null;
-        }
+    private class ResponseInputStream extends ProxyInputStream {
 
-        InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-        StringBuilder builder = new StringBuilder();
-        char[] buffer = new char[BUFFER_SIZE];
-
-        try {
-            int read;
-            while ((read = reader.read(buffer, 0, BUFFER_SIZE)) != -1) {
-                builder.append(buffer, 0, read);
-            }
-
-            stream.close();
-        } catch (IOException e) {
-            throw new OneDriveAPIException("Couldn't read the stream from OneDrive API.", e);
-        }
-        return builder.toString();
-    }
-
-    private class ResponseInputStream extends InputStream {
-
-        @Override
-        public int read() throws IOException {
-            return inputStream.read();
+        public ResponseInputStream() {
+            super(inputStream);
         }
 
         @Override
@@ -188,5 +123,4 @@ public abstract class AbstractResponse<C> implements Closeable {
             AbstractResponse.this.close();
         }
     }
-
 }

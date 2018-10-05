@@ -61,9 +61,10 @@ public class OneDriveThumbnailSetIterator implements Iterator<OneDriveThumbnailS
         int id = Integer.parseInt(nextObject.get("id").asString());
 
         OneDriveThumbnailSet thumbnail;
-        if (itemId == null) {
+        if(itemId == null) {
             thumbnail = new OneDriveThumbnailSet(api, id);
-        } else {
+        }
+        else {
             thumbnail = new OneDriveThumbnailSet(api, itemId, id);
         }
         return thumbnail.new Metadata(nextObject);
