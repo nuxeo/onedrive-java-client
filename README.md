@@ -18,7 +18,7 @@ To import the client as maven dependency, declare it as follow for latest releas
 <dependency>
   <groupId>org.nuxeo.onedrive</groupId>
   <artifactId>onedrive-java-client</artifactId>
-  <version>1.0</version>
+  <version>2.0</version>
 </dependency>
 ```
 
@@ -28,7 +28,7 @@ If you want to use the on development version, declare :
 <dependency>
   <groupId>org.nuxeo.onedrive</groupId>
   <artifactId>onedrive-java-client</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>2.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -39,11 +39,11 @@ Artifact is available in nuxeo repositories :
 ### OneDrive
 
 To use the client with OneDrive you first need to create a `OneDriveBasicApi` to use it after with items of client :
- 
+
 ```java
 OneDriveAPI api = new OneDriveBasicAPI("YOUR_ACCESS_TOKEN");
 ```
- 
+
 ### OneDrive for Business
 
 To use the client with OneDrive for Business you need to create a `OneDriveBusinessAPI` to use it after with items of client :
@@ -51,7 +51,7 @@ To use the client with OneDrive for Business you need to create a `OneDriveBusin
 ```java
 OneDriveAPI api = new OneDriveBusinessAPI("YOUR_RESOURCE_URL", "YOUR_ACCESS_TOKEN");
 ```
- 
+
 `YOUR_RESOURCE_URL` corresponds to your sharepoint resource url provided by microsoft, for example : `https://nuxeofr-my.sharepoint.com`.
 
 ### First calls
@@ -125,11 +125,11 @@ OneDriveThumbnailSet.Metadata fileThumbnail = metadata.getThumbnailSet();
 Currently the OneDrive Java Client doesn't provide OAuth support to obtain or refresh an access token. You might obtain one before using the client.
 
 # Licensing
- 
+
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
- 
+
 # About Nuxeo
- 
+
 Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with
 SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris.
 More information is available at [www.nuxeo.com](http://www.nuxeo.com).
