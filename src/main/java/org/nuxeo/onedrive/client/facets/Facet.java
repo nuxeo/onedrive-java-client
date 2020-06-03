@@ -5,7 +5,7 @@ import org.nuxeo.onedrive.client.OneDriveJsonObject;
 
 import java.util.function.Consumer;
 
-public abstract class Facet {
+public abstract class Facet<T extends Facet<T>> {
     public JsonObject toJson() {
         final JsonObject jsonObject = new JsonObject();
 
@@ -14,8 +14,9 @@ public abstract class Facet {
         return jsonObject;
     }
 
-    public void fromJson(JsonObject jsonObject) {
+    public T fromJson(JsonObject jsonObject) {
         parseMember(jsonObject, this::parseMember);
+        return (T)this;
     }
 
     protected void populateJsonObject(JsonObject jsonObject) {
