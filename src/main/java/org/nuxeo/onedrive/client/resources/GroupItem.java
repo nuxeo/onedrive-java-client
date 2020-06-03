@@ -19,15 +19,17 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 
 public class GroupItem extends DirectoryObject {
-    public final static URLTemplate METADATA_URL_TEMPLATE = new URLTemplate("/groups/$1");
-
     public GroupItem(final OneDriveAPI api, final String id) {
         super(api, id);
     }
 
+    public String getBasePath() {
+        return "/groups/" + getId();
+    }
+
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = METADATA_URL_TEMPLATE.build(getApi().getBaseURL(), query, getId());
+        final URL url = new URLTemplate(getBasePath()).build(getApi().getBaseURL(), query);
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();
