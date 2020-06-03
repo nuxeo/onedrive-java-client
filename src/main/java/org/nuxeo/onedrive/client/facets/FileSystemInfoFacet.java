@@ -6,7 +6,7 @@ import com.eclipsesource.json.JsonValue;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
-public class FileSystemInfoFacet extends Facet {
+public class FileSystemInfoFacet extends Facet<FileSystemInfoFacet> {
     // The UTC date and time the file was created on a client.
     private OffsetDateTime createdDateTime;
 
