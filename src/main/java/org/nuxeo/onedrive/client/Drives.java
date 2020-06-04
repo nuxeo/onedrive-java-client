@@ -7,7 +7,7 @@ import org.nuxeo.onedrive.client.resources.Site;
 import java.net.URL;
 import java.util.Iterator;
 
-public class Drives {
+public final class Drives {
     public static Iterator<OneDriveDrive.Metadata> getDrives(final GroupItem group) {
         final URL groupDrivesURL = createDrivesUrl(group.getApi(), group.getBasePath());
         return new DrivesIterator(group.getApi(), groupDrivesURL);
