@@ -37,6 +37,10 @@ public class GroupItem extends DirectoryObject {
         return new Metadata(jsonObject);
     }
 
+    public static Metadata fromJson(final OneDriveAPI api, final JsonObject jsonObject) {
+        return new GroupItem(api, jsonObject.get("id").asString()).new Metadata(jsonObject);
+    }
+
     public class Metadata extends DirectoryObject.Metadata {
         private boolean allowExternalSenders = false;
         private boolean autoSubscribeNewMembers = false;

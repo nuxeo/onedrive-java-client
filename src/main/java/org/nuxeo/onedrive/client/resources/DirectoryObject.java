@@ -28,7 +28,7 @@ public abstract class DirectoryObject {
         final String type = jsonObject.get("@odata.type").asString();
         switch (type) {
             case "#microsoft.graph.group":
-                return new GroupItem(api, jsonObject.get("id").asString()).new Metadata(jsonObject);
+                return GroupItem.fromJson(api, jsonObject);
 
             default:
                 throw new OneDriveRuntimeException(
