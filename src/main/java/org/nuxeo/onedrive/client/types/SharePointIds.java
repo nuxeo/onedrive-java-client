@@ -1,8 +1,8 @@
-package org.nuxeo.onedrive.client.facets;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 
-public class SharePointIdsFacet extends Facet<SharePointIdsFacet> {
+public class SharePointIds extends Facet<SharePointIds> {
     private String listId;
     private String listItemId;
     private String listItemUniqueId;

@@ -1,10 +1,10 @@
-package org.nuxeo.onedrive.client.resources;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveIdentitySet;
-import org.nuxeo.onedrive.client.OneDriveJsonObject;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 
 public abstract class BaseItem {
@@ -29,7 +29,13 @@ public abstract class BaseItem {
         this.id = id;
     }
 
-    public abstract class Metadata extends OneDriveJsonObject {
+    public abstract String getPath();
+
+    public abstract String getAction(final String action);
+
+    public abstract Metadata getMetadata() throws IOException;
+
+    public abstract class Metadata<T extends Metadata<T>> extends GraphType<T> {
         private OneDriveIdentitySet createdBy;
         private ZonedDateTime createdDateTime;
         private String description;
@@ -37,7 +43,7 @@ public abstract class BaseItem {
         private OneDriveIdentitySet lastModifiedBy;
         private ZonedDateTime lastModifiedDateTime;
         private String name;
-        //private Object parentReference;
+        private ItemReference parentReference;
         public String webUrl;
 
         public String getId() {
@@ -76,8 +82,12 @@ public abstract class BaseItem {
             return name;
         }
 
-        public Metadata(final JsonObject jsonObject) {
-            super(jsonObject);
+        public ItemReference getParentReference() {
+            return parentReference;
+        }
+
+        public String getWebUrl() {
+            return webUrl;
         }
 
         @Override
@@ -105,7 +115,7 @@ public abstract class BaseItem {
                     name = member.getValue().asString();
                     break;
                 case "parentReference":
-                    // TODO
+                    parentReference = new ItemReference().fromJson(member.getValue().asObject());
                     break;
                 case "webUrl":
                     webUrl = member.getValue().asString();

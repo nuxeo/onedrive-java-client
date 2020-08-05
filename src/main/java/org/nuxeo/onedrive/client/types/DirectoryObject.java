@@ -1,4 +1,4 @@
-package org.nuxeo.onedrive.client.resources;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 

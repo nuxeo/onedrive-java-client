@@ -1,4 +1,4 @@
-package org.nuxeo.onedrive.client.resources;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -6,7 +6,6 @@ import com.eclipsesource.json.ParseException;
 
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 import org.nuxeo.onedrive.client.OneDriveJsonResponse;
@@ -58,7 +57,7 @@ public class GroupItem extends DirectoryObject {
         private boolean securityEnabled;
         private int unseenCount;
         private String visibility;
-        private OneDriveDrive drive;
+        private Drive drive;
 
         public Metadata() {
         }
@@ -136,7 +135,7 @@ public class GroupItem extends DirectoryObject {
             return visibility;
         }
 
-        public OneDriveDrive getDrive() {
+        public Drive getDrive() {
             return drive;
         }
 
@@ -199,7 +198,7 @@ public class GroupItem extends DirectoryObject {
                         final JsonValue driveIdName = driveObject.get("string");
                         if (null != driveIdName) {
                             final String driveId = driveIdName.asString();
-                            drive = new OneDriveDrive(GroupItem.this.getApi(), driveId);
+                            drive = new Drive(GroupItem.this, driveId);
                         }
                         break;
 

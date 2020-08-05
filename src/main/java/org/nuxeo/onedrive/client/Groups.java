@@ -1,9 +1,9 @@
 package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
-import org.nuxeo.onedrive.client.resources.GroupItem;
-import org.nuxeo.onedrive.client.resources.GroupItem.Metadata;
-import org.nuxeo.onedrive.client.resources.User;
+import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.GroupItem.Metadata;
+import org.nuxeo.onedrive.client.types.User;
 
 import java.net.URL;
 import java.util.Iterator;

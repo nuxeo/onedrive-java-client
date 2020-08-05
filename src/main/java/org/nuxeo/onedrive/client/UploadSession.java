@@ -4,6 +4,7 @@ import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,13 +13,13 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
-public class OneDriveUploadSession extends OneDriveJsonObject {
+public class UploadSession extends OneDriveJsonObject {
     private final OneDriveAPI api;
     private URL uploadUrl;
     private ZonedDateTime expirationDateTime;
     private String[] nextExpectedRanges;
 
-    public OneDriveUploadSession(OneDriveAPI api, JsonObject json) {
+    public UploadSession(OneDriveAPI api, JsonObject json) {
         super(json);
         this.api = api;
     }
@@ -46,12 +47,12 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
         return nextExpectedRanges[0];
     }
 
-    public OneDriveUploadSession getUploadStatus() throws IOException {
+    public UploadSession getUploadStatus() throws IOException {
         OneDriveJsonRequest request = new OneDriveJsonRequest(getUploadUrl(), "GET");
         OneDriveJsonResponse response = request.sendRequest(api.getExecutor());
         JsonObject jsonObject = response.getContent();
         response.close();
-        return new OneDriveUploadSession(api, jsonObject);
+        return new UploadSession(api, jsonObject);
     }
 
     public OneDriveJsonObject uploadFragment(String contentRange, byte[] content) throws IOException {
@@ -67,9 +68,9 @@ public class OneDriveUploadSession extends OneDriveJsonObject {
         JsonObject jsonObject = response.getContent();
         response.close();
         if (response.getResponseCode() == 202) {
-            return new OneDriveUploadSession(getApi(), jsonObject);
+            return new UploadSession(getApi(), jsonObject);
         } else if (response.getResponseCode() == 201 || response.getResponseCode() == 200) {
-            return OneDriveFile.parseJson(api, jsonObject);
+            return DriveItem.parseJson(api, jsonObject);
         }
         return null;
     }

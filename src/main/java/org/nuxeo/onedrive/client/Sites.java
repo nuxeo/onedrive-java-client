@@ -1,7 +1,7 @@
 package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
-import org.nuxeo.onedrive.client.resources.Site;
+import org.nuxeo.onedrive.client.types.Site;
 
 import java.net.URL;
 import java.util.Iterator;
@@ -22,7 +22,7 @@ public final class Sites {
     }
 
     private static URL createSitesUrl(final Site site) {
-        return new URLTemplate(site.getActionPath("sites")).build(site.getApi().getBaseURL());
+        return new URLTemplate(site.getAction("/sites")).build(site.getApi().getBaseURL());
     }
 
     private static URL createSitesUrl(final OneDriveAPI api, final String basePath) {
@@ -56,7 +56,7 @@ public final class Sites {
             final JsonObject jsonObject = iterator.next();
             final String id = jsonObject.get("id").asString();
 
-            return new Site(api, id).new Metadata(jsonObject);
+            return new Site(api, id).new Metadata().fromJson(jsonObject);
         }
     }
 }

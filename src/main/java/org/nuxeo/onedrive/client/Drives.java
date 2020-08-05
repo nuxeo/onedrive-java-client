@@ -1,20 +1,25 @@
 package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
-import org.nuxeo.onedrive.client.resources.GroupItem;
-import org.nuxeo.onedrive.client.resources.Site;
+import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.Site;
 
 import java.net.URL;
 import java.util.Iterator;
 
 public final class Drives {
-    public static Iterator<OneDriveDrive.Metadata> getDrives(final GroupItem group) {
+    public static Iterator<Drive.Metadata> getDrives(final OneDriveAPI api) {
+        return new DrivesIterator(api, new URLTemplate("/drives").build(api.getBaseURL()));
+    }
+
+    public static Iterator<Drive.Metadata> getDrives(final GroupItem group) {
         final URL groupDrivesURL = createDrivesUrl(group.getApi(), group.getBasePath());
         return new DrivesIterator(group.getApi(), groupDrivesURL);
     }
 
-    public static Iterator<OneDriveDrive.Metadata> getDrives(final Site site) {
-        final URL siteDrivesURL = createDrivesUrl(site.getApi(), site.getBasePath());
+    public static Iterator<Drive.Metadata> getDrives(final Site site) {
+        final URL siteDrivesURL = createDrivesUrl(site.getApi(), site.getPath());
         return new DrivesIterator(site.getApi(), siteDrivesURL);
     }
 
@@ -26,7 +31,7 @@ public final class Drives {
         return basePath + "/drives";
     }
 
-    private static class DrivesIterator implements Iterator<OneDriveDrive.Metadata> {
+    private static class DrivesIterator implements Iterator<Drive.Metadata> {
         private final OneDriveAPI api;
         private final JsonObjectIterator iterator;
 
@@ -41,11 +46,11 @@ public final class Drives {
         }
 
         @Override
-        public OneDriveDrive.Metadata next() {
+        public Drive.Metadata next() {
             final JsonObject nextObject = iterator.next();
             final String id = nextObject.get("id").asString();
 
-            return new OneDriveDrive(api, id).new Metadata(nextObject);
+            return new Drive(api, id).new Metadata().fromJson(nextObject);
         }
     }
 }

@@ -1,12 +1,10 @@
 package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
-import org.nuxeo.onedrive.client.resources.DirectoryObject;
-import org.nuxeo.onedrive.client.resources.GroupItem;
-import org.nuxeo.onedrive.client.resources.User;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.nuxeo.onedrive.client.types.DirectoryObject;
+import org.nuxeo.onedrive.client.types.GroupItem;
+import org.nuxeo.onedrive.client.types.User;
 
-import java.io.InvalidObjectException;
 import java.net.URL;
 import java.util.Iterator;
 

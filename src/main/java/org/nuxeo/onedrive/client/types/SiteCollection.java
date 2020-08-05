@@ -1,11 +1,11 @@
-package org.nuxeo.onedrive.client.facets;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 
-public class SiteCollectionFacet extends Facet<SiteCollectionFacet> {
+public class SiteCollection extends Facet<SiteCollection> {
     private String hostname;
     private String dataLocationCode;
-    private RootFacet root;
+    private Root root;
 
     public String getHostname() {
         return hostname;
@@ -15,7 +15,7 @@ public class SiteCollectionFacet extends Facet<SiteCollectionFacet> {
         return dataLocationCode;
     }
 
-    public RootFacet getRoot() {
+    public Root getRoot() {
         return root;
     }
 
@@ -29,7 +29,7 @@ public class SiteCollectionFacet extends Facet<SiteCollectionFacet> {
                 dataLocationCode = member.getValue().asString();
                 break;
             case "root":
-                root = new RootFacet().fromJson(member.getValue().asObject());
+                root = new Root().fromJson(member.getValue().asObject());
                 break;
             default:
                 super.parseMember(member);
