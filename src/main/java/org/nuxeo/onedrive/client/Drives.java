@@ -19,8 +19,7 @@ public final class Drives {
     }
 
     public static Iterator<Drive.Metadata> getDrives(final Site site) {
-        final URL siteDrivesURL = createDrivesUrl(site.getApi(), site.getPath());
-        return new DrivesIterator(site.getApi(), siteDrivesURL);
+        return new DrivesIterator(site.getApi(), new URLTemplate(site.getAction("/drives")).build(site.getApi().getBaseURL()));
     }
 
     private static URL createDrivesUrl(final OneDriveAPI api, final String basePath) {

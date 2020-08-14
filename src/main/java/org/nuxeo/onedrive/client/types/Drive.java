@@ -103,7 +103,7 @@ public class Drive extends BaseItem {
     }
 
     public enum DriveType {
-        Personal, Business, DocumentLibrary
+        personal, business, documentLibrary
     }
 
     private static List<DriveItem.Metadata> map(JsonArray array, OneDriveAPI api) {
