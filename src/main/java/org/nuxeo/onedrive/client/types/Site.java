@@ -11,40 +11,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Site extends BaseItem {
+    private final Site parent;
     private final SiteIdentifier identifier;
-    private final String hostname;
-    private final String path;
 
-    public Site(final OneDriveAPI api) {
+    Site(final OneDriveAPI api) {
         super(api);
-        identifier = null;
-        hostname = null;
-        path = null;
+        this.parent = null;
+        this.identifier = null;
     }
 
-    public Site(final OneDriveAPI api, final String id) {
+    Site(final OneDriveAPI api, final String id, final SiteIdentifier identifier) {
         super(api, id);
-        identifier = SiteIdentifier.Id;
-        hostname = null;
-        path = null;
+        this.parent = null;
+        this.identifier = identifier;
     }
 
-    public Site(final OneDriveAPI api, final String hostname, final String path) {
-        super(api);
-        identifier = SiteIdentifier.Path;
-        this.hostname = hostname;
-        this.path = path;
+    Site(final Site parent, final String id, final SiteIdentifier identifier) {
+        super(parent.getApi(), id);
+        this.parent = parent;
+        this.identifier = identifier;
+    }
+
+    public static Site byId(final OneDriveAPI api, final String id) {
+        return new Site(api, id, SiteIdentifier.Id);
+    }
+
+    public static Site byId(final Site parent, final String id) {
+        return new Site(parent, id, SiteIdentifier.Id);
+    }
+
+    public static Site byHostname(final OneDriveAPI api, final String hostname) {
+        return new Site(api, hostname, null);
+    }
+
+    public static Site byPath(final Site site, final String path) {
+        return new Site(site, path, SiteIdentifier.Path);
     }
 
     @Override
     public String getPath() {
-        if (isRoot()) {
-            return "/sites/root";
-        } else if (null == getId()) {
-            return "/sites/" + hostname + ":" + path;
-        } else {
+        if (identifier == null) {
             return "/sites/" + getId();
         }
+
+        String path;
+        if (identifier == SiteIdentifier.Path) {
+            path = ":" + getId();
+        }
+        else {
+            path = "/sites/" + getId();
+        }
+
+        if (null != parent) {
+            return parent.getAction(path);
+        }
+        return path;
     }
 
     @Deprecated
@@ -97,7 +118,7 @@ public class Site extends BaseItem {
 
     public static Site.Metadata fromJson(final OneDriveAPI api, final JsonObject jsonObject) {
         final String id = jsonObject.get("id").asString();
-        return new Site(api, id).new Metadata().fromJson(jsonObject);
+        return new Site(api, id, SiteIdentifier.Id).new Metadata().fromJson(jsonObject);
     }
 
     public class Metadata extends BaseItem.Metadata<Metadata> {

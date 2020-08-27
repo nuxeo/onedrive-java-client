@@ -56,7 +56,7 @@ public final class Sites {
             final JsonObject jsonObject = iterator.next();
             final String id = jsonObject.get("id").asString();
 
-            return new Site(api, id).new Metadata().fromJson(jsonObject);
+            return Site.byId(api, id).new Metadata().fromJson(jsonObject);
         }
     }
 }
