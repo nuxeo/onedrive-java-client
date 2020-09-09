@@ -84,7 +84,12 @@ public class Site extends BaseItem {
 
     @Override
     public Metadata getMetadata() throws IOException {
-        return null;
+        final URL url = new URLTemplate(getBasePath()).build(getApi().getBaseURL());
+        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        try (final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor())) {
+            JsonObject jsonObject = response.getContent();
+            return new Metadata().fromJson(jsonObject);
+        }
     }
 
     @Deprecated
@@ -104,16 +109,6 @@ public class Site extends BaseItem {
 
     private enum SiteIdentifier {
         Id, Path
-    }
-
-    public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
-        final QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = new URLTemplate(getBasePath()).build(getApi().getBaseURL(), query);
-        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
-        final OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
-        JsonObject jsonObject = response.getContent();
-        response.close();
-        return new Metadata().fromJson(jsonObject);
     }
 
     public static Site.Metadata fromJson(final OneDriveAPI api, final JsonObject jsonObject) {
