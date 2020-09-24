@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Objects;
 
 public final class Files {
     private static URL getChildrenUrl(DriveItem item) {
@@ -86,6 +87,20 @@ public final class Files {
 
     public static void patch(DriveItem item, PatchOperation patch) throws IOException {
         new OneDriveJsonRequest(new URLTemplate(item.getPath()).build(item.getApi().getBaseURL()), "PATCH", patch.build()).sendRequest(item.getApi().getExecutor()).close();
+    }
+
+    public static void checkout(DriveItem item) throws IOException {
+        new OneDriveRequest(new URLTemplate(item.getPath()).build(item.getApi().getBaseURL()), "POST").sendRequest(item.getApi().getExecutor()).close();
+    }
+
+    public static void checkin(DriveItem item, String comment) throws IOException {
+        comment = Objects.requireNonNull(comment).trim();
+        if (comment.isEmpty()){
+            throw new OneDriveAPIException("Comment must not be empty.");
+        }
+        final JsonObject root = new JsonObject();
+        root.add("comment", comment);
+        new OneDriveJsonRequest(new URLTemplate(item.getPath()).build(item.getApi().getBaseURL()), "POST", root).sendRequest(item.getApi().getExecutor()).close();
     }
 
     public static OneDriveLongRunningAction copy(DriveItem item, CopyOperation copy) throws IOException {
