@@ -30,18 +30,24 @@ public final class Files {
         return new URLTemplate(item.getAction("/createUploadSession")).build(item.getApi().getBaseURL());
     }
 
+    private static URL getCheckInUrl(DriveItem item) {
+        return new URLTemplate(item.getAction("/checkin")).build(item.getApi().getBaseURL());
+    }
+
+    private static URL getCheckOutUrl(DriveItem item) {
+        return new URLTemplate(item.getAction("/checkout")).build(item.getApi().getBaseURL());
+    }
+
     public static DriveItem.Metadata createFile(DriveItem parent, String filename, String mimeType) throws IOException {
-        final URL url = getChildrenUrl(parent);
-        final JsonObject rootObject = new JsonObject();
-        rootObject.add("name", filename);
-        final JsonObject file = new JsonObject();
-        file.add("mimeType", mimeType);
-        rootObject.add("file", file);
-        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "POST", rootObject);
-        final OneDriveJsonResponse response = request.sendRequest(parent.getApi().getExecutor());
-        final JsonObject responseObject = response.getContent();
+        final DriveItem item = new DriveItem(parent, filename);
+        final URL url = getContentUrl(item);
+        final OneDriveRequest request = new OneDriveRequest(url, "PUT");
+        request.addHeader("Content-Type", mimeType);
+        final OneDriveResponse response = request.sendRequest(parent.getApi().getExecutor(), new NullInputStream(0));
+        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getLocation(), response.getContent());
+        final JsonObject jsonObject = jsonResponse.getContent();
         response.close();
-        return DriveItem.parseJson(parent.getApi(), responseObject);
+        return DriveItem.parseJson(parent.getApi(), jsonObject);
     }
 
     public static DriveItem.Metadata createFolder(DriveItem parent, String foldername) throws IOException {
@@ -90,7 +96,7 @@ public final class Files {
     }
 
     public static void checkout(DriveItem item) throws IOException {
-        new OneDriveRequest(new URLTemplate(item.getPath()).build(item.getApi().getBaseURL()), "POST").sendRequest(item.getApi().getExecutor()).close();
+        new OneDriveRequest(getCheckOutUrl(item), "POST").sendRequest(item.getApi().getExecutor(), new NullInputStream(0)).close();
     }
 
     public static void checkin(DriveItem item, String comment) throws IOException {
@@ -100,7 +106,7 @@ public final class Files {
         }
         final JsonObject root = new JsonObject();
         root.add("comment", comment);
-        new OneDriveJsonRequest(new URLTemplate(item.getPath()).build(item.getApi().getBaseURL()), "POST", root).sendRequest(item.getApi().getExecutor()).close();
+        new OneDriveJsonRequest(getCheckInUrl(item), "POST", root).sendRequest(item.getApi().getExecutor()).close();
     }
 
     public static OneDriveLongRunningAction copy(DriveItem item, CopyOperation copy) throws IOException {
