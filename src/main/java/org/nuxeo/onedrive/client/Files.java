@@ -1,15 +1,20 @@
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import org.apache.commons.io.input.NullInputStream;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.DriveItemVersion;
 import org.nuxeo.onedrive.client.types.Permission;
 import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 public final class Files {
@@ -24,6 +29,10 @@ public final class Files {
 
     private static URL getContentUrl(DriveItem item) {
         return new URLTemplate(item.getAction("/content")).build(item.getApi().getBaseURL());
+    }
+
+    private static URL getVersionsUrl(DriveItem item) {
+        return new URLTemplate(item.getAction("/versions")).build(item.getApi().getBaseURL());
     }
 
     private static URL getUploadSessionUrl(DriveItem item) {
@@ -60,6 +69,19 @@ public final class Files {
         final JsonObject responseObject = response.getContent();
         response.close();
         return DriveItem.parseJson(parent.getApi(), responseObject);
+    }
+
+    public static List<DriveItemVersion> versions(DriveItem item) throws IOException {
+        final URL url = getVersionsUrl(item);
+        OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        OneDriveJsonResponse response = request.sendRequest(item.getApi().getExecutor());
+        final List<DriveItemVersion> versions = new ArrayList<>();
+        final JsonObject body = response.getContent();
+        final JsonArray value = body.get("value").asArray();
+        for (JsonValue version : value) {
+            versions.add(new DriveItemVersion().fromJson(version.asObject()));
+        }
+        return versions;
     }
 
     public static InputStream download(DriveItem item) throws IOException {
@@ -101,7 +123,7 @@ public final class Files {
 
     public static void checkin(DriveItem item, String comment) throws IOException {
         comment = Objects.requireNonNull(comment).trim();
-        if (comment.isEmpty()){
+        if (comment.isEmpty()) {
             throw new OneDriveAPIException("Comment must not be empty.");
         }
         final JsonObject root = new JsonObject();
