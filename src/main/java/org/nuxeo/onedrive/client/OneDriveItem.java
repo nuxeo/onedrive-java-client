@@ -177,14 +177,14 @@ public abstract class OneDriveItem extends OneDriveResource {
     }
 
     public static OneDriveItem.Metadata parseJson(OneDriveAPI api, final JsonObject nextObject) {
-        if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
+        if (nextObject.get("remoteItem") != null && !nextObject.get("remoteItem").isNull()) {
+            return OneDriveRemoteItem.parseJson(api, nextObject);
+        } else if (nextObject.get("folder") != null && !nextObject.get("folder").isNull()) {
             return OneDriveFolder.parseJson(api, nextObject);
         } else if (nextObject.get("file") != null && !nextObject.get("file").isNull()) {
             return OneDriveFile.parseJson(api, nextObject);
         } else if (nextObject.get("package") != null && !nextObject.get("package").isNull()) {
             return OneDrivePackageItem.parseJson(api, nextObject);
-        } else if (nextObject.get("remoteItem") != null && !nextObject.get("remoteItem").isNull()) {
-            return OneDriveRemoteItem.parseJson(api, nextObject);
         } else {
             throw new OneDriveRuntimeException(new OneDriveAPIException("The object type is currently not handled"));
         }
