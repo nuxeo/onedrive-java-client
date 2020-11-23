@@ -1,4 +1,4 @@
-package org.nuxeo.onedrive.client.resources;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -6,7 +6,6 @@ import com.eclipsesource.json.ParseException;
 
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 import org.nuxeo.onedrive.client.OneDriveJsonResponse;
@@ -19,20 +18,26 @@ import java.net.URL;
 import java.time.ZonedDateTime;
 
 public class GroupItem extends DirectoryObject {
-    public final static URLTemplate METADATA_URL_TEMPLATE = new URLTemplate("/groups/$1");
-
     public GroupItem(final OneDriveAPI api, final String id) {
         super(api, id);
     }
 
+    public String getBasePath() {
+        return "/groups/" + getId();
+    }
+
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = METADATA_URL_TEMPLATE.build(getApi().getBaseURL(), query, getId());
+        final URL url = new URLTemplate(getBasePath()).build(getApi().getBaseURL(), query);
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();
         response.close();
         return new Metadata(jsonObject);
+    }
+
+    public static Metadata fromJson(final OneDriveAPI api, final JsonObject jsonObject) {
+        return new GroupItem(api, jsonObject.get("id").asString()).new Metadata(jsonObject);
     }
 
     public class Metadata extends DirectoryObject.Metadata {
@@ -52,7 +57,7 @@ public class GroupItem extends DirectoryObject {
         private boolean securityEnabled;
         private int unseenCount;
         private String visibility;
-        private OneDriveDrive drive;
+        private Drive drive;
 
         public Metadata() {
         }
@@ -130,7 +135,7 @@ public class GroupItem extends DirectoryObject {
             return visibility;
         }
 
-        public OneDriveDrive getDrive() {
+        public Drive getDrive() {
             return drive;
         }
 
@@ -193,7 +198,7 @@ public class GroupItem extends DirectoryObject {
                         final JsonValue driveIdName = driveObject.get("string");
                         if (null != driveIdName) {
                             final String driveId = driveIdName.asString();
-                            drive = new OneDriveDrive(GroupItem.this.getApi(), driveId);
+                            drive = new Drive(GroupItem.this, driveId);
                         }
                         break;
 

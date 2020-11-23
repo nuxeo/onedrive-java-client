@@ -1,12 +1,11 @@
-package org.nuxeo.onedrive.client.facets;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
-public class FileSystemInfoFacet extends Facet {
+public class FileSystemInfo extends Facet<FileSystemInfo> {
     // The UTC date and time the file was created on a client.
     private OffsetDateTime createdDateTime;
 

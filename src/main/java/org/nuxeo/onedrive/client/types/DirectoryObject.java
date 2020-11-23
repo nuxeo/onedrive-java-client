@@ -1,9 +1,11 @@
-package org.nuxeo.onedrive.client.resources;
+package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
 
 import org.nuxeo.onedrive.client.OneDriveAPI;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonObject;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 public abstract class DirectoryObject {
     private final OneDriveAPI api;
@@ -20,6 +22,18 @@ public abstract class DirectoryObject {
 
     public String getId() {
         return id;
+    }
+
+    public static DirectoryObject.Metadata fromJson(final OneDriveAPI api, final JsonObject jsonObject) {
+        final String type = jsonObject.get("@odata.type").asString();
+        switch (type) {
+            case "#microsoft.graph.group":
+                return GroupItem.fromJson(api, jsonObject);
+
+            default:
+                throw new OneDriveRuntimeException(
+                        new OneDriveAPIException(String.format("The object type %s is currently not handled.", type)));
+        }
     }
 
     public abstract class Metadata extends OneDriveJsonObject {

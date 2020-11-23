@@ -1,10 +1,24 @@
 package org.nuxeo.onedrive.client;
 
 import org.junit.Test;
+import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import static org.junit.Assert.assertEquals;
 
 public class OneDriveItemBuilderTest extends OneDriveTestCase {
+    private static void assertPath(String expected, Drive drive) {
+        assertEquals(expected, new URLTemplate(drive.getPath()).build(drive.getApi().getBaseURL()).getPath());
+    }
+
+    private static void assertPath(String expected, DriveItem item) {
+        assertEquals(expected, new URLTemplate(item.getPath()).build(item.getApi().getBaseURL()).getPath());
+    }
+
+    private static void assertChildrenPath(String expected, DriveItem item) {
+        assertEquals(expected, new URLTemplate(item.getAction("/children")).build(item.getApi().getBaseURL()).getPath());
+    }
+
     /*
     Test Matrix
     +-----------------------+-------------------------+----------------------------------+
@@ -17,86 +31,91 @@ public class OneDriveItemBuilderTest extends OneDriveTestCase {
      */
     @Test
     public void testDriveDefault() {
-        OneDriveDrive drive = OneDriveDrive.getDefaultDrive(api);
-        assertEquals("/v1.0/drive", drive.getMetadataUrl().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api);
+        assertPath("/v1.0/drive", drive);
     }
 
     @Test
     public void testDriveId() {
-        OneDriveDrive drive = new OneDriveDrive(api, "DRIVE");
-        assertEquals("/v1.0/drives/DRIVE", drive.getMetadataUrl().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVE");
+        assertPath("/v1.0/drives/DRIVE", drive);
     }
 
     @Test
     public void testDriveNullFolderNull() {
-        OneDriveDrive drive = OneDriveDrive.getDefaultDrive(api);
-        OneDriveFolder folder = drive.getRoot();
-        assertEquals("/v1.0/drive/root", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drive/root/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api);
+        DriveItem folder = new DriveItem(drive);
+        assertPath("/v1.0/drive/root", folder);
+        assertChildrenPath("/v1.0/drive/root/children", folder);
     }
 
     @Test
     public void testDriveNullFolderId() {
-        OneDriveDrive drive = OneDriveDrive.getDefaultDrive(api);
-        OneDriveFolder folder = new OneDriveFolder(api, drive, "FOLDERID", OneDriveItem.ItemIdentifierType.Id);
-        assertEquals("/v1.0/drive/items/FOLDERID", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drive/items/FOLDERID/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api);
+        DriveItem folder = new DriveItem(drive, "FOLDERID");
+        assertPath("/v1.0/drive/items/FOLDERID", folder);
+        assertChildrenPath("/v1.0/drive/items/FOLDERID/children", folder);
     }
 
     @Test
     public void testDriveNullFolderPath() {
-        OneDriveDrive drive = OneDriveDrive.getDefaultDrive(api);
-        OneDriveFolder folder = new OneDriveFolder(api, drive, "FOLDERPATH", OneDriveItem.ItemIdentifierType.Path);
-        assertEquals("/v1.0/drive/root:/FOLDERPATH", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drive/root:/FOLDERPATH:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api);
+        DriveItem root = new DriveItem(drive);
+        DriveItem folder = new DriveItem(root, "FOLDERPATH");
+
+        assertPath("/v1.0/drive/root:/FOLDERPATH", folder);
+        assertChildrenPath("/v1.0/drive/root:/FOLDERPATH:/children", folder);
     }
 
     @Test
     public void testDriveFolderNull() {
-        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
-        OneDriveFolder folder = new OneDriveFolder(api, testDrive);
-        assertEquals("/v1.0/drives/DRIVEID/root", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drives/DRIVEID/root/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVEID");
+        DriveItem folder = new DriveItem(drive);
+        assertPath("/v1.0/drives/DRIVEID/root", folder);
+        assertChildrenPath("/v1.0/drives/DRIVEID/root/children", folder);
     }
 
     @Test
     public void testDriveFolderId() {
-        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
-        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "FOLDERID", OneDriveItem.ItemIdentifierType.Id);
-        assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVEID");
+        DriveItem folder = new DriveItem(drive, "FOLDERID");
+        assertPath("/v1.0/drives/DRIVEID/items/FOLDERID", folder);
+        assertChildrenPath("/v1.0/drives/DRIVEID/items/FOLDERID/children", folder);
     }
 
     @Test
     public void testDriveFolderPath() {
-        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
-        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "FOLDERPATH", OneDriveItem.ItemIdentifierType.Path);
-        assertEquals("/v1.0/drives/DRIVEID/root:/FOLDERPATH", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drives/DRIVEID/root:/FOLDERPATH:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVEID");
+        DriveItem root = new DriveItem(drive);
+        DriveItem folder = new DriveItem(root, "FOLDERPATH");
+        assertPath("/v1.0/drives/DRIVEID/root:/FOLDERPATH", folder);
+        assertChildrenPath("/v1.0/drives/DRIVEID/root:/FOLDERPATH:/children", folder);
     }
 
     @Test
     public void testParent() {
-        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
-        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "FOLDERID", OneDriveItem.ItemIdentifierType.Id);
-        OneDriveFolder child = new OneDriveFolder(api, folder, "Test", OneDriveItem.ItemIdentifierType.Path);
-        assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID:/Test", child.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drives/DRIVEID/items/FOLDERID:/Test:/children", child.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVEID");
+        DriveItem folder = new DriveItem(drive, "FOLDERID");
+        DriveItem child = new DriveItem(folder, "Test");
+        assertPath("/v1.0/drives/DRIVEID/items/FOLDERID:/Test", child);
+        assertChildrenPath("/v1.0/drives/DRIVEID/items/FOLDERID:/Test:/children", child);
     }
 
     @Test
     public void testSpace() {
-        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
-        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "SPACE SPACE", OneDriveItem.ItemIdentifierType.Path);
-        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE SPACE", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE SPACE:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVEID");
+        DriveItem root = new DriveItem(drive);
+        DriveItem folder = new DriveItem(root, "SPACE SPACE");
+        assertPath("/v1.0/drives/DRIVEID/root:/SPACE SPACE", folder);
+        assertChildrenPath("/v1.0/drives/DRIVEID/root:/SPACE SPACE:/children", folder);
     }
 
     @Test
     public void testEscapedSpace() {
-        OneDriveDrive testDrive = new OneDriveDrive(api, "DRIVEID");
-        OneDriveFolder folder = new OneDriveFolder(api, testDrive, "SPACE%20SPACE", OneDriveItem.ItemIdentifierType.Path);
-        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE%20SPACE", folder.getMetadataURL().build(api.getBaseURL()).getPath());
-        assertEquals("/v1.0/drives/DRIVEID/root:/SPACE%20SPACE:/children", folder.getChildrenURL().build(api.getBaseURL()).getPath());
+        Drive drive = new Drive(api, "DRIVEID");
+        DriveItem root = new DriveItem(drive);
+        DriveItem folder = new DriveItem(root, "SPACE%20SPACE");
+        assertPath("/v1.0/drives/DRIVEID/root:/SPACE%20SPACE", folder);
+        assertChildrenPath("/v1.0/drives/DRIVEID/root:/SPACE%20SPACE:/children", folder);
     }
 }
