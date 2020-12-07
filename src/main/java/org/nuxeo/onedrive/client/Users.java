@@ -5,10 +5,22 @@ import org.nuxeo.onedrive.client.types.DirectoryObject;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.User;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 
 public class Users {
+
+    public static User.Metadata get(final User user, final User.Select... select) throws IOException {
+        final QueryStringBuilder query = new QueryStringBuilder().set("$select", select);
+        final URL url = new URLTemplate(user.getPath()).build(user.getApi().getBaseURL(), query);
+        final OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+        final OneDriveJsonResponse response = request.sendRequest(user.getApi().getExecutor());
+        final JsonObject jsonObject = response.getContent();
+        response.close();
+        return user.new Metadata(jsonObject);
+    }
+
     public static Iterator<DirectoryObject.Metadata> memberOf(final OneDriveAPI api, final User user) {
         return new MemberOfIterator(api, new URLTemplate(user.getOperationPath("memberOf")).build(api.getBaseURL()));
     }
