@@ -22,13 +22,14 @@ public class GroupItem extends DirectoryObject {
         super(api, id);
     }
 
-    public String getBasePath() {
+    @Override
+    public String getPath() {
         return "/groups/" + getId();
     }
 
     public Metadata getMetadata(OneDriveExpand... expands) throws IOException {
         QueryStringBuilder query = new QueryStringBuilder().set("expand", expands);
-        final URL url = new URLTemplate(getBasePath()).build(getApi().getBaseURL(), query);
+        final URL url = new URLTemplate(getPath()).build(getApi().getBaseURL(), query);
         OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
         OneDriveJsonResponse response = request.sendRequest(getApi().getExecutor());
         JsonObject jsonObject = response.getContent();

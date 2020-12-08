@@ -32,14 +32,14 @@ public class Drive extends BaseItem {
         this.parent = new SiteParent(parent);
     }
 
-    public Drive(GroupItem parent) {
+    public Drive(DirectoryObject parent) {
         super(parent.getApi());
-        this.parent = new GroupParent(parent);
+        this.parent = new DirectoryObjectParent(parent);
     }
 
-    public Drive(GroupItem parent, String id) {
+    public Drive(DirectoryObject parent, String id) {
         super(parent.getApi(), id);
-        this.parent = new GroupParent(parent);
+        this.parent = new DirectoryObjectParent(parent);
     }
 
     @Override
@@ -55,8 +55,8 @@ public class Drive extends BaseItem {
             return action;
         } else if (parent instanceof SiteParent) {
             return ((SiteParent) parent).getParent().getAction(action);
-        } else if (parent instanceof GroupParent) {
-            return ((GroupParent) parent).getParent().getBasePath() + action;
+        } else if (parent instanceof DirectoryObjectParent) {
+            return ((DirectoryObjectParent) parent).getParent().getPath() + action;
         }
         return "";
     }
@@ -90,8 +90,8 @@ public class Drive extends BaseItem {
         }
     }
 
-    private static class GroupParent extends DriveParent<GroupItem> {
-        GroupParent(GroupItem parent) {
+    private static class DirectoryObjectParent extends DriveParent<DirectoryObject> {
+        DirectoryObjectParent(DirectoryObject parent) {
             super(parent);
         }
     }

@@ -1,8 +1,8 @@
 package org.nuxeo.onedrive.client;
 
 import com.eclipsesource.json.JsonObject;
+import org.nuxeo.onedrive.client.types.DirectoryObject;
 import org.nuxeo.onedrive.client.types.Drive;
-import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.net.URL;
@@ -13,9 +13,9 @@ public final class Drives {
         return new DrivesIterator(api, new URLTemplate("/drives").build(api.getBaseURL()));
     }
 
-    public static Iterator<Drive.Metadata> getDrives(final GroupItem group) {
-        final URL groupDrivesURL = createDrivesUrl(group.getApi(), group.getBasePath());
-        return new DrivesIterator(group.getApi(), groupDrivesURL);
+    public static Iterator<Drive.Metadata> getDrives(final DirectoryObject object) {
+        final URL objectDrivesURL = createDrivesUrl(object.getApi(), object.getPath());
+        return new DrivesIterator(object.getApi(), objectDrivesURL);
     }
 
     public static Iterator<Drive.Metadata> getDrives(final Site site) {

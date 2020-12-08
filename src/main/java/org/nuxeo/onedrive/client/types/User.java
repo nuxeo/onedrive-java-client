@@ -22,6 +22,7 @@ public class User extends DirectoryObject {
         return new User(api, "me", null);
     }
 
+    @Override
     public String getPath() {
         if (null == userIdType) {
             return "/" + getId();

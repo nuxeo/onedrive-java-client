@@ -24,6 +24,8 @@ public abstract class DirectoryObject {
         return id;
     }
 
+    public abstract String getPath();
+
     public static DirectoryObject.Metadata fromJson(final OneDriveAPI api, final JsonObject jsonObject) {
         final String type = jsonObject.get("@odata.type").asString();
         switch (type) {
