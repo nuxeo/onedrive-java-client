@@ -1,6 +1,8 @@
 package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import org.graalvm.compiler.nodes.calc.IntegerDivRemNode;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.QueryStringCommaParameter;
 
@@ -94,7 +96,7 @@ public class User extends DirectoryObject {
                 case "creationType":
                     // creationType can be non-assigned (Microsoft Account)
                     // or null, Inviation, LocalAccount or EmailVerified.
-                    creationType = Optional.ofNullable(member.getValue().asString());
+                    creationType = member.getValue().isNull() ? Optional.empty() : Optional.ofNullable(member.getValue().asString());
                     break;
                 case "department":
                 case "displayName":
