@@ -1,7 +1,6 @@
 package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
-
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonObject;

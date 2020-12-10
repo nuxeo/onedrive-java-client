@@ -18,14 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-
-import com.eclipsesource.json.JsonArray;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 /**
  * @since 1.0

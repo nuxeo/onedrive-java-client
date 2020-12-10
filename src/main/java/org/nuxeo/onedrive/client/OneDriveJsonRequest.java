@@ -18,12 +18,12 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
-import com.eclipsesource.json.JsonObject;
 
 /**
  * @since 1.0

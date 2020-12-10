@@ -18,9 +18,9 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.io.IOException;
-
 import com.eclipsesource.json.JsonObject;
+
+import java.io.IOException;
 
 /**
  * @since 1.0

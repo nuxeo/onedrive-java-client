@@ -3,8 +3,6 @@ package org.nuxeo.onedrive.client.types;
 import com.eclipsesource.json.JsonObject;
 import org.nuxeo.onedrive.client.OneDriveIdentitySet;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.OffsetDateTime;
 
 public class DriveItemVersion extends Facet<DriveItemVersion> {

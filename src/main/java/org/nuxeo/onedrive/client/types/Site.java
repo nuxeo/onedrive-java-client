@@ -3,7 +3,10 @@ package org.nuxeo.onedrive.client.types;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import org.nuxeo.onedrive.client.*;
+import org.nuxeo.onedrive.client.OneDriveAPI;
+import org.nuxeo.onedrive.client.OneDriveJsonRequest;
+import org.nuxeo.onedrive.client.OneDriveJsonResponse;
+import org.nuxeo.onedrive.client.URLTemplate;
 
 import java.io.IOException;
 import java.net.URL;

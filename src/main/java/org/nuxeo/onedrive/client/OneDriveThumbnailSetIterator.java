@@ -18,10 +18,10 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+
 import java.util.Iterator;
 import java.util.Objects;
-
-import com.eclipsesource.json.JsonObject;
 
 /**
  * @since 1.0

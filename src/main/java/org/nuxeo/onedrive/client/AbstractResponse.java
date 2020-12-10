@@ -18,6 +18,9 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.ParseException;
 import org.apache.commons.io.input.ProxyInputStream;
 
 import java.io.Closeable;
@@ -25,10 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.ParseException;
 
 /**
  * @since 1.0

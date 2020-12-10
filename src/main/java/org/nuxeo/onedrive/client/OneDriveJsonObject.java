@@ -18,9 +18,9 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.util.function.Consumer;
-
 import com.eclipsesource.json.JsonObject;
+
+import java.util.function.Consumer;
 
 /**
  * @since 1.0

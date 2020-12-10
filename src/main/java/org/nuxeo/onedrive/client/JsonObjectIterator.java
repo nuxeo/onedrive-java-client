@@ -18,14 +18,14 @@
  */
 package org.nuxeo.onedrive.client;
 
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 /**
  * @since 1.0

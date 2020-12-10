@@ -18,11 +18,11 @@
  */
 package org.nuxeo.onedrive.client;
 
-import java.util.Objects;
-
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
+
+import java.util.Objects;
 
 /**
  * See documentation at https://dev.onedrive.com/resources/thumbnailSet.htm.
