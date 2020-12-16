@@ -76,6 +76,17 @@ public class User extends DirectoryObject {
         }
 
         @Override
+        protected boolean parseMemberUnsafe(JsonObject.Member member) {
+            if ("creationType".equals(member.getName())) {
+                // creationType can be non-assigned (Microsoft Account)
+                // or null, Inviation, LocalAccount or EmailVerified.
+                creationType = member.getValue().isNull() ? Optional.empty() : Optional.ofNullable(member.getValue().asString());
+                return true;
+            }
+            return super.parseMemberUnsafe(member);
+        }
+
+        @Override
         protected void parseMember(JsonObject.Member member) {
             switch (member.getName()) {
                 case "aboutMe":
@@ -90,11 +101,6 @@ public class User extends DirectoryObject {
                 case "consentProvidedForMinor":
                 case "country":
                 case "createdDateTime":
-                    break;
-                case "creationType":
-                    // creationType can be non-assigned (Microsoft Account)
-                    // or null, Inviation, LocalAccount or EmailVerified.
-                    creationType = member.getValue().isNull() ? Optional.empty() : Optional.ofNullable(member.getValue().asString());
                     break;
                 case "department":
                 case "displayName":

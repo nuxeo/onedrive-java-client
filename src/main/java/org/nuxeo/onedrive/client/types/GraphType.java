@@ -13,7 +13,7 @@ public abstract class GraphType<T extends GraphType<T>> extends OneDriveJsonObje
     }
 
     public T fromJson(JsonObject jsonObject) {
-        parseMember(jsonObject, this::parseMember);
+        parseMember(jsonObject, this::parseMember, this::parseMemberUnsafe);
         return (T) this;
     }
 

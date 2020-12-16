@@ -21,6 +21,7 @@ package org.nuxeo.onedrive.client;
 import com.eclipsesource.json.JsonObject;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * @since 1.0
@@ -34,15 +35,23 @@ public abstract class OneDriveJsonObject {
     }
 
     public final void parseMember(JsonObject json) {
-        parseMember(json, this::parseMember);
+        parseMember(json, this::parseMember, this::parseMemberUnsafe);
     }
 
     protected void parseMember(JsonObject.Member member) {
     }
 
-    protected static void parseMember(JsonObject json, Consumer<JsonObject.Member> consumer) {
+    protected boolean parseMemberUnsafe(JsonObject.Member member) {
+        return false;
+    }
+
+    protected static void parseMember(JsonObject json, Consumer<JsonObject.Member> consumer, Predicate<JsonObject.Member> filterUnsafe) {
         for (JsonObject.Member member : json) {
-            consumer.accept(member);
+            if (!filterUnsafe.test(member) && !member.getValue().isNull()) {
+                // parseMember assumes that member.getValue() is never null.
+                // which causes much trouble.
+                consumer.accept(member);
+            }
         }
     }
 
