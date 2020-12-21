@@ -1,6 +1,7 @@
 package org.nuxeo.onedrive.client.types;
 
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 import org.nuxeo.onedrive.client.OneDriveJsonResponse;
@@ -91,7 +92,14 @@ public class DriveItem extends BaseItem {
 
     public static DriveItem.Metadata parseJson(final OneDriveAPI api, final JsonObject jsonObject) {
         final String id = jsonObject.get("id").asString();
-        final Drive drive = new Drive(api, jsonObject.get("parentReference").asObject().get("driveId").asString());
+
+        final Drive drive;
+        final JsonValue parentReference = jsonObject.get("parentReference");
+        if (null == parentReference) {
+            drive = new Drive(api);
+        } else {
+            drive = new Drive(api, parentReference.asObject().get("driveId").asString());
+        }
         final DriveItem item = new DriveItem(drive, id);
         return item.new Metadata().fromJson(jsonObject);
     }
