@@ -132,7 +132,7 @@ public class DriveItem extends BaseItem {
         private String cTag;
         private String description;
         private DriveItem.Metadata remoteItem;
-        private Integer size;
+        private Long size;
         private String webDavUrl;
 
         private final Map<Class, Facet> facetMap = new HashMap<>();
@@ -174,7 +174,7 @@ public class DriveItem extends BaseItem {
             return remoteItem;
         }
 
-        public Integer getSize() {
+        public Long getSize() {
             return size;
         }
 
@@ -202,7 +202,7 @@ public class DriveItem extends BaseItem {
                     break;
 
                 case "size":
-                    size = member.getValue().asInt();
+                    size = member.getValue().asLong();
                     break;
 
                 case "webDavUrl":
