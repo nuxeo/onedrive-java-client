@@ -52,7 +52,6 @@ public class OneDriveResource {
         return resourceIdentifier;
     }
 
-
     public String getFullyQualifiedPath() {
         return "";
     }
