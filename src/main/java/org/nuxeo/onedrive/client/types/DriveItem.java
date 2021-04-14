@@ -64,6 +64,24 @@ public class DriveItem extends BaseItem {
         return null;
     }
 
+    public JsonObject createParentReferenceObject() {
+        final JsonObject root = new JsonObject();
+
+        if (ItemIdentifierType.Id == itemIdentifierType) {
+            root.add("driveId", getDrive().getId());
+            root.add("id", getId());
+        } else {
+            final StringBuilder pathBuilder = new StringBuilder();
+            pathBuilder.append(getPath());
+            if (null == itemIdentifierType) {
+                pathBuilder.append(":");
+            }
+            root.add("path", pathBuilder.toString());
+        }
+
+        return root;
+    }
+
     @Override
     public String getAction(String action) {
         final StringBuilder actionPathBuilder = new StringBuilder();
