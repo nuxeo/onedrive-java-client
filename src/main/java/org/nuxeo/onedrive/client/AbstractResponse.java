@@ -34,6 +34,8 @@ import java.nio.charset.StandardCharsets;
  */
 public abstract class AbstractResponse<C> implements Closeable {
 
+    private final RequestExecutor.Response response;
+
     private final int responseCode;
     private final String responseMessage;
     private final String location;
@@ -45,12 +47,17 @@ public abstract class AbstractResponse<C> implements Closeable {
 
     private boolean closed;
 
-    public AbstractResponse(final int responseCode, final String responseMessage, final String location, final InputStream inputStream) throws IOException {
-        this.responseCode = responseCode;
-        this.responseMessage = responseMessage;
-        this.location = location;
-        this.inputStream = inputStream;
+    public AbstractResponse(final RequestExecutor.Response response) throws IOException {
+        this.response = response;
+        this.responseCode = response.getStatusCode();
+        this.responseMessage = response.getStatusMessage();
+        this.location = response.getLocation();
+        this.inputStream = response.getInputStream();
         this.validate();
+    }
+
+    public RequestExecutor.Response getResponse() {
+        return response;
     }
 
     public abstract C getContent() throws IOException;
@@ -78,7 +85,16 @@ public abstract class AbstractResponse<C> implements Closeable {
     }
 
     /**
-     * Returns a string representation of error. Method returns the content of error stream.
+     *
+     * @param header Header name
+     * @return Header value or null
+     */
+    public String getHeader(String header) {
+        return response.getHeader(header);
+    }
+
+    /**
+     * @return A string representation of error. Method returns the content of error stream.
      */
     protected String getResponseMessage() {
         return responseMessage;
@@ -101,6 +117,10 @@ public abstract class AbstractResponse<C> implements Closeable {
             final JsonObject error = this.getError();
             if(null == error) {
                 throw new OneDriveAPIException(responseMessage, responseCode);
+            }
+            final String retry = this.getHeader("Retry-After");
+            if(retry != null) {
+                throw new OneDriveAPIException(responseMessage, responseCode, error, Integer.valueOf(retry));
             }
             throw new OneDriveAPIException(responseMessage, responseCode, error);
         }

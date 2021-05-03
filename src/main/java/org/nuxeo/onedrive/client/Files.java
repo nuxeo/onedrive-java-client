@@ -53,7 +53,7 @@ public final class Files {
         final OneDriveRequest request = new OneDriveRequest(url, "PUT");
         request.addHeader("Content-Type", mimeType);
         final OneDriveResponse response = request.sendRequest(parent.getApi().getExecutor(), new NullInputStream(0));
-        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), response.getResponseMessage(), response.getLocation(), response.getContent());
+        final OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponse());
         final JsonObject jsonObject = jsonResponse.getContent();
         response.close();
         return DriveItem.parseJson(parent.getApi(), jsonObject);

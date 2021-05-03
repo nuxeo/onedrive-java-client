@@ -31,32 +31,44 @@ public class OneDriveAPIException extends IOException {
 
     private final int responseCode;
     private final String errorMessage;
+    /**
+     * Retry-After header value (in seconds)
+     */
+    private final Integer retry;
 
     public OneDriveAPIException(String message) {
         super(message);
         this.responseCode = -1;
         this.errorMessage = null;
+        this.retry = null;
     }
 
     public OneDriveAPIException(String message, Throwable cause) {
         super(message, cause);
         this.responseCode = -1;
         this.errorMessage = null;
+        this.retry = null;
     }
 
     public OneDriveAPIException(String responseMessage, int responseCode) {
         super(responseMessage);
         this.responseCode = responseCode;
         this.errorMessage = null;
+        this.retry = null;
     }
 
     public OneDriveAPIException(OneDriveRuntimeException cause) {
         super(cause);
         this.responseCode = cause.getCause().getResponseCode();
         this.errorMessage = cause.getCause().getErrorMessage();
+        this.retry = null;
     }
 
     public OneDriveAPIException(final String responseMessage, final int responseCode, final JsonObject error) {
+        this(responseMessage, responseCode, error, null);
+    }
+
+    public OneDriveAPIException(final String responseMessage, final int responseCode, final JsonObject error, final Integer retry) {
         super(responseMessage);
         this.responseCode = responseCode;
         if(error.get("error").isObject()) {
@@ -65,6 +77,7 @@ public class OneDriveAPIException extends IOException {
         else {
             this.errorMessage = error.toString();
         }
+        this.retry = retry;
     }
 
     public int getResponseCode() {
@@ -73,5 +86,14 @@ public class OneDriveAPIException extends IOException {
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    /**
+     * Retry-After header value (in seconds)
+     *
+     * @return Value in seconds or null if not Retry-After header in response
+     */
+    public Integer getRetry() {
+        return retry;
     }
 }

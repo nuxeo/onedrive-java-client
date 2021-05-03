@@ -31,8 +31,8 @@ import java.nio.charset.StandardCharsets;
  */
 public class OneDriveJsonResponse extends AbstractResponse<JsonObject> {
 
-    public OneDriveJsonResponse(final int responseCode, final String responseMessage, final String location, final InputStream inputStream) throws IOException {
-        super(responseCode, responseMessage, location, inputStream);
+    public OneDriveJsonResponse(RequestExecutor.Response response) throws IOException {
+        super(response);
     }
 
     /**

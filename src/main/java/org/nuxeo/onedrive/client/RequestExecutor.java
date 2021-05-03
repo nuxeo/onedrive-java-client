@@ -36,6 +36,8 @@ public interface RequestExecutor extends Closeable {
         public InputStream getInputStream() {
             return responseBody;
         }
+
+        public abstract String getHeader(final String header);
     }
 
     abstract class Upload {

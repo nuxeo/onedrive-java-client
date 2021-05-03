@@ -135,9 +135,9 @@ public class JavaNetRequestExecutor implements RequestExecutor {
         //
     }
 
-    private final class JavaNetResponse extends Response {
+    private static final class JavaNetResponse extends Response {
 
-        private HttpURLConnection connection;
+        private final HttpURLConnection connection;
 
         public JavaNetResponse(final HttpURLConnection connection, final InputStream stream) throws IOException {
             super("gzip".equalsIgnoreCase(connection.getContentEncoding()) ? new GZIPInputStream(stream) : stream
@@ -158,6 +158,11 @@ public class JavaNetRequestExecutor implements RequestExecutor {
         @Override
         public String getLocation() {
             return connection.getHeaderField("Location");
+        }
+
+        @Override
+        public String getHeader(String header) {
+            return connection.getHeaderField(header);
         }
     }
 }

@@ -26,8 +26,8 @@ import java.io.InputStream;
  */
 public class OneDriveResponse extends AbstractResponse<InputStream> {
 
-    public OneDriveResponse(final int responseCode, final String responseMessage, final String location, final InputStream inputStream) throws IOException {
-        super(responseCode, responseMessage, location, inputStream);
+    public OneDriveResponse(final RequestExecutor.Response response) throws IOException {
+        super(response);
     }
 
     @Override

@@ -54,6 +54,6 @@ public class OneDriveJsonRequest extends AbstractRequest<OneDriveJsonResponse> {
 
     @Override
     protected OneDriveJsonResponse createResponse(final RequestExecutor.Response response) throws IOException {
-        return new OneDriveJsonResponse(response.getStatusCode(), response.getStatusMessage(), response.getLocation(), response.getInputStream());
+        return new OneDriveJsonResponse(response);
     }
 }
