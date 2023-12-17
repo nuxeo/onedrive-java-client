@@ -134,7 +134,7 @@
   <repositories>
     <repository>
       <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <url>https://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -144,7 +144,7 @@
     </repository>
     <repository>
       <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <url>https://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -161,11 +161,11 @@
     </site>
     <repository>
       <id>public-releases</id>
-      <url>http://mavenin.nuxeo.com/nexus/content/repositories/public-releases</url>
+      <url>https://mavenin.nuxeo.com/nexus/content/repositories/public-releases</url>
     </repository>
     <snapshotRepository>
       <id>public-snapshots</id>
-      <url>http://mavenin.nuxeo.com/nexus/content/repositories/public-snapshots</url>
+      <url>https://mavenin.nuxeo.com/nexus/content/repositories/public-snapshots</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
